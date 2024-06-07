@@ -1,6 +1,7 @@
 <?php
+require 'cors.php';
 require_once 'db.php';
-
+ 
 function generateToken() {
     return bin2hex(random_bytes(16));
 }
@@ -185,7 +186,7 @@ switch ($path[0]) {
         if ($request_method == 'GET' && isset($path[1])) {
             $user_id = intval($path[1]);
             if (validateToken($con, $user_id, $_SERVER['HTTP_TOKEN'])) {
-                $stmt = $con->prepare("SELECT * FROM users WHERE user_id = ?");
+                $stmt = $con->prepare("SELECT user_id, firstname, lastname, email, dob, country, ocupation FROM users WHERE user_id = ?");
                 $stmt->bind_param("i", $user_id);
                 $stmt->execute();
                 $result = $stmt->get_result();
