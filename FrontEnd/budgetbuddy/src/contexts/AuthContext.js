@@ -1,3 +1,4 @@
+// contexts/AuthContext.js
 import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -7,9 +8,9 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
-
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
+  const [isFirstTime, setIsFirstTime] = useState(false);
   const navigate = useNavigate();
 
   function signup(email, password) {
@@ -17,30 +18,44 @@ export function AuthProvider({ children }) {
     return fetch("https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/register", {
       method: "POST",
       headers: {
-        // "Content-Type": "application/json"
-      },  
-      body: JSON.stringify({ email, password })
-    }).then(res => res.json()).then(data => {
-      setCurrentUser(data.user);
-    });
-  }
-
-  function login(email, password) {
-    // Call API to login
-    return fetch("https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/auth", {
-      method: "POST",
-      headers: {
-        // "Content-Type": "application/json"
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({ email, password })
     }).then(res => res.json()).then(data => {
       setCurrentUser(data.user);
-      navigate("/");
+      setIsFirstTime(true);
     });
   }
 
+  async function login(email, password) {
+    try {
+      const response = await fetch("https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to log in");
+        //dar respuesta a partir del API
+      }
+
+      const data = await response.json();
+      // Assuming `isFirstTime` is determined elsewhere and stored in the localStorage for this example keep this in mind for future references users are being redirected to the onborading but this needs to be reviewed.
+      const isFirstTime = localStorage.getItem(`isFirstTime_${data.user_id}`) === "true";
+
+      setCurrentUser({ id: data.user_id, token: data.token });
+      setIsFirstTime(isFirstTime);
+    } catch (error) {
+      console.error(error);
+      throw new Error("Failed to log in");
+      //dar respuesta a partir del API
+    }
+  }
+
   function logout() {
-    // Call API to logout
     return fetch("/api/logout", {
       method: "POST"
     }).then(() => {
@@ -50,7 +65,6 @@ export function AuthProvider({ children }) {
   }
 
   function resetPassword(email) {
-    // Call API to reset password
     return fetch("", {
       method: "POST",
       headers: {
@@ -61,14 +75,15 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    // Check if the user is logged in on component mount
     fetch("").then(res => res.json()).then(data => {
       setCurrentUser(data.user);
+      setIsFirstTime(data.user.isFirstTime);
     });
   }, []);
 
   const value = {
     currentUser,
+    isFirstTime,
     login,
     signup,
     logout,
