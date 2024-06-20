@@ -91,6 +91,9 @@ export const Goals = () => {
         goalDate: data[`goalDate_${goal.id}`],
       })),
     };
+    console.log(data);
+    console.log(combinedData);
+
     setState(combinedData);
     await saveToDatabase(combinedData);
     navigate("/onboarding/incomes");

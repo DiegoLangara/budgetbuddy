@@ -8,30 +8,37 @@ import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
 import { Button } from "../OnboardingParts/Button";
 
-// Diego's DB Test
-// Improved personalDetails function with error handling
-// async function personalDetails(id, token) {
-//   try {
-//     const response = await fetch(
-//       `https://inteligencia.ec/budgetbuddy/backend/user/${id}`,
-//       {
-//         method: "GET",
-//         headers: {
-//           "Content-Type": "application/json",
-//           token: token,
-//         },
-//         // credentials: "include", // Uncomment if using cookies
-//       }
-//     );
-//     if (!response.ok) {
-//       throw new Error(`HTTP error! status: ${response.status}`);
-//     }
-//     return await response.json();
-//   } catch (error) {
-//     console.error("Failed to fetch personal details:", error);
-//     return null;
-//   }
-// }
+// Utility function to format the date
+const formatDate = (isoDate) => {
+  const date = new Date(isoDate);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+async function fetchPersonalDetails(user_id, token) {
+  try {
+    const response = await fetch(
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/user/`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: token,
+          user_id: user_id,
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Failed to fetch personal details:", error);
+    return null;
+  }
+}
 
 export const PersonalDetails = () => {
   const [state, setState] = useOnboardingState();
@@ -39,53 +46,59 @@ export const PersonalDetails = () => {
     defaultValues: state,
   });
   const navigate = useNavigate();
+  const token = "150db5987860acbe262bf7141ca73b86";
+  const user_id = 23;
 
-  // Diego's DB Test
-  // Fetch and populate form with personal details
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     const user = await personalDetails(
-  //       13,
-  //       "0a2ebfd62a439afd739953435b8749cc"
-  //     );
-  //     if (user) {
-  //       // Populate form fields with fetched data
-  //       Object.entries(user).forEach(([key, value]) => {
-  //         if (value !== null && value !== undefined) {
-  //           setValue(key, value);
-  //         }
-  //       });
-  //     }
-  //   }
-  //   fetchData();
-  // }, [setValue]);
+  useEffect(() => {
+    async function fetchData() {
+      const user = await fetchPersonalDetails(user_id, token);
+      console.log("Fetched user data:", user); // Debug output
+      if (user) {
+        Object.entries(user).forEach(([key, value]) => {
+          if (value !== null && value !== undefined) {
+            if (key === "dob") {
+              setValue(key, formatDate(value)); // Format date before setting
+            } else {
+              setValue(key, value);
+            }
+          }
+        });
+      }
+    }
+    fetchData();
+  }, [setValue, user_id, token]);
 
   useEffect(() => {
     if (state) {
-      setValue("firstName", state.firstName);
-      setValue("lastName", state.lastName);
-      setValue("email", state.email);
-      setValue("phone", state.phone);
-      setValue("address", state.address);
+      setValue("firstname", state.firstname);
+      setValue("lastname", state.lastname);
+      setValue("dob", state.dob);
+      setValue("country", state.country);
+      setValue("occupation", state.occupation);
     }
   }, [setValue, state]);
 
   const saveToDatabase = async (data) => {
     try {
-      const response = await fetch("/api/saveDetails", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/user/`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+            user_id: user_id,
+          },
+          body: JSON.stringify(data),
+        }
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const responseData = await response.json();
-      console.log("Data saved successfully:", responseData);
+      console.log("Data updated successfully:", responseData);
     } catch (error) {
-      console.error("Failed to save data:", error);
+      console.error("Failed to update data:", error);
     }
   };
 
@@ -104,31 +117,20 @@ export const PersonalDetails = () => {
       <div style={{ margin: "2.1rem 0 2.2rem" }}>
         <h3>Personal Details</h3>
       </div>
-
       <StyledPersonalDetails>
-        {/* <p>********** Diego's DB test **********</p> */}
-        {/* <Field label="Email" error={errors.firstName}>
-        <Input
-          {...register("email")}
-          type="email"
-          id="email"
-          placeholder="email@domain.com"
-        />
-      </Field> */}
-
         <Field label="First Name">
           <Input
-            {...register("firstName")}
+            {...register("firstname")}
             type="text"
-            id="first-name"
+            id="firstname"
             placeholder="First Name"
           />
         </Field>
         <Field label="Last Name">
           <Input
-            {...register("lastName")}
+            {...register("lastname")}
             type="text"
-            id="last-name"
+            id="lastname"
             placeholder="Last Name"
           />
         </Field>
@@ -152,7 +154,6 @@ export const PersonalDetails = () => {
           />
         </Field>
       </StyledPersonalDetails>
-
       <StyledBottomBtnWrapper>
         <StyledLink to="/onboarding">{"<"} Return</StyledLink>
         <Button type="submit" style={{ padding: "0 .5rem" }}>
@@ -185,7 +186,6 @@ const StyledLink = styled(Link)`
   border-radius: 4px;
   text-align: center;
   cursor: pointer;
-
   &:hover {
     background-color: lightgray;
     text-decoration: none;

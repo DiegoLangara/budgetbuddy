@@ -13,7 +13,7 @@ import { OnboardingProvider } from "../Hooks/useOnboardingState";
 
 export const OnboardingPage = () => {
   const location = useLocation();
-  console.log("Current location:", location.pathname); // Debug current path
+  // console.log("Current location:", location.pathname);
 
   return (
     <StyledOnboardingWrapper>
