@@ -1,8 +1,10 @@
 import React, { useRef, useState } from "react";
-import { Form, Button, Card, Alert } from "react-bootstrap";
+import { Form, Button, Card, Alert, InputGroup } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 export default function Signup() {
   const emailRef = useRef();
@@ -11,10 +13,11 @@ export default function Signup() {
   const { signup } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const navigate = useNavigate();
 
   const validatePassword = (password) => {
-   
     const re = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
     return re.test(password);
   };
@@ -40,6 +43,7 @@ export default function Signup() {
         icon: 'success',
         title: 'Account Created',
         text: 'Your account has been successfully created!',
+        //si el usuario esta creado tener la respuesta con el api.
       }).then(() => {
         navigate("/");
       });
@@ -62,11 +66,35 @@ export default function Signup() {
             </Form.Group>
             <Form.Group id="password">
               <Form.Label>Password</Form.Label>
-              <Form.Control type="password" ref={passwordRef} required />
+              <InputGroup>
+                <Form.Control
+                  type={showPassword ? "text" : "password"}
+                  ref={passwordRef}
+                  required
+                />
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+                </Button>
+              </InputGroup>
             </Form.Group>
             <Form.Group id="password-confirm">
               <Form.Label>Password Confirmation</Form.Label>
-              <Form.Control type="password" ref={passwordConfirmRef} required />
+              <InputGroup>
+                <Form.Control
+                  type={showPasswordConfirm ? "text" : "password"}
+                  ref={passwordConfirmRef}
+                  required
+                />
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                >
+                  <FontAwesomeIcon icon={showPasswordConfirm ? faEye : faEyeSlash} />
+                </Button>
+              </InputGroup>
             </Form.Group>
             <Button disabled={loading} className="w-100" type="submit">
               Sign Up

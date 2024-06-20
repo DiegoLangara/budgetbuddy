@@ -1,31 +1,33 @@
-import React, { useRef, useState } from "react"
-import { Form, Button, Card, Alert } from "react-bootstrap"
+import React, { useRef, useState } from "react";
+import { Form, Button, Card, Alert } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
-import { Link, useNavigate } from "react-router-dom"
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const emailRef = useRef()
-  const passwordRef = useRef()
-  const rememberMeRef = useRef()
-  const { login } = useAuth()
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const { login, isFirstTime } = useAuth();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   async function handleSubmit(e) {
-    e.preventDefault()
+    e.preventDefault();
 
     try {
-      setError("")
-      setLoading(true)
-      await login(emailRef.current.value, passwordRef.current.value, rememberMeRef.current.checked)
-      navigate("/")
+      setError("");
+      setLoading(true);
+      await login(emailRef.current.value, passwordRef.current.value);
+      setLoading(false);
+      if (isFirstTime) {
+        navigate("/onboarding");
+      } else {
+        navigate("/dashboard");
+      }
     } catch {
-      setError("Failed to log in")
+      setError("Failed to log in");
+      setLoading(false);
     }
-
-    setLoading(false)
   }
 
   return (
@@ -44,9 +46,6 @@ export default function Login() {
               <Form.Label>Password</Form.Label>
               <Form.Control type="password" ref={passwordRef} required />
             </Form.Group>
-            <Form.Group id="remember-me" className="mt-3">
-              <Form.Check type="checkbox" label="Remember Me" ref={rememberMeRef} />
-            </Form.Group>
             <Button disabled={loading} className="w-100 mt-3" type="submit">
               Log In
             </Button>
@@ -59,18 +58,6 @@ export default function Login() {
       <div className="w-100 text-center mt-2">
         Need an account? <Link to="/signup">Sign Up</Link>
       </div>
-      <div className="w-100 text-center mt-2">
-        {"    "}
-        <Link to=""><i className="bi bi-facebook"></i></Link>
-        {"    "}
-        <Link to=""><i className="bi bi-google"></i></Link>
-        {"    "}
-        <Link to=""><i className="bi bi-apple"></i></Link>
-      </div>
-
-      <div className="w-100 text-center mt-2">
-          <Link to="/terms">Terms & Conditions</Link>
-      </div>
     </>
-  )
+  );
 }
