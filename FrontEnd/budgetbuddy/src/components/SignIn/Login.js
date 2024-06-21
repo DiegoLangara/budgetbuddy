@@ -1,8 +1,10 @@
 import React, { useRef, useState } from "react";
-import { Form, Button, Card, Alert, Container } from "react-bootstrap";
+import { Form, Button, Card, Alert, Container, InputGroup } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import "../../css/Login.css";
 
 export default function Login() {
@@ -11,6 +13,7 @@ export default function Login() {
   const { login } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
@@ -50,7 +53,19 @@ export default function Login() {
                 </Form.Group>
                 <Form.Group id="password" className="mb-3">
                   <Form.Label>Password</Form.Label>
-                  <Form.Control type="password" ref={passwordRef} required />
+                  <InputGroup>
+                    <Form.Control
+                      type={showPassword ? "text" : "password"}
+                      ref={passwordRef}
+                      required
+                    />
+                    <Button
+                      variant="outline-secondary"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+                    </Button>
+                  </InputGroup>
                 </Form.Group>
                 <Button disabled={loading} className="w-100 mt-3" type="submit">
                   Log In
