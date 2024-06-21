@@ -5,7 +5,7 @@ import styled from "styled-components";
 export const TestDashboard = () => {
   return (
     <div style={{ margin: "5rem", textAlign: "center" }}>
-      <h1>This is Dashboard!!</h1>
+      <h1>This is Dashboard!! try it out</h1>
       <StyledLink to="/debts">{"<"} Return</StyledLink>
     </div>
   );
