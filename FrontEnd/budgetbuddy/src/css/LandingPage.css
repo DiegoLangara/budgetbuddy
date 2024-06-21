@@ -1,0 +1,86 @@
+/* LandingPage.css */
+.landing-page {
+    font-family: Arial, sans-serif;
+  }
+  
+  .landing-header {
+    background-color: #f8f9fa;
+    padding: 20px 0;
+  }
+  
+  .header-content {
+    padding: 100px 0;
+  }
+  
+  .header-content h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+  }
+  
+  .header-content p {
+    font-size: 1.2rem;
+  }
+  
+  .features-section {
+    background-color: #f1f1f1;
+    padding: 50px 0;
+  }
+  
+  .features-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 50px;
+  }
+  
+  .feature-item {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  
+  .feature-item h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+  
+  .feature-item p {
+    font-size: 1rem;
+  }
+  
+  .team-section {
+    padding: 50px 0;
+  }
+  
+  .team-member {
+    margin-bottom: 30px;
+  }
+  
+  .team-member img {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .team-member h3 {
+    font-size: 1.2rem;
+    margin-top: 10px;
+  }
+  
+  .contact-section {
+    background-color: #f1f1f1;
+    padding: 50px 0;
+  }
+  
+  .contact-section h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .footer {
+    padding: 20px 0;
+  }
+  
+  .footer p {
+    margin: 0;
+  }
+  
