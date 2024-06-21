@@ -1,6 +1,7 @@
 // contexts/AuthContext.js
 import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
 
 const AuthContext = React.createContext();
 
@@ -10,21 +11,21 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
-  const [isFirstTime, setIsFirstTime] = useState(false);
   const navigate = useNavigate();
 
-  function signup(email, password) {
-    // Call API to create a user
-    return fetch("https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/register", {
+  async function signup(email, password) {
+    const response = await fetch("https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ email, password })
-    }).then(res => res.json()).then(data => {
-      setCurrentUser(data.user);
-      setIsFirstTime(true);
     });
+    const data = await response.json();
+    if (data.success) {
+      setCurrentUser({ id: data.user_id, token: data.token });
+    }
+    return data;  // Return the data object for processing in Signup.js
   }
 
   async function login(email, password) {
@@ -36,58 +37,55 @@ export function AuthProvider({ children }) {
         },
         body: JSON.stringify({ email, password })
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to log in");
-        //dar respuesta a partir del API
-      }
-
       const data = await response.json();
-      // Assuming `isFirstTime` is determined elsewhere and stored in the localStorage for this example keep this in mind for future references users are being redirected to the onborading but this needs to be reviewed.
-      const isFirstTime = localStorage.getItem(`isFirstTime_${data.user_id}`) === "true";
-
-      setCurrentUser({ id: data.user_id, token: data.token });
-      setIsFirstTime(isFirstTime);
+      if (data.success === false) {
+        Swal.fire({
+          icon: data.message_icon,
+          title: data.message_title,
+          text: data.message_text,
+        }).then(() => {
+          navigate("/login");
+        });
+      } else {
+        Swal.fire({
+          icon: data.message_icon,
+          title: data.message_title,
+          text: data.message_text,
+        }).then(() => {
+          setCurrentUser({ id: data.user_id, token: data.token });
+          data.onboarding === true ? navigate("/onboarding") : navigate("/dashboard");
+        });
+      }
     } catch (error) {
-      console.error(error);
-      throw new Error("Failed to log in");
-      //dar respuesta a partir del API
+      throw new Error("Data connection error. Please try again.");
     }
   }
 
   function logout() {
-    return fetch("/api/logout", {
-      method: "POST"
-    }).then(() => {
-      setCurrentUser(null);
-      navigate("/login");
-    });
-  }
-
-  function resetPassword(email) {
-    return fetch("", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email })
-    });
+    setCurrentUser(null);
+    navigate("/login");
   }
 
   useEffect(() => {
-    fetch("").then(res => res.json()).then(data => {
-      setCurrentUser(data.user);
-      setIsFirstTime(data.user.isFirstTime);
-    });
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    if (user) {
+      setCurrentUser(user);
+    }
   }, []);
+
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem("currentUser", JSON.stringify(currentUser));
+    } else {
+      localStorage.removeItem("currentUser");
+    }
+  }, [currentUser]);
 
   const value = {
     currentUser,
-    isFirstTime,
     login,
     signup,
     logout,
-    resetPassword
   };
 
   return (
@@ -96,4 +94,5 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
+
 export default AuthContext;

@@ -36,16 +36,17 @@ export default function Signup() {
     try {
       setError("");
       setLoading(true);
-      await signup(emailRef.current.value, passwordRef.current.value);
-      setLoading(false);
-      // Show success alert
+      const data = await signup(emailRef.current.value, passwordRef.current.value);
       Swal.fire({
-        icon: 'success',
-        title: 'Account Created',
-        text: 'Your account has been successfully created!',
-        //si el usuario esta creado tener la respuesta con el api.
+        icon: data.message_icon,
+        title: data.message_title,
+        text: data.message_text,
       }).then(() => {
-        navigate("/");
+        if (data.success) {
+          navigate("/login");
+        } else {
+          setLoading(false);
+        }
       });
     } catch {
       setError("Failed to create an account");

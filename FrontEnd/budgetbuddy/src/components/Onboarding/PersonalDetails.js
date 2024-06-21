@@ -7,6 +7,7 @@ import { Field } from "../OnboardingParts/Field";
 import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
 import { Button } from "../OnboardingParts/Button";
+import { useAuth } from "../../contexts/AuthContext";
 
 // Utility function to format the date
 const formatDate = (isoDate) => {
@@ -46,8 +47,9 @@ export const PersonalDetails = () => {
     defaultValues: state,
   });
   const navigate = useNavigate();
-  const token = "150db5987860acbe262bf7141ca73b86";
-  const user_id = 23;
+  const { currentUser } = useAuth();
+  const token = currentUser.token;
+  const user_id = currentUser.id;
 
   useEffect(() => {
     async function fetchData() {

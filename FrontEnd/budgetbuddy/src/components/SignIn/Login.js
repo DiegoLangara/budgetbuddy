@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { Form, Button, Card, Alert } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
 
 export default function Login() {
   const emailRef = useRef();
@@ -19,13 +20,17 @@ export default function Login() {
       setLoading(true);
       await login(emailRef.current.value, passwordRef.current.value);
       setLoading(false);
-      if (isFirstTime) {
-        navigate("/onboarding");
-      } else {
-        navigate("/dashboard");
-      }
+     
     } catch {
-      setError("Failed to log in");
+      Swal.fire({
+        icon: 'error',
+        title: 'Ooops...',
+        text: 'Data connection error. Please try again.',
+        //si el usuario esta creado tener la respuesta con el api.
+      }).then(() => {
+        navigate("/login");
+      });
+    //  setError("Data connection error. Please try again.");
       setLoading(false);
     }
   }
@@ -40,11 +45,11 @@ export default function Login() {
           <Form onSubmit={handleSubmit}>
             <Form.Group id="email">
               <Form.Label>Email</Form.Label>
-              <Form.Control type="email" ref={emailRef} required />
+              <Form.Control type="email" ref={emailRef}  required />
             </Form.Group>
             <Form.Group id="password">
               <Form.Label>Password</Form.Label>
-              <Form.Control type="password" ref={passwordRef} required />
+              <Form.Control type="password" ref={passwordRef}  required />
             </Form.Group>
             <Button disabled={loading} className="w-100 mt-3" type="submit">
               Log In
