@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "../OnboardingParts/Button";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
