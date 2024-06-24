@@ -1,0 +1,27 @@
+
+.login-background {
+    /* background: url('/path/to/your/background-image.jpg') no-repeat center center fixed; */
+    background-size: cover;
+  }
+  
+  .card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .btn-primary {
+    background-color: #001F3F;
+    border: none;
+  }
+  
+  .btn-primary:hover {
+    background-color: #001F3F;
+  }
+  
+  .form-control {
+    border-radius: 5px;
+    padding: 10px;
+  }
+  
+  

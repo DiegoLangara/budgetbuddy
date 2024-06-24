@@ -5,11 +5,15 @@ import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
+import { WelcomePage } from "./pages/WelcomePage";
 import { OnboardingPage } from "./pages/OnboardingPage";
 import ProfilePage from "./pages/ProfilePage";
 import SupportPage from "./pages/SupportPage";
 import PrivateRoute from "./components/SignIn/PrivateRoute";
-// import "./styles/App.css";
+import Signup from "./components/SignIn/Signup";
+import ForgotPassword from "./components/SignIn/ForgotPassword";
+import UpdateProfile from "./components/SignIn/UpdateProfile";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   return (
@@ -19,12 +23,49 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/onboarding/*" element={<OnboardingPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/support" element={<SupportPage />} />
-          <Route path="/dashboard" element={<PrivateRoute />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
-          </Route>
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/onboarding/welcome" element={<WelcomePage />} />
+          <Route
+            path="/onboarding/*"
+            element={
+              <PrivateRoute>
+                <OnboardingPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <ProfilePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/support"
+            element={
+              <PrivateRoute>
+                <SupportPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/update-profile"
+            element={
+              <PrivateRoute>
+                <UpdateProfile />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <DashboardPage />
+              </PrivateRoute>
+            }
+          />
         </Routes>
       </AuthProvider>
     </Router>

@@ -1,5 +1,7 @@
+// contexts/AuthContext.js
 import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
 
 const AuthContext = React.createContext();
 
@@ -7,72 +9,83 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
-
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
 
-  function signup(email, password) {
-    // Call API to create a user
-    return fetch("https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/register", {
-      method: "POST",
-      headers: {
-        // "Content-Type": "application/json"
-      },  
-      body: JSON.stringify({ email, password })
-    }).then(res => res.json()).then(data => {
-      setCurrentUser(data.user);
-    });
-  }
-
-  function login(email, password) {
-    // Call API to login
-    return fetch("https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/auth", {
-      method: "POST",
-      headers: {
-        // "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email, password })
-    }).then(res => res.json()).then(data => {
-      setCurrentUser(data.user);
-      navigate("/");
-    });
-  }
-
-  function logout() {
-    // Call API to logout
-    return fetch("/api/logout", {
-      method: "POST"
-    }).then(() => {
-      setCurrentUser(null);
-      navigate("/login");
-    });
-  }
-
-  function resetPassword(email) {
-    // Call API to reset password
-    return fetch("", {
+  async function signup(email, password) {
+    const response = await fetch("https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ email, password })
     });
+    const data = await response.json();
+    if (data.success) {
+      setCurrentUser({ id: data.user_id, token: data.token });
+    }
+    return data;  // Return the data object for processing in Signup.js
+  }
+
+  async function login(email, password) {
+    try {
+      const response = await fetch("https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await response.json();
+      if (data.success === false) {
+        Swal.fire({
+          icon: data.message_icon,
+          title: data.message_title,
+          text: data.message_text,
+        }).then(() => {
+          navigate("/login");
+        });
+      } else {
+        Swal.fire({
+          icon: data.message_icon,
+          title: data.message_title,
+          text: data.message_text,
+        }).then(() => {
+          setCurrentUser({ id: data.user_id, token: data.token });
+          data.onboarding === true ? navigate("/onboarding") : navigate("/dashboard");
+        });
+      }
+    } catch (error) {
+      throw new Error("Data connection error. Please try again.");
+    }
+  }
+
+  function logout() {
+    setCurrentUser(null);
+    navigate("/login");
   }
 
   useEffect(() => {
-    // Check if the user is logged in on component mount
-    fetch("").then(res => res.json()).then(data => {
-      setCurrentUser(data.user);
-    });
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    if (user) {
+      setCurrentUser(user);
+    }
   }, []);
+
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem("currentUser", JSON.stringify(currentUser));
+    } else {
+      localStorage.removeItem("currentUser");
+    }
+  }, [currentUser]);
 
   const value = {
     currentUser,
     login,
     signup,
     logout,
-    resetPassword
   };
 
   return (
@@ -81,4 +94,5 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
+
 export default AuthContext;
