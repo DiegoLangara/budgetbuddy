@@ -45,7 +45,7 @@ export const PersonalDetails = () => {
   const { currentUser } = useAuth();
   const token = currentUser.token;
   const user_id = currentUser.id;
-
+  console.log(token, user_id);
   // Local state to manage form inputs
   const [formData, setFormData] = useState({
     firstname: "",
@@ -118,7 +118,7 @@ export const PersonalDetails = () => {
   return (
     <Form onSubmit={saveData} className="my-4 mx-2">
       <div>
-        <h3>Personal Details</h3>
+        <h3 className="mb-4">Personal Details</h3>
       </div>
       <div className="container">
         <div className="row">
@@ -188,7 +188,7 @@ export const PersonalDetails = () => {
           </div>
         </div>
       </div>
-      <div className="container mt-3">
+      <div className="container mt-5">
         <div className="row">
           <div className="col-md-12 text-right">
             <Button

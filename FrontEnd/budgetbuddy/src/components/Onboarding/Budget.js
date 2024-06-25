@@ -11,12 +11,13 @@ import { useAuth } from "../../contexts/AuthContext";
 async function fetchBudgetItems(user_id, token) {
   try {
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/${user_id}`,
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/}`,
       {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          token: token,
+          user_id: user_id,
         },
       }
     );
@@ -80,6 +81,9 @@ export const Budget = () => {
         amount: expense.amount || "",
         period: expense.period ?? 0,
       }));
+      // Sort expenses by id in ascending order
+      formattedExpenses.sort((a, b) => a.id - b.id);
+
       setExpenses(
         formattedExpenses.length > 0
           ? formattedExpenses
@@ -102,8 +106,12 @@ export const Budget = () => {
   };
 
   const addExpense = () => {
-    const newExpense = { id: expenses.length + 1, expense_type_id: 0 };
-    setExpenses([...expenses, newExpense]);
+    const newId =
+      expenses.length > 0 ? Math.max(...expenses.map((g) => g.id)) + 1 : 1;
+    const newExpense = { id: newId, expense_type_id: 0 };
+    const updatedExpenses = [...expenses, newExpense];
+    updatedExpenses.sort((a, b) => a.id - b.id); // Ensure order is maintained
+    setExpenses(updatedExpenses);
     setExpandedExpenseId(newExpense.id);
   };
 
@@ -122,12 +130,13 @@ export const Budget = () => {
   const saveToDatabase = async (data) => {
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/${user_id}`,
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budget/`,
         {
-          method: "PUT",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            token: token,
+            user_id: user_id,
           },
           body: JSON.stringify({ expenses: data.expenses }),
         }
@@ -169,9 +178,9 @@ export const Budget = () => {
               </Link>
             </div>
 
-            {expenses.map((expense) => (
+            {expenses.map((expense, index) => (
               <div key={expense.id} className="accordion mb-3">
-                <div className="accordion-item border border-secondary-sutble">
+                <div className="accordion-item border border-secondary-subtle">
                   <div
                     className="accordion-header"
                     onClick={() => toggleExpense(expense.id)}
@@ -182,11 +191,14 @@ export const Budget = () => {
                     }}
                   >
                     <div className="d-flex justify-content-between align-items-center">
-                      <h5>Budget {expense.id}</h5>
+                      <h5 style={{ margin: ".2rem 0" }}>Budget {index + 1}</h5>
                       <button
                         type="button"
-                        className="btn btn-danger btn-sm ms-3"
-                        onClick={() => deleteExpense(expense.id)}
+                        className="btn btn-outline-danger  btn-sm ms-3"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent collapse/expand on delete
+                          deleteExpense(expense.id);
+                        }}
                       >
                         Delete
                       </button>
@@ -195,73 +207,83 @@ export const Budget = () => {
 
                   {expandedExpenseId === expense.id && (
                     <div className="accordion-collapse collapse show">
-                      <div className="accordion-body p-2">
-                        <Field label="Predicted expense category">
-                          <select
-                            className="form-select w-100 p-2 border border-secondary-subtle round round-2"
-                            value={expense.expense_type_id || 0}
-                            onChange={(e) =>
-                              handleInputChange(
-                                expense.id,
-                                "expense_type_id",
-                                Number(e.target.value)
-                              )
-                            }
-                          >
-                            {budgetCategoryOptions.map((option) => (
-                              <option
-                                key={option.id}
-                                value={option.id}
-                                disabled={option.disabled}
+                      <div className="accordion-body p-3 container">
+                        <div className="row">
+                          <div className="col-md-6">
+                            <Field label="Predicted expense category">
+                              <select
+                                className="form-select w-100 p-2 border border-secondary-subtle rounded-2"
+                                value={expense.expense_type_id || 0}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    expense.id,
+                                    "expense_type_id",
+                                    Number(e.target.value)
+                                  )
+                                }
                               >
-                                {option.name}
-                              </option>
-                            ))}
-                          </select>
-                        </Field>
-                        <Field label="Predicted expense amount">
-                          <div className="input-group">
-                            <span className="input-group-text">$</span>
-                            <Input
-                              type="number"
-                              value={expense.amount || ""}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  expense.id,
-                                  "amount",
-                                  e.target.value
-                                )
-                              }
-                              placeholder="e.g. 1200"
-                              step="100"
-                              min="0"
-                              className="form-control"
-                            />
+                                {budgetCategoryOptions.map((option) => (
+                                  <option
+                                    key={option.id}
+                                    value={option.id}
+                                    disabled={option.disabled}
+                                  >
+                                    {option.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </Field>
                           </div>
-                        </Field>
-                        <Field label="How often do you earn it?">
-                          <select
-                            className="form-select w-100 p-2 border border-secondary-subtle round round-2"
-                            value={expense.period || 0}
-                            onChange={(e) =>
-                              handleInputChange(
-                                expense.id,
-                                "period",
-                                Number(e.target.value)
-                              )
-                            }
-                          >
-                            {budgetPeriodOptions.map((option) => (
-                              <option
-                                key={option.id}
-                                value={option.id}
-                                disabled={option.disabled}
+                          <div className="col-md-6">
+                            <Field label="How often do you incur it?">
+                              <select
+                                className="form-select w-100 p-2 border border-secondary-subtle rounded-2"
+                                value={expense.period || 0}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    expense.id,
+                                    "period",
+                                    Number(e.target.value)
+                                  )
+                                }
                               >
-                                {option.name}
-                              </option>
-                            ))}
-                          </select>
-                        </Field>
+                                {budgetPeriodOptions.map((option) => (
+                                  <option
+                                    key={option.id}
+                                    value={option.id}
+                                    disabled={option.disabled}
+                                  >
+                                    {option.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </Field>
+                          </div>
+                        </div>
+                        <div className="row">
+                          <div className="col-md-6">
+                            <Field label="Predicted expense amount">
+                              <div className="input-group">
+                                <span className="input-group-text">$</span>
+                                <Input
+                                  type="number"
+                                  value={expense.amount || ""}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      expense.id,
+                                      "amount",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="e.g. 1200"
+                                  step="100"
+                                  min="0"
+                                  className="form-control"
+                                />
+                              </div>
+                            </Field>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -285,7 +307,7 @@ export const Budget = () => {
           <div className="col">
             <div className="d-flex justify-content-between mt-4">
               <Link
-                to="/onboarding/debts"
+                to="/onboarding/incomes"
                 className="btn btn-outline-secondary"
               >
                 {"<"} Return

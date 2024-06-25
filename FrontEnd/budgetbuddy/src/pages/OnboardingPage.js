@@ -7,7 +7,7 @@ import { Goals } from "../components/Onboarding/Goals";
 import { Incomes } from "../components/Onboarding/Incomes";
 import { PersonalDetails } from "../components/Onboarding/PersonalDetails";
 import { Progress } from "../components/Onboarding/Progress";
-import { TestDashboard } from "../components/Onboarding/TestDashboard";
+import { CompleteProcess } from "../components/Onboarding/CompleteProcess";
 import { OnboardingProvider } from "../Hooks/useOnboardingState";
 
 export const OnboardingPage = () => {
@@ -21,7 +21,7 @@ export const OnboardingPage = () => {
           <Route path="incomes" element={<Incomes />} />
           <Route path="budget" element={<Budget />} />
           <Route path="debts" element={<Debts />} />
-          <Route path="test-dashboard" element={<TestDashboard />} />
+          <Route path="complete-process" element={<CompleteProcess />} />
         </Routes>
       </StyledOnboardingWrapper>
     </OnboardingProvider>

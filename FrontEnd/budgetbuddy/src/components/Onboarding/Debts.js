@@ -20,12 +20,13 @@ const formatDate = (isoDate) => {
 async function fetchDebts(user_id, token) {
   try {
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debts/${user_id}`,
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debts/`,
       {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          token: token,
+          user_id: user_id,
         },
       }
     );
@@ -79,6 +80,9 @@ export const Debts = () => {
         debtPeriodId: debt.debt_period_id ?? 0,
         dueDate: debt.due_date ? formatDate(debt.due_date) : "",
       }));
+      // Sort incomes by id in ascending order
+      formattedDebts.sort((a, b) => a.id - b.id);
+
       setDebts(
         formattedDebts.length > 0
           ? formattedDebts
@@ -99,8 +103,12 @@ export const Debts = () => {
   };
 
   const addDebt = () => {
-    const newDebt = { id: debts.length + 1, debtCategoryId: 0 };
-    setDebts([...debts, newDebt]);
+    const newId =
+      debts.length > 0 ? Math.max(...debts.map((g) => g.id)) + 1 : 1;
+    const newDebt = { id: newId, debt_type_id: 0 };
+    const updatedDebts = [...debts, newDebt];
+    updatedDebts.sort((a, b) => a.id - b.id); // Ensure order is maintained
+    setDebts(updatedDebts);
     setExpandedDebtId(newDebt.id);
   };
 
@@ -117,12 +125,13 @@ export const Debts = () => {
   const saveToDatabase = async (data) => {
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debts/${user_id}`,
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debts/`,
         {
-          method: "PUT",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            token: token,
+            user_id: user_id,
           },
           body: JSON.stringify({ debts: data.debts }),
         }
@@ -145,7 +154,7 @@ export const Debts = () => {
     };
     setState(combinedData);
     await saveToDatabase(combinedData);
-    navigate("/onboarding/test-dashboard");
+    navigate("/onboarding/complete-process");
   };
 
   const toggleDebt = (id) => {
@@ -160,14 +169,14 @@ export const Debts = () => {
             <div className="d-flex justify-content-between align-items-center mt-4 mb-3">
               <h3>Set Your Debts</h3>
               <Link
-                to="/onboarding/test-dashboard"
+                to="/onboarding/complete-process"
                 className="btn btn-secondary"
               >
                 Skip to next
               </Link>
             </div>
 
-            {debts.map((debt) => (
+            {debts.map((debt, index) => (
               <div key={debt.id} className="accordion mb-3">
                 <div className="accordion-item border border-secondary-subtle">
                   <div
@@ -180,121 +189,144 @@ export const Debts = () => {
                     }}
                   >
                     <div className="d-flex justify-content-between align-items-center">
-                      <h5>Debt {debt.id}</h5>
+                      <h5 style={{ margin: ".2rem 0" }}>Debt {index + 1}</h5>
                       <button
                         type="button"
-                        className="btn btn-danger btn-sm ms-3"
-                        onClick={() => deleteDebt(debt.id)}
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteDebt(debt.id);
+                        }}
                       >
                         Delete
                       </button>
                     </div>
                   </div>
-
                   {expandedDebtId === debt.id && (
                     <div className="accordion-collapse collapse show">
-                      <div className="accordion-body p-2">
-                        <Field label="Debt category">
-                          <select
-                            className="form-select w-100 p-2 border border-secondary-subtle rounded rounded-2"
-                            value={debt.debtCategoryId || 0}
-                            onChange={(e) =>
-                              handleInputChange(
-                                debt.id,
-                                "debtCategoryId",
-                                Number(e.target.value)
-                              )
-                            }
-                          >
-                            {debtCategoryOptions.map((option) => (
-                              <option
-                                key={option.id}
-                                value={option.id}
-                                disabled={option.disabled}
+                      <div className="accordion-body p-3 container">
+                        <div className="row mb-3">
+                          <div className="col-md-6">
+                            <Field label="Debt Category">
+                              <select
+                                className="form-select w-100 p-2 border border-secondary-subtle rounded rounded-2"
+                                value={debt.debtCategoryId || 0}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    debt.id,
+                                    "debtCategoryId",
+                                    Number(e.target.value)
+                                  )
+                                }
                               >
-                                {option.name}
-                              </option>
-                            ))}
-                          </select>
-                        </Field>
-                        <Field label="Debt amount">
-                          <div className="input-group">
-                            <span className="input-group-text">$</span>
-                            <Input
-                              type="number"
-                              value={debt.debtAmount || ""}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  debt.id,
-                                  "debtAmount",
-                                  e.target.value
-                                )
-                              }
-                              placeholder="e.g. 1500"
-                              step="100"
-                              min="0"
-                              className="form-control"
-                            />
+                                {debtCategoryOptions.map((option) => (
+                                  <option
+                                    key={option.id}
+                                    value={option.id}
+                                    disabled={option.disabled}
+                                  >
+                                    {option.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </Field>
                           </div>
-                        </Field>
-                        <Field label="Payment period">
-                          <select
-                            className="form-select w-100 p-2 border border-secondary-subtle rounded rounded-2"
-                            value={debt.debtPeriodId || 0}
-                            onChange={(e) =>
-                              handleInputChange(
-                                debt.id,
-                                "debtPeriodId",
-                                Number(e.target.value)
-                              )
-                            }
-                          >
-                            {debtPeriodOptions.map((option) => (
-                              <option
-                                key={option.id}
-                                value={option.id}
-                                disabled={option.disabled}
+                          <div className="col-md-6">
+                            <Field label="Debt Amount">
+                              <div className="input-group">
+                                <span className="input-group-text">$</span>
+                                <Input
+                                  type="number"
+                                  value={debt.debtAmount || ""}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      debt.id,
+                                      "debtAmount",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="e.g., 1500"
+                                  step="100"
+                                  min="0"
+                                  className="form-control"
+                                />
+                              </div>
+                            </Field>
+                          </div>
+                        </div>
+                        <div className="row">
+                          <div className="col-md-6">
+                            <Field label="Payment Period">
+                              <select
+                                className="form-select w-100 p-2 border border-secondary-subtle rounded rounded-2"
+                                value={debt.debtPeriodId || 0}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    debt.id,
+                                    "debtPeriodId",
+                                    Number(e.target.value)
+                                  )
+                                }
                               >
-                                {option.name}
-                              </option>
-                            ))}
-                          </select>
-                        </Field>
-                        <Field label="Due date">
-                          <Input
-                            type="date"
-                            value={debt.dueDate || ""}
-                            onChange={(e) =>
-                              handleInputChange(
-                                debt.id,
-                                "dueDate",
-                                e.target.value
-                              )
-                            }
-                            className="form-control"
-                          />
-                        </Field>
+                                {debtPeriodOptions.map((option) => (
+                                  <option
+                                    key={option.id}
+                                    value={option.id}
+                                    disabled={option.disabled}
+                                  >
+                                    {option.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </Field>
+                          </div>
+                          <div className="col-md-6">
+                            <Field label="Due Date">
+                              <Input
+                                type="date"
+                                value={debt.dueDate || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    debt.id,
+                                    "dueDate",
+                                    e.target.value
+                                  )
+                                }
+                                className="form-control"
+                              />
+                            </Field>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}
                 </div>
               </div>
             ))}
+
             <div className="d-flex justify-content-center">
               <Link
-                onClick={addDebt}
+                to="#"
                 className="btn btn-outline-primary mt-3 mb-5"
+                onClick={addDebt}
               >
                 {debts.length === 0 ? "Create a debt" : "Add another debt"}
               </Link>
             </div>
+          </div>
+        </div>
 
+        <div className="row">
+          <div className="col">
             <div className="d-flex justify-content-between mt-4">
-              <Link to="/onboarding/budget" className="btn btn-secondary">
-                Previous
+              <Link
+                to="/onboarding/budget"
+                className="btn btn-outline-secondary"
+              >
+                {"<"} Return
               </Link>
               <Button type="submit" className="btn btn-primary">
-                Save & Next
+                Save & Next {">"}
               </Button>
             </div>
           </div>

@@ -5,7 +5,7 @@ export const Progress = () => {
   const location = useLocation();
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark w-100">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark w-100 mb-3">
       <div className="collapse navbar-collapse" id="navbarNav">
         <ul className="navbar-nav w-100 justify-content-between">
           <li className="nav-item">
