@@ -11,7 +11,7 @@ import { useAuth } from "../../contexts/AuthContext";
 async function fetchBudgetItems(user_id, token) {
   try {
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/}`,
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budget/}`,
       {
         method: "GET",
         headers: {
