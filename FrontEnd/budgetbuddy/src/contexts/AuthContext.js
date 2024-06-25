@@ -1,7 +1,7 @@
 // contexts/AuthContext.js
 import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
 const AuthContext = React.createContext();
 
@@ -14,29 +14,35 @@ export function AuthProvider({ children }) {
   const navigate = useNavigate();
 
   async function signup(email, password) {
-    const response = await fetch("https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email, password })
-    });
+    const response = await fetch(
+      "https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/register",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      }
+    );
     const data = await response.json();
     if (data.success) {
       setCurrentUser({ id: data.user_id, token: data.token });
     }
-    return data;  // Return the data object for processing in Signup.js
+    return data; // Return the data object for processing in Signup.js
   }
 
   async function login(email, password) {
     try {
-      const response = await fetch("https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/auth", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-      });
+      const response = await fetch(
+        "https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/auth",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
       const data = await response.json();
       if (data.success === false) {
         Swal.fire({
@@ -53,7 +59,9 @@ export function AuthProvider({ children }) {
           text: data.message_text,
         }).then(() => {
           setCurrentUser({ id: data.user_id, token: data.token });
-          data.onboarding === true ? navigate("/onboarding") : navigate("/dashboard");
+          data.onboarding === true
+            ? navigate("/onboarding/welcome")
+            : navigate("/dashboard");
         });
       }
     } catch (error) {
@@ -88,11 +96,7 @@ export function AuthProvider({ children }) {
     logout,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export default AuthContext;

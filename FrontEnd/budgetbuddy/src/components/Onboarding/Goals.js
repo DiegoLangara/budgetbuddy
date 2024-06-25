@@ -19,12 +19,13 @@ const formatDate = (isoDate) => {
 async function fetchGoals(user_id, token) {
   try {
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/goals/${user_id}`,
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/goals/`,
       {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          token: token,
+          user_id: user_id,
         },
       }
     );
@@ -76,6 +77,9 @@ export const Goals = () => {
         current_amount: goal.current_amount || "",
         target_date: goal.target_date ? formatDate(goal.target_date) : "",
       }));
+      // Sort goals by id in ascending order
+      formattedGoals.sort((a, b) => a.id - b.id);
+
       setGoals(
         formattedGoals.length > 0
           ? formattedGoals
@@ -96,8 +100,12 @@ export const Goals = () => {
   };
 
   const addGoal = () => {
-    const newGoal = { id: goals.length + 1, goal_type_id: 0 };
-    setGoals([...goals, newGoal]);
+    const newId =
+      goals.length > 0 ? Math.max(...goals.map((g) => g.id)) + 1 : 1;
+    const newGoal = { id: newId, goal_type_id: 0 };
+    const updatedGoals = [...goals, newGoal];
+    updatedGoals.sort((a, b) => a.id - b.id);
+    setGoals(updatedGoals);
     setExpandedGoalId(newGoal.id);
   };
 
@@ -114,12 +122,13 @@ export const Goals = () => {
   const saveToDatabase = async (data) => {
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/goals/${user_id}`,
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/goals/`,
         {
-          method: "PUT",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            token: token,
+            user_id: user_id,
           },
           body: JSON.stringify({ goals: data.goals }),
         }
@@ -161,7 +170,7 @@ export const Goals = () => {
               </Link>
             </div>
 
-            {goals.map((goal) => (
+            {goals.map((goal, index) => (
               <div key={goal.id} className="accordion mb-3">
                 <div className="accordion-item border border-secondary-sutble">
                   <div
@@ -174,7 +183,7 @@ export const Goals = () => {
                     }}
                   >
                     <div className="d-flex justify-content-between align-items-center">
-                      <h5 className="accordion-title">Goal {goal.id}</h5>
+                      <h5 style={{ margin: ".2rem 0" }}>Goal {index + 1}</h5>
                       <button
                         className="btn btn-outline-danger btn-sm"
                         type="button"
@@ -186,99 +195,116 @@ export const Goals = () => {
                   </div>
                   {expandedGoalId === goal.id && (
                     <div className="accordion-collapse collapse show">
-                      <div className="accordion-body p-2">
-                        <Field label="Your goal">
-                          <Input
-                            type="text"
-                            value={goal.goal_name || ""}
-                            onChange={(e) =>
-                              handleInputChange(
-                                goal.id,
-                                "goal_name",
-                                e.target.value
-                              )
-                            }
-                            placeholder="ex. Buy a Tesla"
-                          />
-                        </Field>
-                        <Field label="Goal category">
-                          <div className="mt-0">
-                            <select
-                              className="form-select w-100 p-2 border border-secondary-subtle round round-2"
-                              value={goal.goal_type_id || 0}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  goal.id,
-                                  "goal_type_id",
-                                  Number(e.target.value)
-                                )
-                              }
-                            >
-                              {goalTypeOptions.map((option) => (
-                                <option
-                                  key={option.id}
-                                  value={option.id}
-                                  disabled={option.disabled}
+                      <div className="accordion-body p-3 container">
+                        <div className="row">
+                          <div className="col-md-6">
+                            <Field label="Your goal">
+                              <Input
+                                type="text"
+                                value={goal.goal_name || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    goal.id,
+                                    "goal_name",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="ex. Buy a Tesla"
+                              />
+                            </Field>
+                          </div>
+                          <div className="col-md-6">
+                            <Field label="Goal category">
+                              <div className="mt-0">
+                                <select
+                                  className="form-select w-100 p-2 border border-secondary-subtle round round-2"
+                                  value={goal.goal_type_id || 0}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      goal.id,
+                                      "goal_type_id",
+                                      Number(e.target.value)
+                                    )
+                                  }
                                 >
-                                  {option.name}
-                                </option>
-                              ))}
-                            </select>
+                                  {goalTypeOptions.map((option) => (
+                                    <option
+                                      key={option.id}
+                                      value={option.id}
+                                      disabled={option.disabled}
+                                    >
+                                      {option.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            </Field>
                           </div>
-                        </Field>
-                        <Field label="Goal date">
-                          <Input
-                            type="date"
-                            value={goal.target_date || ""}
-                            onChange={(e) =>
-                              handleInputChange(
-                                goal.id,
-                                "target_date",
-                                e.target.value
-                              )
-                            }
-                          />
-                        </Field>
-                        <Field label="How much have you saved?">
-                          <div className="input-group">
-                            <span className="input-group-text">$</span>
-                            <Input
-                              type="number"
-                              value={goal.current_amount || ""}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  goal.id,
-                                  "current_amount",
-                                  e.target.value
-                                )
-                              }
-                              placeholder="ex. 5000"
-                              className="form-control"
-                              step="100"
-                              min="100"
-                            />
+                        </div>
+                        <div className="row">
+                          <div className="col-md-6">
+                            <Field label="Goal date" className="col">
+                              <Input
+                                type="date"
+                                value={goal.target_date || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    goal.id,
+                                    "target_date",
+                                    e.target.value
+                                  )
+                                }
+                              />
+                            </Field>
                           </div>
-                        </Field>
-                        <Field label="How much more do you need?">
-                          <div className="input-group">
-                            <span className="input-group-text">$</span>
-                            <Input
-                              type="number"
-                              value={goal.target_amount || ""}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  goal.id,
-                                  "target_amount",
-                                  e.target.value
-                                )
-                              }
-                              placeholder="ex. 3000"
-                              className="form-control"
-                              step="100"
-                              min="100"
-                            />
+                          <div className="col-md-6">
+                            <Field label="How much have you saved?">
+                              <div className="input-group">
+                                <span className="input-group-text">$</span>
+                                <Input
+                                  type="number"
+                                  value={goal.current_amount || ""}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      goal.id,
+                                      "current_amount",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="ex. 5000"
+                                  className="form-control"
+                                  step="100"
+                                  min="100"
+                                />
+                              </div>
+                            </Field>
                           </div>
-                        </Field>
+                        </div>
+                        <div className="row">
+                          <div className="col-md-6">
+                            <Field label="How much more do you need?">
+                              <div className="input-group">
+                                <span className="input-group-text">$</span>
+                                <Input
+                                  type="number"
+                                  value={goal.target_amount || ""}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      goal.id,
+                                      "target_amount",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="ex. 3000"
+                                  className="form-control"
+                                  step="100"
+                                  min="100"
+                                />
+                              </div>
+                            </Field>
+                            <div></div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -307,10 +333,7 @@ export const Goals = () => {
               >
                 {"<"} Return
               </Link>
-              <Button
-                type="submit"
-                className="btn btn-primary"
-              >
+              <Button type="submit" className="btn btn-primary">
                 Save & Next {">"}
               </Button>
             </div>
