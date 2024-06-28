@@ -12,7 +12,7 @@ export const TrackExpenses = () => {
 
   const options = {
     chart: {
-      type: 'bar',
+      type: 'line',
       toolbar: {
         show: true,
       },
@@ -43,7 +43,7 @@ export const TrackExpenses = () => {
   return (
     <StyledTrackExpensesWrapper>
       <h3>Actual Expense</h3>
-      <ReactApexChart options={options} series={monthlyExpenses} type="bar" />
+      <ReactApexChart options={options} series={monthlyExpenses} type="line" />
     </StyledTrackExpensesWrapper>
   );
 };
