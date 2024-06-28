@@ -33,5 +33,5 @@ const StyledCategoryWrapper = styled.div`
   border: 1px solid #333;
   border-radius: 5px;
   padding: 1rem;
-  grid-column: 1 / 5;
+  grid-column: 1 / 7;
 `;

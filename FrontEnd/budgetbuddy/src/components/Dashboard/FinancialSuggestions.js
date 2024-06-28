@@ -92,7 +92,7 @@ const StyledFinancialSuggestions = styled.div`
   border: 1px solid #333;
   border-radius: 5px;
   padding: 1rem;
-  grid-column: 5 / 6;
+  grid-column: 7 / 9;
   grid-row: 1 / 3;
   display: grid;
   gap: 1rem;

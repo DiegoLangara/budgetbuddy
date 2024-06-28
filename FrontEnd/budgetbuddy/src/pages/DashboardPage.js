@@ -22,8 +22,8 @@ export const DashboardPage = () => {
 
 const StyledMainSection = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(8, 1fr);
   gap: 1rem;
-  width: calc(100% - 4rem); /* Subtract the margins from the width */
+  width: calc(100% - 4rem);
   margin: 2rem;
 `;

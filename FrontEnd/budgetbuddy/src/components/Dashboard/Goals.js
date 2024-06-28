@@ -40,5 +40,5 @@ const StyledGoalWrapper = styled.div`
   border: 1px solid #333;
   border-radius: 5px;
   padding: 1rem;
-  grid-column: 1 / 3;
+  grid-column: 1 / 4;
 `;
