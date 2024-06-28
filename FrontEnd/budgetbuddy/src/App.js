@@ -4,7 +4,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import DashboardPage from "./pages/DashboardPage";
+import { DashboardPage } from "./pages/DashboardPage";
 import { WelcomePage } from "./pages/WelcomePage";
 import { OnboardingPage } from "./pages/OnboardingPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -61,9 +61,9 @@ function App() {
           <Route
             path="/dashboard"
             element={
-              <PrivateRoute>
-                <DashboardPage />
-              </PrivateRoute>
+              // <PrivateRoute>
+              <DashboardPage />
+              // </PrivateRoute>
             }
           />
         </Routes>
