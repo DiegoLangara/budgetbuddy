@@ -1,6 +1,6 @@
 import React from "react";
-import ReactApexChart from "react-apexcharts";
 import { GoalBarChart } from "../DashboardParts/GoalBarChart";
+import styled from "styled-components";
 
 export const Goals = () => {
   const jsonData = [
@@ -22,7 +22,7 @@ export const Goals = () => {
   ];
 
   return (
-    <>
+    <StyledGoalWrapper>
       <h3>Goals</h3>
       {jsonData.map((goal, index) => (
         <GoalBarChart
@@ -32,6 +32,13 @@ export const Goals = () => {
           savings={goal.savings}
         />
       ))}
-    </>
+    </StyledGoalWrapper>
   );
 };
+
+const StyledGoalWrapper = styled.div`
+  border: 1px solid #333;
+  border-radius: 5px;
+  padding: 1rem;
+  grid-column: 1 / 2;
+`;
