@@ -80,6 +80,7 @@ export const Budget = () => {
         expense_type_id: expense.expense_type_id ?? 0,
         amount: expense.amount || "",
         period: expense.period ?? 0,
+        deletable: expense.deletable || "",
       }));
       // Sort expenses by id in ascending order
       formattedExpenses.sort((a, b) => a.id - b.id);
@@ -141,6 +142,7 @@ export const Budget = () => {
           body: JSON.stringify({ expenses: data.expenses }),
         }
       );
+      console.log(JSON.stringify({ expenses: data.expenses }));
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -191,17 +193,24 @@ export const Budget = () => {
                     }}
                   >
                     <div className="d-flex justify-content-between align-items-center">
-                      <h5 style={{ margin: ".2rem 0" }}>Budget {index + 1}</h5>
-                      <button
-                        type="button"
-                        className="btn btn-outline-danger  btn-sm ms-3"
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent collapse/expand on delete
-                          deleteExpense(expense.id);
-                        }}
-                      >
-                        Delete
-                      </button>
+                      <h5 style={{ margin: ".2rem 0" }}>
+                        Budget {index + 1}{" "}
+                        {expense.amount ? " - " + expense.amount : ""}
+                      </h5>
+                      {expense.deletable === 1 ? (
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger  btn-sm ms-3"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent collapse/expand on delete
+                            deleteExpense(expense.id);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      ) : (
+                        ""
+                      )}
                     </div>
                   </div>
 
@@ -235,7 +244,31 @@ export const Budget = () => {
                             </Field>
                           </div>
                           <div className="col-md-6">
-                            <Field label="How often do you incur it?">
+                            <Field label="Predicted expense amount">
+                              <div className="input-group">
+                                <span className="input-group-text">$</span>
+                                <Input
+                                  type="number"
+                                  value={expense.amount || ""}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      expense.id,
+                                      "amount",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="e.g. 1200"
+                                  step="100"
+                                  min="0"
+                                  className="form-control"
+                                />
+                              </div>
+                            </Field>
+                          </div>
+                        </div>
+                        <div className="row">
+                          <div className="col-md-6">
+                            <Field label="How often would you pay for it?">
                               <select
                                 className="form-select w-100 p-2 border border-secondary-subtle rounded-2"
                                 value={expense.period || 0}
@@ -257,30 +290,6 @@ export const Budget = () => {
                                   </option>
                                 ))}
                               </select>
-                            </Field>
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-md-6">
-                            <Field label="Predicted expense amount">
-                              <div className="input-group">
-                                <span className="input-group-text">$</span>
-                                <Input
-                                  type="number"
-                                  value={expense.amount || ""}
-                                  onChange={(e) =>
-                                    handleInputChange(
-                                      expense.id,
-                                      "amount",
-                                      e.target.value
-                                    )
-                                  }
-                                  placeholder="e.g. 1200"
-                                  step="100"
-                                  min="0"
-                                  className="form-control"
-                                />
-                              </div>
                             </Field>
                           </div>
                         </div>

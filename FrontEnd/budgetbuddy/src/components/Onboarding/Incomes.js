@@ -72,6 +72,7 @@ export const Incomes = () => {
         income_type_id: income.income_type_id ?? 0,
         amount: income.amount || "",
         period: income.period ?? 0,
+        deletable: income.deletable || "",
       }));
       // Sort incomes by id in ascending order
       formattedIncomes.sort((a, b) => a.id - b.id);
@@ -133,6 +134,7 @@ export const Incomes = () => {
           body: JSON.stringify({ incomes: data.incomes }),
         }
       );
+      console.log(JSON.stringify({ incomes: data.incomes }));
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -183,17 +185,24 @@ export const Incomes = () => {
                     }}
                   >
                     <div className="d-flex justify-content-between align-items-center">
-                      <h5 style={{ margin: ".2rem 0" }}>Income {index + 1}</h5>
-                      <button
-                        className="btn btn-outline-danger btn-sm"
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteIncome(income.id);
-                        }}
-                      >
-                        Delete
-                      </button>
+                      <h5 style={{ margin: ".2rem 0" }}>
+                        Income {index + 1}{" "}
+                        {income.amount ? " - " + income.amount : ""}
+                      </h5>
+                      {income.deletable === 1 ? (
+                        <button
+                          className="btn btn-outline-danger btn-sm"
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteIncome(income.id);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      ) : (
+                        ""
+                      )}
                     </div>
                   </div>
                   {expandedIncomeId === income.id && (

@@ -66,6 +66,7 @@ export const Goals = () => {
   );
   const [expandedGoalId, setExpandedGoalId] = useState(goals[0]?.id || 1);
 
+  // Fetch goals on component mount
   useEffect(() => {
     async function loadGoals() {
       const fetchedGoals = await fetchGoals(user_id, token);
@@ -75,6 +76,7 @@ export const Goals = () => {
         goal_type_id: goal.goal_type_id ?? 0,
         target_amount: goal.target_amount || "",
         current_amount: goal.current_amount || "",
+        deletable: goal.deletable || "",
         target_date: goal.target_date ? formatDate(goal.target_date) : "",
       }));
       // Sort goals by id in ascending order
@@ -133,6 +135,7 @@ export const Goals = () => {
           body: JSON.stringify({ goals: data.goals }),
         }
       );
+      console.log(JSON.stringify({ goals: data.goals }));
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -183,14 +186,21 @@ export const Goals = () => {
                     }}
                   >
                     <div className="d-flex justify-content-between align-items-center">
-                      <h5 style={{ margin: ".2rem 0" }}>Goal {index + 1}</h5>
-                      <button
-                        className="btn btn-outline-danger btn-sm"
-                        type="button"
-                        onClick={() => deleteGoal(goal.id)}
-                      >
-                        Delete
-                      </button>
+                      <h5 style={{ margin: ".2rem 0" }}>
+                        Goal {index + 1}{" "}
+                        {goal.goal_name ? " - " + goal.goal_name : ""}
+                      </h5>
+                      {goal.deletable === 1 ? (
+                        <button
+                          className="btn btn-outline-danger btn-sm"
+                          type="button"
+                          onClick={() => deleteGoal(goal.id)}
+                        >
+                          Delete
+                        </button>
+                      ) : (
+                        ""
+                      )}
                     </div>
                   </div>
                   {expandedGoalId === goal.id && (
