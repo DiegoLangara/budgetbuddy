@@ -1,4 +1,5 @@
 import { CompactTable } from "@table-library/react-table-library/compact";
+import styled from "styled-components";
 
 export const Category = () => {
   const nodes = [
@@ -50,9 +51,16 @@ export const Category = () => {
   const data = { nodes };
 
   return (
-    <>
+    <StyledCategoryWrapper>
       <h3>Category</h3>
       <CompactTable columns={COLUMNS} data={data} />
-    </>
+    </StyledCategoryWrapper>
   );
 };
+
+const StyledCategoryWrapper = styled.div`
+  border: 1px solid #333;
+  border-radius: 5px;
+  padding: 1rem;
+  grid-column: 2 / 3;
+`;
