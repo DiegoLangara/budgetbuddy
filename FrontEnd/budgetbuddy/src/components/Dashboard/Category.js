@@ -62,5 +62,6 @@ const StyledCategoryWrapper = styled.div`
   border: 1px solid #333;
   border-radius: 5px;
   padding: 1rem;
-  grid-column: 2 / 3;
+  grid-column: 3 / 5;
+   grid-template-rows: auto auto auto;
 `;
