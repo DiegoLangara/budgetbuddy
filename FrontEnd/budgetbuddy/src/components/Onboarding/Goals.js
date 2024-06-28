@@ -1,75 +1,154 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
 import { useOnboardingState } from "../../Hooks/useOnboardingState";
 import { Field } from "../OnboardingParts/Field";
 import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
 import { Button } from "../OnboardingParts/Button";
+import { useAuth } from "../../contexts/AuthContext";
+import Swal from 'sweetalert2';
+
+// Utility function to format the date
+const formatDate = (isoDate) => {
+  const date = new Date(isoDate);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+async function fetchGoals(user_id, token) {
+  try {
+    const response = await fetch(
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/goals/`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: token,
+          user_id: user_id,
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error("Failed to fetch goals:", error);
+    return [];
+  }
+}
+
+const goalTypeOptions = [
+  { id: 0, name: "Select a category", disabled: true },
+  { id: 1, name: "Savings" },
+  { id: 2, name: "Emergency Fund" },
+  { id: 3, name: "Vacation Fund" },
+  { id: 4, name: "Education Fund" },
+  { id: 5, name: "Home Purchase" },
+  { id: 6, name: "Car Purchase" },
+  { id: 7, name: "Wedding Fund" },
+  { id: 8, name: "Gadget Purchase" },
+  { id: 9, name: "Retirement Plan" },
+  { id: 10, name: "Other" },
+];
 
 export const Goals = () => {
   const [state, setState] = useOnboardingState();
-  const { handleSubmit, register, setValue } = useForm({
-    defaultValues: state,
-  });
   const navigate = useNavigate();
-  const [goals, setGoals] = useState(state.goals || [{ id: 1 }]);
-  // Track expanded goal of accordion, and open the first item by default
-  const [expandedGoalId, setExpandedGoalId] = useState(goals[0]?.id || null);
+  const { currentUser } = useAuth();
+  const token = currentUser.token;
+  const user_id = currentUser.id;
 
+  const [goals, setGoals] = useState(
+    state.goals || [{ id: 1, goal_type_id: 0 }]
+  );
+  const [expandedGoalId, setExpandedGoalId] = useState(goals[0]?.id || 1);
+
+  // Fetch goals on component mount
   useEffect(() => {
-    goals.forEach((goal, index) => {
-      if (state.goals && state.goals[index]) {
-        setValue(`goal_${goal.id}`, state.goals[index].goal);
-        setValue(
-          `goalSavedAmount_${goal.id}`,
-          state.goals[index].goalSavedAmount
-        );
-        setValue(`goalAmount_${goal.id}`, state.goals[index].goalAmount);
-        setValue(`goalDate_${goal.id}`, state.goals[index].goalDate);
-      }
-    });
-  }, [goals, setValue, state.goals]);
+    async function loadGoals() {
+      const fetchedGoals = await fetchGoals(user_id, token);
+      const formattedGoals = fetchedGoals.map((goal, index) => ({
+        id: goal.goal_id || index + 1,
+        goal_name: goal.goal_name || "",
+        goal_type_id: goal.goal_type_id ?? 0,
+        target_amount: goal.target_amount || "",
+        current_amount: goal.current_amount || "",
+        deletable: goal.deletable || "",
+        target_date: goal.target_date ? formatDate(goal.target_date) : "",
+      }));
+      // Sort goals by id in ascending order
+      formattedGoals.sort((a, b) => a.id - b.id);
+
+      setGoals(
+        formattedGoals.length > 0
+          ? formattedGoals
+          : [{ id: 1, goal_type_id: 0 }]
+      );
+      setExpandedGoalId(formattedGoals.length > 0 ? formattedGoals[0]?.id : 1);
+      setState({ ...state, goals: formattedGoals });
+    }
+    loadGoals();
+  }, [user_id, token, setState]);
+
+  const handleInputChange = (id, field, value) => {
+    setGoals((prevGoals) =>
+      prevGoals.map((goal) =>
+        goal.id === id ? { ...goal, [field]: value } : goal
+      )
+    );
+  };
 
   const addGoal = () => {
-    const newGoal = { id: goals.length + 1 };
-    setGoals([...goals, newGoal]);
-    // Expand the newly added goal
+    const newId =
+      goals.length > 0 ? Math.max(...goals.map((g) => g.id)) + 1 : 1;
+    const newGoal = { id: newId, goal_type_id: 0 };
+    const updatedGoals = [...goals, newGoal];
+    updatedGoals.sort((a, b) => a.id - b.id);
+    setGoals(updatedGoals);
     setExpandedGoalId(newGoal.id);
   };
 
   const deleteGoal = (id) => {
-    const confirmMessage = window.confirm("Are you sure to delete this item?");
-    if (confirmMessage === true) {
-      // Update both "goals" and "savedGoals"(table) independently
-      const updatedGoals = goals.filter((goal) => goal.id !== id);
-      setGoals(updatedGoals);
-      // const updatedSavedGoals = savedGoals.filter((goal) => goal.id !== id);
-      // setSavedGoals(updatedSavedGoals);
 
-      // Update the state with the new updatedGoals
-      setState({ ...state, goals: updatedGoals });
-
-      // Adjust expanded goal if the current expanded goal is deleted
-      if (expandedGoalId === id && updatedGoals.length > 0) {
-        setExpandedGoalId(updatedGoals[0].id);
-      } else if (updatedGoals.length === 0) {
-        setExpandedGoalId(null);
+    const confirmMessage = Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const updatedGoals = goals.filter((goal) => goal.id !== id);
+        setGoals(updatedGoals);
+        setState({ ...state, goals: updatedGoals });
+        setExpandedGoalId(updatedGoals.length > 0 ? updatedGoals[0].id : null);
       }
-    }
+    });
+
+  
   };
 
   const saveToDatabase = async (data) => {
     try {
-      // replace with the real API
-      const response = await fetch("/api/saveGoals", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/goals/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+            user_id: user_id,
+          },
+          body: JSON.stringify({ goals: data.goals }),
+        }
+      );
+      console.log(JSON.stringify({ goals: data.goals }));
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -80,20 +159,12 @@ export const Goals = () => {
     }
   };
 
-  const saveData = async (data) => {
+  const saveData = async (event) => {
+    event.preventDefault();
     const combinedData = {
       ...state,
-      goals: goals.map((goal) => ({
-        id: goal.id,
-        goal: data[`goal_${goal.id}`],
-        goalSavedAmount: data[`goalSavedAmount_${goal.id}`],
-        goalAmount: data[`goalAmount_${goal.id}`],
-        goalDate: data[`goalDate_${goal.id}`],
-      })),
+      goals: goals,
     };
-    console.log(data);
-    console.log(combinedData);
-
     setState(combinedData);
     await saveToDatabase(combinedData);
     navigate("/onboarding/incomes");
@@ -104,174 +175,194 @@ export const Goals = () => {
   };
 
   return (
-    <Form onSubmit={handleSubmit(saveData)}>
-      <StyledTitleSkipWrapper>
-        <h3>Set Your Goals</h3>
-        <StyledLink to="/onboarding/test-dashboard">
-          Skip to dashboard
-        </StyledLink>
-      </StyledTitleSkipWrapper>
+    <Form onSubmit={saveData}>
+      <div className="container">
+        <div className="row">
+          <div className="col">
+            <div className="d-flex justify-content-between align-items-center mt-4 mb-3">
+              <h3>Set Your Goals</h3>
+              <Link to="/onboarding/incomes" className="btn btn-secondary">
+                Skip to next
+              </Link>
+            </div>
 
-      {goals.map((goal, index) => (
-        <StyledGoalAccordion key={goal.id}>
-          <StyledAccordionHeader>
-            <HeaderContent onClick={() => toggleGoal(goal.id)}>
-              <legend style={{ fontWeight: "bold", marginBottom: "0" }}>
-                Goal {index + 1}
-              </legend>
-            </HeaderContent>
-            <StyledDeleteBtn type="button" onClick={() => deleteGoal(goal.id)}>
-              Delete
-            </StyledDeleteBtn>
-          </StyledAccordionHeader>
-          {expandedGoalId === goal.id && (
-            <StyledAccordionContent>
-              <Field label="Your goal">
-                <Input
-                  {...register(`goal_${goal.id}`)}
-                  type="text"
-                  id={`goal-${goal.id}`}
-                  placeholder="ex. To buy a car"
-                />
-              </Field>
-              <Field label="Goal date">
-                <Input
-                  {...register(`goalDate_${goal.id}`)}
-                  type="date"
-                  id={`goal-date-${goal.id}`}
-                />
-              </Field>
-              <Field label="How much have you saved?">
-                <>
-                  <span>$</span>
-                  <Input
-                    {...register(`goalSavedAmount_${goal.id}`)}
-                    type="number"
-                    id={`goal-saved-amount-${goal.id}`}
-                    placeholder="ex. 5000"
-                    step="100"
-                    min="100"
-                  />
-                </>
-              </Field>
-              <Field label="How much more do you need?">
-                <>
-                  <span>$</span>
-                  <Input
-                    {...register(`goalAmount_${goal.id}`)}
-                    type="number"
-                    id={`goal-amount-${goal.id}`}
-                    placeholder="ex. 3000"
-                    step="100"
-                    min="100"
-                  />
-                </>
-              </Field>
-            </StyledAccordionContent>
-          )}
-        </StyledGoalAccordion>
-      ))}
-      <Link
-        onClick={addGoal}
-        style={{
-          marginTop: "1.5rem",
-          marginBottom: "5rem",
-          display: "block",
-          textAlign: "center",
-        }}
-      >
-        {goals.length === 0 ? "Creat a goal" : "Add another goal"}
-      </Link>
+            {goals.map((goal, index) => (
+              <div key={goal.id} className="accordion mb-3">
+                <div className="accordion-item border border-secondary-sutble">
+                  <div
+                    className="accordion-header"
+                    onClick={() => toggleGoal(goal.id)}
+                    style={{
+                      cursor: "pointer",
+                      background: "#e7e7e7",
+                      padding: "0.5rem",
+                    }}
+                  >
+                    <div className="d-flex justify-content-between align-items-center">
+                      <h5 style={{ margin: ".2rem 0" }}>
+                        Goal {index + 1}{" "}
+                        {goal.goal_name ? " - " + goal.goal_name : ""}
+                      </h5>
+                      {goal.deletable === 1 ? (
+                        <button
+                          className="btn btn-outline-danger btn-sm"
+                          type="button"
+                          onClick={() => deleteGoal(goal.id)}
+                        >
+                          Delete
+                        </button>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                  </div>
+                  {expandedGoalId === goal.id && (
+                    <div className="accordion-collapse collapse show">
+                      <div className="accordion-body p-3 container">
+                        <div className="row">
+                          <div className="col-md-6">
+                            <Field label="Your goal">
+                              <Input
+                                type="text"
+                                value={goal.goal_name || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    goal.id,
+                                    "goal_name",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="ex. Buy a Tesla"
+                              />
+                            </Field>
+                          </div>
+                          <div className="col-md-6">
+                            <Field label="Goal category">
+                              <div className="mt-0">
+                                <select
+                                  className="form-select w-100 p-2 border border-secondary-subtle round round-2"
+                                  value={goal.goal_type_id || 0}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      goal.id,
+                                      "goal_type_id",
+                                      Number(e.target.value)
+                                    )
+                                  }
+                                >
+                                  {goalTypeOptions.map((option) => (
+                                    <option
+                                      key={option.id}
+                                      value={option.id}
+                                      disabled={option.disabled}
+                                    >
+                                      {option.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            </Field>
+                          </div>
+                        </div>
+                        <div className="row">
+                          <div className="col-md-6">
+                            <Field label="Goal date" className="col">
+                              <Input
+                                type="date"
+                                value={goal.target_date || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    goal.id,
+                                    "target_date",
+                                    e.target.value
+                                  )
+                                }
+                              />
+                            </Field>
+                          </div>
+                          <div className="col-md-6">
+                            <Field label="How much have you saved?">
+                              <div className="input-group">
+                                <span className="input-group-text">$</span>
+                                <Input
+                                  type="number"
+                                  value={goal.current_amount || ""}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      goal.id,
+                                      "current_amount",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="ex. 5000"
+                                  className="form-control"
+                                  step="100"
+                                  min="100"
+                                />
+                              </div>
+                            </Field>
+                          </div>
+                        </div>
+                        <div className="row">
+                          <div className="col-md-6">
+                            <Field label="How much more do you need?">
+                              <div className="input-group">
+                                <span className="input-group-text">$</span>
+                                <Input
+                                  type="number"
+                                  value={goal.target_amount || ""}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      goal.id,
+                                      "target_amount",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="ex. 3000"
+                                  className="form-control"
+                                  step="100"
+                                  min="100"
+                                />
+                              </div>
+                            </Field>
+                            <div></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
 
-      <StyledBottomBtnWrapper>
-        <StyledLink to="/onboarding/personal-details">{"<"} Return</StyledLink>
-        <Button type="submit" style={{ padding: "0 .5rem" }}>
-          Save & Next {">"}
-        </Button>
-      </StyledBottomBtnWrapper>
+            <div className="d-flex justify-content-center">
+              <Link
+                to="#"
+                className="btn btn-outline-primary mt-3 mb-5 "
+                onClick={addGoal}
+              >
+                {goals.length === 0 ? "Create a goal" : "Add another goal"}
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <div className="row">
+          <div className="col">
+            <div className="d-flex justify-content-between mt-4">
+              <Link
+                to="/onboarding/personal-details"
+                className="btn btn-outline-secondary"
+              >
+                {"<"} Return
+              </Link>
+              <Button type="submit" className="btn btn-primary">
+                Save & Next {">"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
     </Form>
   );
 };
-
-const StyledTitleSkipWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 2rem;
-`;
-
-const StyledGoalAccordion = styled.div`
-  margin: 0.3rem 0 0.7rem;
-`;
-
-const StyledAccordionHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  background: #f7f7f7;
-  padding: 0.3rem 0.5rem;
-  border: 1px solid #bbb;
-  border-radius: 4px;
-
-  &:hover {
-    background: #e7e7e7;
-  }
-`;
-
-const HeaderContent = styled.div`
-  flex-grow: 1;
-  display: flex;
-  align-items: center;
-`;
-
-const StyledAccordionContent = styled.div`
-  padding: 0.5rem 1rem 1.2rem;
-  border: 1px solid #bbb;
-  border-top: none;
-  border-radius: 0 0 4px 4px;
-  background: #fff;
-
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  row-gap: 0.7rem;
-
-  .buttons {
-    grid-column: 1/-1;
-  }
-`;
-
-const StyledDeleteBtn = styled(Button)`
-  margin: 0 !important;
-  padding: 0.3rem 0.5rem;
-  font-size: 0.95rem;
-
-  &:hover {
-    background-color: rgb(100, 100, 100);
-  }
-`;
-
-const StyledLink = styled(Link)`
-  display: inline-block;
-  padding: 0.4rem 0.4rem;
-  margin: 0 0 1.5rem;
-  font-weight: bold;
-  text-decoration: none;
-  background-color: white;
-  color: black;
-  border: 2px solid black;
-  border-radius: 4px;
-  text-align: center;
-  cursor: pointer;
-
-  &:hover {
-    background-color: lightgray;
-    text-decoration: none;
-  }
-`;
-
-const StyledBottomBtnWrapper = styled.div`
-  margin-top: 0.5rem;
-  display: grid;
-  grid-template-columns: auto auto;
-  justify-content: space-between;
-`;

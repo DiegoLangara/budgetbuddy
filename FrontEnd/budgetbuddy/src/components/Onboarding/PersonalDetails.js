@@ -1,12 +1,10 @@
-import React, { useEffect } from "react";
-import styled from "styled-components";
-import { useForm } from "react-hook-form";
+import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useOnboardingState } from "../../Hooks/useOnboardingState";
 import { Field } from "../OnboardingParts/Field";
 import { Form } from "../OnboardingParts/Form";
-import { Input } from "../OnboardingParts/Input";
-import { Button } from "../OnboardingParts/Button";
+import { Input } from "../OnboardingParts/Input"; // Assuming Input is exported as default
+import { Button } from "../OnboardingParts/Button"; // Assuming Button is exported as default
 import { useAuth } from "../../contexts/AuthContext";
 
 // Utility function to format the date
@@ -43,42 +41,44 @@ async function fetchPersonalDetails(user_id, token) {
 
 export const PersonalDetails = () => {
   const [state, setState] = useOnboardingState();
-  const { handleSubmit, register, setValue } = useForm({
-    defaultValues: state,
-  });
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const token = currentUser.token;
   const user_id = currentUser.id;
+  console.log(token, user_id);
+  // Local state to manage form inputs
+  const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    dob: "",
+    country: "",
+    occupation: "",
+  });
 
   useEffect(() => {
     async function fetchData() {
       const user = await fetchPersonalDetails(user_id, token);
       console.log("Fetched user data:", user); // Debug output
       if (user) {
-        Object.entries(user).forEach(([key, value]) => {
-          if (value !== null && value !== undefined) {
-            if (key === "dob") {
-              setValue(key, formatDate(value)); // Format date before setting
-            } else {
-              setValue(key, value);
-            }
-          }
-        });
+        const formattedUser = {
+          ...user,
+          dob: user.dob ? formatDate(user.dob) : "",
+        };
+        setFormData(formattedUser);
+        setState(formattedUser); // Initialize state with fetched data
       }
     }
     fetchData();
-  }, [setValue, user_id, token]);
+  }, [user_id, token, setState]);
 
-  useEffect(() => {
-    if (state) {
-      setValue("firstname", state.firstname);
-      setValue("lastname", state.lastname);
-      setValue("dob", state.dob);
-      setValue("country", state.country);
-      setValue("occupation", state.occupation);
-    }
-  }, [setValue, state]);
+  // Handle input change
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
   const saveToDatabase = async (data) => {
     try {
@@ -104,10 +104,11 @@ export const PersonalDetails = () => {
     }
   };
 
-  const saveData = async (data) => {
+  const saveData = async (e) => {
+    e.preventDefault();
     const updatedData = {
       ...state,
-      ...data,
+      ...formData,
     };
     setState(updatedData);
     await saveToDatabase(updatedData);
@@ -115,88 +116,90 @@ export const PersonalDetails = () => {
   };
 
   return (
-    <Form onSubmit={handleSubmit(saveData)}>
-      <div style={{ margin: "2.1rem 0 2.2rem" }}>
-        <h3>Personal Details</h3>
+    <Form onSubmit={saveData} className="my-4 mx-2">
+      <div>
+        <h3 className="mb-4">Personal Details</h3>
       </div>
-      <StyledPersonalDetails>
-        <Field label="First Name">
-          <Input
-            {...register("firstname")}
-            type="text"
-            id="firstname"
-            placeholder="First Name"
-          />
-        </Field>
-        <Field label="Last Name">
-          <Input
-            {...register("lastname")}
-            type="text"
-            id="lastname"
-            placeholder="Last Name"
-          />
-        </Field>
-        <Field label="Date of Birth">
-          <Input {...register("dob")} type="date" id="dob" />
-        </Field>
-        <Field label="Country (Where you live)">
-          <Input
-            {...register("country")}
-            type="text"
-            id="country"
-            placeholder="ex. Canada"
-          />
-        </Field>
-        <Field label="Occupation">
-          <Input
-            {...register("occupation")}
-            type="text"
-            id="occupation"
-            placeholder="ex. Sales Manager"
-          />
-        </Field>
-      </StyledPersonalDetails>
-      <StyledBottomBtnWrapper>
-        <StyledLink to="/onboarding">{"<"} Return</StyledLink>
-        <Button type="submit" style={{ padding: "0 .5rem" }}>
-          Save & Next {">"}
-        </Button>
-      </StyledBottomBtnWrapper>
+      <div className="container">
+        <div className="row">
+          <div className="col-md-6">
+            <Field label="First Name">
+              <Input
+                name="firstname"
+                type="text"
+                id="firstname"
+                placeholder="First Name"
+                value={formData.firstname}
+                onChange={handleChange}
+                className="form-control"
+              />
+            </Field>
+          </div>
+          <div className="col-md-6">
+            <Field label="Last Name">
+              <Input
+                name="lastname"
+                type="text"
+                id="lastname"
+                placeholder="Last Name"
+                value={formData.lastname}
+                onChange={handleChange}
+                className="form-control"
+              />
+            </Field>
+          </div>
+          <div className="col-md-6">
+            <Field label="Date of Birth">
+              <Input
+                name="dob"
+                type="date"
+                id="dob"
+                value={formData.dob}
+                onChange={handleChange}
+                className="form-control"
+              />
+            </Field>
+          </div>
+          <div className="col-md-6">
+            <Field label="Country (Where you live)">
+              <Input
+                name="country"
+                type="text"
+                id="country"
+                placeholder="ex. Canada"
+                value={formData.country}
+                onChange={handleChange}
+                className="form-control"
+              />
+            </Field>
+          </div>
+          <div className="col-md-6">
+            <Field label="Occupation">
+              <Input
+                name="occupation"
+                type="text"
+                id="occupation"
+                placeholder="ex. Sales Manager"
+                value={formData.occupation}
+                onChange={handleChange}
+                className="form-control"
+              />
+            </Field>
+          </div>
+        </div>
+      </div>
+      <div className="container mt-5">
+        <div className="row">
+          <div className="col-md-12 text-right">
+            <Button
+              type="submit"
+              className="btn btn-primary d-inline-flex p-2 justify-items-end"
+            >
+              Save & Next {">"}
+            </Button>
+          </div>
+        </div>
+      </div>
     </Form>
   );
 };
-
-const StyledPersonalDetails = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  border: 1px solid #bbb;
-  border-radius: 4px;
-  padding: 0.7rem 1rem 1.3rem;
-  margin-bottom: 5.3rem;
-`;
-
-const StyledLink = styled(Link)`
-  display: inline-block;
-  padding: 0.4rem 0.4rem;
-  margin: 0 0 1.5rem;
-  font-weight: bold;
-  text-decoration: none;
-  background-color: white;
-  color: black;
-  border: 2px solid black;
-  border-radius: 4px;
-  text-align: center;
-  cursor: pointer;
-  &:hover {
-    background-color: lightgray;
-    text-decoration: none;
-  }
-`;
-
-const StyledBottomBtnWrapper = styled.div`
-  margin-top: 0.5rem;
-  display: grid;
-  grid-template-columns: auto auto;
-  justify-content: space-between;
-`;

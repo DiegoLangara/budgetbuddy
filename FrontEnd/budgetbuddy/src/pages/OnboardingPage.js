@@ -1,35 +1,30 @@
 import React from "react";
 import styled from "styled-components";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { Budget } from "../components/Onboarding/Budget";
 import { Debts } from "../components/Onboarding/Debts";
 import { Goals } from "../components/Onboarding/Goals";
 import { Incomes } from "../components/Onboarding/Incomes";
 import { PersonalDetails } from "../components/Onboarding/PersonalDetails";
 import { Progress } from "../components/Onboarding/Progress";
-import { Welcome } from "../components/Onboarding/Welcome";
-import { TestDashboard } from "../components/Onboarding/TestDashboard";
+import { CompleteProcess } from "../components/Onboarding/CompleteProcess";
 import { OnboardingProvider } from "../Hooks/useOnboardingState";
 
 export const OnboardingPage = () => {
-  const location = useLocation();
-  // console.log("Current location:", location.pathname);
-
   return (
-    <StyledOnboardingWrapper>
-      <OnboardingProvider>
+    <OnboardingProvider>
+      <StyledOnboardingWrapper>
         <Progress />
         <Routes>
-          <Route path="/" element={<Welcome />} />
           <Route path="personal-details" element={<PersonalDetails />} />
           <Route path="goals" element={<Goals />} />
           <Route path="incomes" element={<Incomes />} />
           <Route path="budget" element={<Budget />} />
           <Route path="debts" element={<Debts />} />
-          <Route path="test-dashboard" element={<TestDashboard />} />
+          <Route path="complete-process" element={<CompleteProcess />} />
         </Routes>
-      </OnboardingProvider>
-    </StyledOnboardingWrapper>
+      </StyledOnboardingWrapper>
+    </OnboardingProvider>
   );
 };
 
