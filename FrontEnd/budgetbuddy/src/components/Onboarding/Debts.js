@@ -66,7 +66,7 @@ export const Debts = () => {
   const user_id = currentUser.id;
 
   const [debts, setDebts] = useState(
-    state.debts || [{ id: 1, debtCategoryId: 0 }]
+    state.debts || [{ id: 1, debt_type_id: 0 }]
   );
   const [expandedDebtId, setExpandedDebtId] = useState(debts[0]?.id || 1);
 
@@ -75,10 +75,11 @@ export const Debts = () => {
       const fetchedDebts = await fetchDebts(user_id, token);
       const formattedDebts = fetchedDebts.map((debt, index) => ({
         id: debt.debt_id || index + 1,
-        debtCategoryId: debt.debt_category_id ?? 0,
-        debtAmount: debt.debt_amount || "",
-        debtPeriodId: debt.debt_period_id ?? 0,
-        dueDate: debt.due_date ? formatDate(debt.due_date) : "",
+        debt_type_id: debt.debt_type_id ?? 0,
+        amount: debt.amount || "",
+        period: debt.period ?? 0,
+        deletable: debt.deletable || "",
+        due_date: debt.due_date ? formatDate(debt.due_date) : "",
       }));
       // Sort incomes by id in ascending order
       formattedDebts.sort((a, b) => a.id - b.id);
@@ -86,7 +87,7 @@ export const Debts = () => {
       setDebts(
         formattedDebts.length > 0
           ? formattedDebts
-          : [{ id: 1, debtCategoryId: 0 }]
+          : [{ id: 1, debt_type_id: 0 }]
       );
       setExpandedDebtId(formattedDebts.length > 0 ? formattedDebts[0]?.id : 1);
       setState({ ...state, debts: formattedDebts });
@@ -136,6 +137,7 @@ export const Debts = () => {
           body: JSON.stringify({ debts: data.debts }),
         }
       );
+      console.log(JSON.stringify({ debts: data.debts }));
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -189,17 +191,24 @@ export const Debts = () => {
                     }}
                   >
                     <div className="d-flex justify-content-between align-items-center">
-                      <h5 style={{ margin: ".2rem 0" }}>Debt {index + 1}</h5>
-                      <button
-                        type="button"
-                        className="btn btn-outline-danger btn-sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteDebt(debt.id);
-                        }}
-                      >
-                        Delete
-                      </button>
+                      <h5 style={{ margin: ".2rem 0" }}>
+                        Debt {index + 1}{" "}
+                        {debt.amount ? " - " + debt.amount : ""}
+                      </h5>
+                      {debt.deletable === 1 ? (
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger btn-sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteDebt(debt.id);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      ) : (
+                        ""
+                      )}
                     </div>
                   </div>
                   {expandedDebtId === debt.id && (
@@ -210,11 +219,11 @@ export const Debts = () => {
                             <Field label="Debt Category">
                               <select
                                 className="form-select w-100 p-2 border border-secondary-subtle rounded rounded-2"
-                                value={debt.debtCategoryId || 0}
+                                value={debt.debt_type_id || 0}
                                 onChange={(e) =>
                                   handleInputChange(
                                     debt.id,
-                                    "debtCategoryId",
+                                    "debt_type_id",
                                     Number(e.target.value)
                                   )
                                 }
@@ -237,11 +246,11 @@ export const Debts = () => {
                                 <span className="input-group-text">$</span>
                                 <Input
                                   type="number"
-                                  value={debt.debtAmount || ""}
+                                  value={debt.amount || ""}
                                   onChange={(e) =>
                                     handleInputChange(
                                       debt.id,
-                                      "debtAmount",
+                                      "amount",
                                       e.target.value
                                     )
                                   }
@@ -259,11 +268,11 @@ export const Debts = () => {
                             <Field label="Payment Period">
                               <select
                                 className="form-select w-100 p-2 border border-secondary-subtle rounded rounded-2"
-                                value={debt.debtPeriodId || 0}
+                                value={debt.period || 0}
                                 onChange={(e) =>
                                   handleInputChange(
                                     debt.id,
-                                    "debtPeriodId",
+                                    "period",
                                     Number(e.target.value)
                                   )
                                 }
@@ -284,11 +293,11 @@ export const Debts = () => {
                             <Field label="Due Date">
                               <Input
                                 type="date"
-                                value={debt.dueDate || ""}
+                                value={debt.due_date || ""}
                                 onChange={(e) =>
                                   handleInputChange(
                                     debt.id,
-                                    "dueDate",
+                                    "due_date",
                                     e.target.value
                                   )
                                 }
