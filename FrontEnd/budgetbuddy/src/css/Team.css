@@ -1,0 +1,38 @@
+.team-section h3{
+    width: 118px;
+    position: relative;
+    font-size: 20px;
+    line-height: 32px;
+    font-family: 'DM Sans';
+    color: #000;
+    text-align: left;
+    display: inline-block;
+}
+.team-section p{
+
+    font-size: 16px;
+    color: #000;
+    text-align: left;
+
+}
+.team-section h2{
+    width: 420px;
+    position: relative;
+    font-size: 60px;
+    letter-spacing: -0.01em;
+    line-height: 70px;
+    font-weight: 500;
+    /* font-family: Geologica; */
+    color: #29638a;
+    text-align: left !important;
+    /* display: inline-block; */
+}
+
+.team-section img{
+    width: 100%;
+    position: relative;
+    max-width: 100%;
+    overflow: hidden;
+    height: 288px;
+    object-fit: cover;
+}

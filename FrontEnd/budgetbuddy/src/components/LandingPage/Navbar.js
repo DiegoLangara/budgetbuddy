@@ -1,12 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../../css/Navbar.css'
+import '../../css/Navbar.css';
+import logo from '../../Assets/Logonn.png';
 
 const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container">
+        <img src={logo} alt="logo" className="logo" />
         <Link className="navbar-brand" to="/">BudgetBuddy</Link>
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ml-auto">

@@ -1,0 +1,76 @@
+/* Features.css */
+.features-section {
+    padding: 50px 0;
+  }
+  
+  .features-section h2 {
+    color: #005580; /* Adjust the color to match the image */
+    font-family: 'Geologica', sans-serif;
+    font-size: 36px;
+    margin-bottom: 30px;
+    text-align: left;
+  }
+  
+  .feature-row {
+    margin-bottom: 30px;
+  }
+  
+  .feature-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #e5f1fb; 
+    padding: 20px;
+    /* border-radius: 8px; */
+    /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) */
+  }
+  
+  .feature-content {
+    flex: 1;
+    text-align: left;
+  }
+  
+  .feature-content h3 {
+    color: #005580; /* Adjust the color to match the image */
+    /* font-family: 'Geologica', sans-serif; */
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .feature-content p {
+    color: #333;
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+  }
+  
+  .feature-image {
+    flex: 1;
+    text-align: right;
+  }
+  
+  .feature-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  .feature-item:nth-child(2){
+    justify-content: flex-end
+  }
+  
+  @media (max-width: 768px) {
+    .feature-item {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    .feature-content {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+  
+    .feature-image {
+      text-align: center;
+    }
+  }
+  
