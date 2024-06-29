@@ -35,21 +35,28 @@ async function fetchIncomes(user_id, token) {
 // Income categories options
 const incomeCategoryOptions = [
   { id: 0, name: "Select category", disabled: true },
-  { id: 1, name: "Salary" },
-  { id: 2, name: "Wages" },
-  { id: 3, name: "Tips" },
-  { id: 4, name: "Investments" },
-  { id: 5, name: "Rental properties" },
-  { id: 6, name: "Others" },
+  { id: 1, name: "Salary/Wages" },
+  { id: 2, name: "Bonuses" },
+  { id: 3, name: "Freelance Income" },
+  { id: 4, name: "Business Income" },
+  { id: 5, name: "Investment Income" },
+  { id: 6, name: "Rental Income" },
+  { id: 7, name: "Pension" },
+  { id: 8, name: "Social Security" },
+  { id: 9, name: "Child Support" },
+  { id: 10, name: "Others" },
 ];
 
 // Income period options
 const incomePeriodOptions = [
   { id: 0, name: "Select period", disabled: true },
-  { id: 1, name: "Weekly" },
-  { id: 2, name: "Monthly" },
-  { id: 3, name: "Yearly" },
-  { id: 4, name: "One-time" },
+  { id: 1, name: "one-off" },
+  { id: 2, name: "daily" },
+  { id: 3, name: "weekly" },
+  { id: 4, name: "bi-weekly" },
+  { id: 5, name: "monthly" },
+  { id: 6, name: "quarterly" },
+  { id: 7, name: "annually" },
 ];
 
 export const Incomes = () => {
@@ -160,6 +167,12 @@ export const Incomes = () => {
     setExpandedIncomeId(expandedIncomeId === id ? null : id);
   };
 
+  // Helper function to get the category name by id
+  const getCategoryNameById = (id) => {
+    const category = incomeCategoryOptions.find((option) => option.id === id);
+    return category ? category.name : "";
+  };
+
   return (
     <Form onSubmit={saveData}>
       <div className="container">
@@ -186,10 +199,12 @@ export const Incomes = () => {
                   >
                     <div className="d-flex justify-content-between align-items-center">
                       <h5 style={{ margin: ".2rem 0" }}>
-                        Income {index + 1}{" "}
-                        {income.amount ? " - " + income.amount : ""}
+                        Income {index + 1}
+                        {income.income_type_id
+                          ? ` - ${getCategoryNameById(income.income_type_id)}`
+                          : ""}
                       </h5>
-                      {income.deletable === 1 ? (
+                      {income.deletable === 1 || index > 0 ? (
                         <button
                           className="btn btn-outline-danger btn-sm"
                           type="button"

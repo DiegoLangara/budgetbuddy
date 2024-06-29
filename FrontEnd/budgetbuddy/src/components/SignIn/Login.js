@@ -1,10 +1,17 @@
 import React, { useRef, useState } from "react";
-import { Form, Button, Card, Alert, Container, InputGroup } from "react-bootstrap";
+import {
+  Form,
+  Button,
+  Card,
+  Alert,
+  Container,
+  InputGroup,
+} from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-import Swal from 'sweetalert2';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import Swal from "sweetalert2";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import "../../css/Login.css";
 
 export default function Login() {
@@ -24,12 +31,12 @@ export default function Login() {
       setLoading(true);
       await login(emailRef.current.value, passwordRef.current.value);
       setLoading(false);
-      navigate("/dashboard");
+      // navigate("/dashboard");
     } catch {
       Swal.fire({
-        icon: 'error',
-        title: 'Ooops...',
-        text: 'Data connection error. Please try again.',
+        icon: "error",
+        title: "Ooops...",
+        text: "Data connection error. Please try again.",
       }).then(() => {
         navigate("/login");
       });
@@ -39,7 +46,10 @@ export default function Login() {
 
   return (
     <div className="login-background">
-      <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: "100vh" }}>
+      <Container
+        className="d-flex align-items-center justify-content-center"
+        style={{ minHeight: "100vh" }}
+      >
         <div className="w-100" style={{ maxWidth: "400px" }}>
           <Card>
             <Card.Body>
@@ -63,7 +73,9 @@ export default function Login() {
                       variant="outline-secondary"
                       onClick={() => setShowPassword(!showPassword)}
                     >
-                      <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+                      <FontAwesomeIcon
+                        icon={showPassword ? faEye : faEyeSlash}
+                      />
                     </Button>
                   </InputGroup>
                 </Form.Group>

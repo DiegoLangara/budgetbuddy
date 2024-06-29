@@ -7,6 +7,15 @@ import { Input } from "../OnboardingParts/Input";
 import { Button } from "../OnboardingParts/Button";
 import { useAuth } from "../../contexts/AuthContext";
 
+// Utility function to format the date
+const formatDate = (isoDate) => {
+  const date = new Date(isoDate);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 // Fetch budget items from the backend
 async function fetchBudgetItems(user_id, token) {
   try {
@@ -50,13 +59,16 @@ const budgetCategoryOptions = [
 ];
 
 // Budget period options
-const budgetPeriodOptions = [
-  { id: 0, name: "Select period", disabled: true },
-  { id: 1, name: "Weekly" },
-  { id: 2, name: "Monthly" },
-  { id: 3, name: "Yearly" },
-  { id: 4, name: "One-time" },
-];
+// const budgetPeriodOptions = [
+//   { id: 0, name: "Select period", disabled: true },
+//   { id: 1, name: "one-off" },
+//   { id: 2, name: "daily" },
+//   { id: 3, name: "weekly" },
+//   { id: 4, name: "bi-weekly" },
+//   { id: 5, name: "monthly" },
+//   { id: 6, name: "quarterly" },
+//   { id: 7, name: "annually" },
+// ];
 
 export const Budget = () => {
   const [state, setState] = useOnboardingState();
@@ -81,6 +93,7 @@ export const Budget = () => {
         amount: expense.amount || "",
         period: expense.period ?? 0,
         deletable: expense.deletable || "",
+        target_date: expense.target_date ? formatDate(expense.target_date) : "",
       }));
       // Sort expenses by id in ascending order
       formattedExpenses.sort((a, b) => a.id - b.id);
@@ -168,6 +181,12 @@ export const Budget = () => {
     setExpandedExpenseId(expandedExpenseId === id ? null : id);
   };
 
+  // Helper function to get the category name by id
+  const getCategoryNameById = (id) => {
+    const category = budgetCategoryOptions.find((option) => option.id === id);
+    return category ? category.name : "";
+  };
+
   return (
     <Form onSubmit={saveData}>
       <div className="container">
@@ -194,10 +213,12 @@ export const Budget = () => {
                   >
                     <div className="d-flex justify-content-between align-items-center">
                       <h5 style={{ margin: ".2rem 0" }}>
-                        Budget {index + 1}{" "}
-                        {expense.amount ? " - " + expense.amount : ""}
+                        Budget {index + 1}
+                        {expense.expense_type_id
+                          ? ` - ${getCategoryNameById(expense.expense_type_id)}`
+                          : ""}
                       </h5>
-                      {expense.deletable === 1 ? (
+                      {expense.deletable === 1 || index > 0 ? (
                         <button
                           type="button"
                           className="btn btn-outline-danger  btn-sm ms-3"
@@ -244,7 +265,7 @@ export const Budget = () => {
                             </Field>
                           </div>
                           <div className="col-md-6">
-                            <Field label="Predicted expense amount">
+                            <Field label="Maximum expense amount">
                               <div className="input-group">
                                 <span className="input-group-text">$</span>
                                 <Input
@@ -268,7 +289,7 @@ export const Budget = () => {
                         </div>
                         <div className="row">
                           <div className="col-md-6">
-                            <Field label="How often would you pay for it?">
+                            {/* <Field label="How often would you pay for it?">
                               <select
                                 className="form-select w-100 p-2 border border-secondary-subtle rounded-2"
                                 value={expense.period || 0}
@@ -290,6 +311,19 @@ export const Budget = () => {
                                   </option>
                                 ))}
                               </select>
+                            </Field> */}
+                            <Field label="End date" className="col">
+                              <Input
+                                type="date"
+                                value={expense.target_date || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    expense.id,
+                                    "target_date",
+                                    e.target.value
+                                  )
+                                }
+                              />
                             </Field>
                           </div>
                         </div>
@@ -305,8 +339,8 @@ export const Budget = () => {
                 className="btn btn-outline-primary mt-3 mb-5"
               >
                 {expenses.length === 0
-                  ? "Create an expense"
-                  : "Add another expense"}
+                  ? "Create an budget"
+                  : "Add another budget"}
               </Link>
             </div>
           </div>

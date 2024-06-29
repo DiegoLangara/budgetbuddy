@@ -50,13 +50,16 @@ const debtCategoryOptions = [
   { id: 5, name: "Others" },
 ];
 
-const debtPeriodOptions = [
-  { id: 0, name: "Select a period", disabled: true },
-  { id: 1, name: "Weekly" },
-  { id: 2, name: "Monthly" },
-  { id: 3, name: "Yearly" },
-  { id: 4, name: "One-time" },
-];
+// const debtPeriodOptions = [
+//   { id: 0, name: "Select period", disabled: true },
+//   { id: 1, name: "one-off" },
+//   { id: 2, name: "daily" },
+//   { id: 3, name: "weekly" },
+//   { id: 4, name: "bi-weekly" },
+//   { id: 5, name: "monthly" },
+//   { id: 6, name: "quarterly" },
+//   { id: 7, name: "annually" },
+// ];
 
 export const Debts = () => {
   const [state, setState] = useOnboardingState();
@@ -77,7 +80,7 @@ export const Debts = () => {
         id: debt.debt_id || index + 1,
         debt_type_id: debt.debt_type_id ?? 0,
         amount: debt.amount || "",
-        period: debt.period ?? 0,
+        // period: debt.period ?? 0,
         deletable: debt.deletable || "",
         due_date: debt.due_date ? formatDate(debt.due_date) : "",
       }));
@@ -163,6 +166,12 @@ export const Debts = () => {
     setExpandedDebtId(expandedDebtId === id ? null : id);
   };
 
+  // Helper function to get the category name by id
+  const getCategoryNameById = (id) => {
+    const category = debtCategoryOptions.find((option) => option.id === id);
+    return category ? category.name : "";
+  };
+
   return (
     <Form onSubmit={saveData}>
       <div className="container">
@@ -192,10 +201,12 @@ export const Debts = () => {
                   >
                     <div className="d-flex justify-content-between align-items-center">
                       <h5 style={{ margin: ".2rem 0" }}>
-                        Debt {index + 1}{" "}
-                        {debt.amount ? " - " + debt.amount : ""}
+                        Debt {index + 1}
+                        {debt.debt_type_id
+                          ? ` - ${getCategoryNameById(debt.debt_type_id)}`
+                          : ""}
                       </h5>
-                      {debt.deletable === 1 ? (
+                      {debt.deletable === 1 || index > 0 ? (
                         <button
                           type="button"
                           className="btn btn-outline-danger btn-sm"
@@ -214,7 +225,7 @@ export const Debts = () => {
                   {expandedDebtId === debt.id && (
                     <div className="accordion-collapse collapse show">
                       <div className="accordion-body p-3 container">
-                        <div className="row mb-3">
+                        <div className="row">
                           <div className="col-md-6">
                             <Field label="Debt Category">
                               <select
@@ -254,7 +265,7 @@ export const Debts = () => {
                                       e.target.value
                                     )
                                   }
-                                  placeholder="e.g., 1500"
+                                  placeholder="e.g. 1500"
                                   step="100"
                                   min="0"
                                   className="form-control"
@@ -264,7 +275,7 @@ export const Debts = () => {
                           </div>
                         </div>
                         <div className="row">
-                          <div className="col-md-6">
+                          {/* <div className="col-md-6">
                             <Field label="Payment Period">
                               <select
                                 className="form-select w-100 p-2 border border-secondary-subtle rounded rounded-2"
@@ -288,7 +299,7 @@ export const Debts = () => {
                                 ))}
                               </select>
                             </Field>
-                          </div>
+                          </div> */}
                           <div className="col-md-6">
                             <Field label="Due Date">
                               <Input
