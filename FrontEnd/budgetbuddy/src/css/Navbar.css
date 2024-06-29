@@ -83,7 +83,7 @@
   
   .brand-name {
     color: var(--Schemes-On-Primary, #FFF);
-    font-family: Geologica;
+    /* font-family: Geologica; */
     font-size: 42px;
     font-style: normal;
     font-weight: 700;
