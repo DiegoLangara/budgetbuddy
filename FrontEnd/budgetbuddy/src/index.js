@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-// import App from "./components/SignIn/App";
 import App from "./App";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { LoadingProvider } from "./contexts/LandingContext";
