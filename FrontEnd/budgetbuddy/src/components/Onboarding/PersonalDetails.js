@@ -3,8 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { useOnboardingState } from "../../Hooks/useOnboardingState";
 import { Field } from "../OnboardingParts/Field";
 import { Form } from "../OnboardingParts/Form";
-import { Input } from "../OnboardingParts/Input"; // Assuming Input is exported as default
-import { Button } from "../OnboardingParts/Button"; // Assuming Button is exported as default
+import { Input } from "../OnboardingParts/Input";
+import { Button } from "../OnboardingParts/Button";
 import { useAuth } from "../../contexts/AuthContext";
 
 // Utility function to format the date

@@ -203,7 +203,7 @@ export const Goals = () => {
                         Goal {index + 1}{" "}
                         {goal.goal_name ? " - " + goal.goal_name : ""}
                       </h5>
-                      {goal.deletable === 1 ? (
+                      {goal.deletable === 1 || index > 0 ? (
                         <button
                           className="btn btn-outline-danger btn-sm"
                           type="button"
