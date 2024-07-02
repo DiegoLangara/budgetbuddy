@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { Routes, Route } from "react-router-dom";
-import { Budget } from "../components/Onboarding/Budget";
+import { Budgets } from "../components/Onboarding/Budgets";
 import { Debts } from "../components/Onboarding/Debts";
 import { Goals } from "../components/Onboarding/Goals";
 import { Incomes } from "../components/Onboarding/Incomes";
@@ -19,7 +19,7 @@ export const OnboardingPage = () => {
           <Route path="personal-details" element={<PersonalDetails />} />
           <Route path="goals" element={<Goals />} />
           <Route path="incomes" element={<Incomes />} />
-          <Route path="budget" element={<Budget />} />
+          <Route path="budgets" element={<Budgets />} />
           <Route path="debts" element={<Debts />} />
           <Route path="complete-process" element={<CompleteProcess />} />
         </Routes>

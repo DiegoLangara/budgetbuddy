@@ -42,12 +42,12 @@ export const Progress = () => {
           </li>
           <li className="nav-item">
             <Link
-              to="/onboarding/budget"
+              to="/onboarding/budgets"
               className={`nav-link ${
                 location.pathname === "/onboarding/budget" ? "active" : ""
               }`}
             >
-              Budget
+              Budgets
             </Link>
           </li>
           <li className="nav-item">
