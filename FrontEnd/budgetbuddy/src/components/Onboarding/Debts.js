@@ -340,7 +340,7 @@ export const Debts = () => {
           <div className="col">
             <div className="d-flex justify-content-between mt-4">
               <Link
-                to="/onboarding/budget"
+                to="/onboarding/budgets"
                 className="btn btn-outline-secondary"
               >
                 {"<"} Return

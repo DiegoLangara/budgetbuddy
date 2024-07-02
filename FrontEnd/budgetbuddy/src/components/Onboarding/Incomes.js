@@ -59,6 +59,28 @@ const incomePeriodOptions = [
   { id: 7, name: "annually" },
 ];
 
+// Map period IDs to names
+const periodIdToName = {
+  1: "one-off",
+  2: "daily",
+  3: "weekly",
+  4: "bi-weekly",
+  5: "monthly",
+  6: "quarterly",
+  7: "annually",
+};
+
+// Map period names to IDs
+const periodNameToId = {
+  "one-off": 1,
+  daily: 2,
+  weekly: 3,
+  "bi-weekly": 4,
+  monthly: 5,
+  quarterly: 6,
+  annually: 7,
+};
+
 export const Incomes = () => {
   const [state, setState] = useOnboardingState();
   const navigate = useNavigate();
@@ -76,9 +98,10 @@ export const Incomes = () => {
       const fetchedIncomes = await fetchIncomes(user_id, token);
       const formattedIncomes = fetchedIncomes.map((income, index) => ({
         id: income.income_id || index + 1,
+        income_name: income.income_name || "",
         income_type_id: income.income_type_id ?? 0,
         amount: income.amount || "",
-        period: income.period ?? 0,
+        period: periodNameToId[income.period] ?? 0,
         deletable: income.deletable || "",
       }));
       // Sort incomes by id in ascending order
@@ -154,23 +177,31 @@ export const Incomes = () => {
 
   const saveData = async (event) => {
     event.preventDefault();
+    // Transform data to the required schema
+    const transformedIncomes = incomes.map((income) => ({
+      income_id: income.id,
+      income_name: income.income_name || null,
+      income_type_id: income.income_type_id,
+      amount: income.amount,
+      period: periodIdToName[income.period],
+      income_type_name:
+        incomeCategoryOptions.find(
+          (category) => category.id === income.income_type_id
+        )?.name || "",
+    }));
+
     const combinedData = {
       ...state,
-      incomes: incomes,
+      incomes: transformedIncomes,
     };
+
     setState(combinedData);
     await saveToDatabase(combinedData);
-    navigate("/onboarding/budget");
+    navigate("/onboarding/budgets");
   };
 
   const toggleIncome = (id) => {
     setExpandedIncomeId(expandedIncomeId === id ? null : id);
-  };
-
-  // Helper function to get the category name by id
-  const getCategoryNameById = (id) => {
-    const category = incomeCategoryOptions.find((option) => option.id === id);
-    return category ? category.name : "";
   };
 
   return (
@@ -180,7 +211,7 @@ export const Incomes = () => {
           <div className="col">
             <div className="d-flex justify-content-between align-items-center mt-4 mb-3">
               <h3>Set Your Incomes</h3>
-              <Link to="/onboarding/budget" className="btn btn-secondary">
+              <Link to="/onboarding/budgets" className="btn btn-secondary">
                 Skip to next
               </Link>
             </div>
@@ -199,10 +230,8 @@ export const Incomes = () => {
                   >
                     <div className="d-flex justify-content-between align-items-center">
                       <h5 style={{ margin: ".2rem 0" }}>
-                        Income {index + 1}
-                        {income.income_type_id
-                          ? ` - ${getCategoryNameById(income.income_type_id)}`
-                          : ""}
+                        Income {index + 1}{" "}
+                        {income.income_name ? " - " + income.income_name : ""}
                       </h5>
                       {income.deletable === 1 || index > 0 ? (
                         <button
@@ -224,6 +253,22 @@ export const Incomes = () => {
                     <div className="accordion-collapse collapse show">
                       <div className="accordion-body p-3 container">
                         <div className="row">
+                          <div className="col-md-6">
+                            <Field label="Your income">
+                              <Input
+                                type="text"
+                                value={income.income_name || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    income.id,
+                                    "income_name",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="ex. House rental"
+                              />
+                            </Field>
+                          </div>
                           <div className="col-md-6">
                             <Field label="Income category">
                               <div>
@@ -251,6 +296,8 @@ export const Incomes = () => {
                               </div>
                             </Field>
                           </div>
+                        </div>
+                        <div className="row">
                           <div className="col-md-6">
                             <Field label="Income amount">
                               <div className="input-group">
@@ -273,8 +320,6 @@ export const Incomes = () => {
                               </div>
                             </Field>
                           </div>
-                        </div>
-                        <div className="row">
                           <div className="col-md-6">
                             <Field label="How often do you earn it?">
                               <div>
