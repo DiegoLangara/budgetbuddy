@@ -71,6 +71,7 @@ export const Goals = () => {
   useEffect(() => {
     async function loadGoals() {
       const fetchedGoals = await fetchGoals(user_id, token);
+      console.log("Fetched goal data:", fetchGoals); // Debug output
       const formattedGoals = fetchedGoals.map((goal, index) => ({
         id: goal.goal_id || index + 1,
         goal_name: goal.goal_name || "",

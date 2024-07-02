@@ -166,7 +166,7 @@ export const PersonalDetails = () => {
                 name="country"
                 type="text"
                 id="country"
-                placeholder="ex. Canada"
+                placeholder="e.g. Canada"
                 value={formData.country}
                 onChange={handleChange}
                 className="form-control"
@@ -179,7 +179,7 @@ export const PersonalDetails = () => {
                 name="occupation"
                 type="text"
                 id="occupation"
-                placeholder="ex. Sales Manager"
+                placeholder="e.g. Sales Manager"
                 value={formData.occupation}
                 onChange={handleChange}
                 className="form-control"
