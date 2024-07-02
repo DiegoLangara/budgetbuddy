@@ -292,7 +292,7 @@ export const Incomes = () => {
                                   {incomePeriodOptions.map((option) => (
                                     <option
                                       key={option.id}
-                                      value={option.id}
+                                      value={option.name}
                                       disabled={option.disabled}
                                     >
                                       {option.name}
