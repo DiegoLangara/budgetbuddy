@@ -22,6 +22,7 @@ async function fetchBudgetItems(user_id, token) {
   try {
     const response = await fetch(
       `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/`,
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/`,
       {
         method: "GET",
         headers: {
@@ -36,6 +37,7 @@ async function fetchBudgetItems(user_id, token) {
     }
     const data = await response.json();
     console.log("Fetched data:", data); // Debugging log
+    console.log("Fetched data:", data); // Debugging log
     return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error("Failed to fetch budget items:", error);
@@ -43,6 +45,7 @@ async function fetchBudgetItems(user_id, token) {
   }
 }
 
+export const Budgets = () => {
 export const Budgets = () => {
   const [state, setState] = useOnboardingState();
   const navigate = useNavigate();
@@ -52,7 +55,10 @@ export const Budgets = () => {
 
   const [budgets, setBudgets] = useState(
     state.budgets || [{ id: 1, budget_name: "", amount: "", end_date: "" }]
+  const [budgets, setBudgets] = useState(
+    state.budgets || [{ id: 1, budget_name: "", amount: "", end_date: "" }]
   );
+  const [expandedBudgetId, setExpandedBudgetId] = useState(budgets[0]?.id || 1);
   const [expandedBudgetId, setExpandedBudgetId] = useState(budgets[0]?.id || 1);
 
   useEffect(() => {
@@ -64,7 +70,16 @@ export const Budgets = () => {
         amount: budget.amount || "",
         deletable: budget.deletable || "",
         end_date: budget.end_date ? formatDate(budget.end_date) : "",
+      const fetchedBudgets = await fetchBudgetItems(user_id, token);
+      const formattedBudgets = fetchedBudgets.map((budget, index) => ({
+        id: budget.budget_id || index + 1,
+        budget_name: budget.budget_name || "",
+        amount: budget.amount || "",
+        deletable: budget.deletable || "",
+        end_date: budget.end_date ? formatDate(budget.end_date) : "",
       }));
+      // Sort budgets by id in ascending order
+      formattedBudgets.sort((a, b) => a.id - b.id);
       // Sort budgets by id in ascending order
       formattedBudgets.sort((a, b) => a.id - b.id);
 
@@ -72,10 +87,17 @@ export const Budgets = () => {
         formattedBudgets.length > 0
           ? formattedBudgets
           : [{ id: 1, budget_name: "", amount: "", end_date: "" }]
+      setBudgets(
+        formattedBudgets.length > 0
+          ? formattedBudgets
+          : [{ id: 1, budget_name: "", amount: "", end_date: "" }]
       );
       setExpandedBudgetId(
         formattedBudgets.length > 0 ? formattedBudgets[0]?.id : 1
+      setExpandedBudgetId(
+        formattedBudgets.length > 0 ? formattedBudgets[0]?.id : 1
       );
+      setState({ ...state, budgets: formattedBudgets });
       setState({ ...state, budgets: formattedBudgets });
     }
     loadBudgetItems();
@@ -85,12 +107,27 @@ export const Budgets = () => {
     setBudgets((prevBudgets) =>
       prevBudgets.map((budget) =>
         budget.id === id ? { ...budget, [field]: value } : budget
+    setBudgets((prevBudgets) =>
+      prevBudgets.map((budget) =>
+        budget.id === id ? { ...budget, [field]: value } : budget
       )
     );
   };
 
   const addBudget = () => {
+  const addBudget = () => {
     const newId =
+      budgets.length > 0 ? Math.max(...budgets.map((g) => g.id)) + 1 : 1;
+    const newBudget = {
+      id: newId,
+      budget_name: "",
+      amount: "",
+      end_date: "",
+    };
+    const updatedBudgets = [...budgets, newBudget];
+    updatedBudgets.sort((a, b) => a.id - b.id); // Ensure order is maintained
+    setBudgets(updatedBudgets);
+    setExpandedBudgetId(newBudget.id);
       budgets.length > 0 ? Math.max(...budgets.map((g) => g.id)) + 1 : 1;
     const newBudget = {
       id: newId,
@@ -129,6 +166,7 @@ export const Budgets = () => {
     try {
       const response = await fetch(
         `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/`,
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/`,
         {
           method: "POST",
           headers: {
@@ -137,8 +175,10 @@ export const Budgets = () => {
             user_id: user_id,
           },
           body: JSON.stringify({ budgets: data.budgets }),
+          body: JSON.stringify({ budgets: data.budgets }),
         }
       );
+      console.log(JSON.stringify({ budgets: data.budgets }));
       console.log(JSON.stringify({ budgets: data.budgets }));
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -160,8 +200,17 @@ export const Budgets = () => {
       end_date: budget.end_date || null,
     }));
 
+    // Transform data to the required schema
+    const transformedBudgets = budgets.map((budget) => ({
+      budget_id: budget.id,
+      budget_name: budget.budget_name || null,
+      amount: budget.amount,
+      end_date: budget.end_date || null,
+    }));
+
     const combinedData = {
       ...state,
+      budgets: transformedBudgets,
       budgets: transformedBudgets,
     };
     setState(combinedData);
@@ -169,6 +218,8 @@ export const Budgets = () => {
     navigate("/onboarding/debts");
   };
 
+  const toggleBudget = (id) => {
+    setExpandedBudgetId(expandedBudgetId === id ? null : id);
   const toggleBudget = (id) => {
     setExpandedBudgetId(expandedBudgetId === id ? null : id);
   };
@@ -180,6 +231,7 @@ export const Budgets = () => {
           <div className="col">
             <div className="d-flex justify-content-between align-items-center mt-4 mb-3">
               <h3>Set Your Budgets</h3>
+              <h3>Set Your Budgets</h3>
               <Link to="/onboarding/debts" className="btn btn-secondary">
                 Skip to next
               </Link>
@@ -187,9 +239,12 @@ export const Budgets = () => {
 
             {budgets.map((budget, index) => (
               <div key={budget.id} className="accordion mb-3">
+            {budgets.map((budget, index) => (
+              <div key={budget.id} className="accordion mb-3">
                 <div className="accordion-item border border-secondary-subtle">
                   <div
                     className="accordion-header"
+                    onClick={() => toggleBudget(budget.id)}
                     onClick={() => toggleBudget(budget.id)}
                     style={{
                       cursor: "pointer",
@@ -201,13 +256,17 @@ export const Budgets = () => {
                       <h5 style={{ margin: ".2rem 0" }}>
                         Budget {index + 1}{" "}
                         {budget.budget_name ? " - " + budget.budget_name : ""}
+                        Budget {index + 1}{" "}
+                        {budget.budget_name ? " - " + budget.budget_name : ""}
                       </h5>
+                      {budget.deletable === 1 || index > 0 ? (
                       {budget.deletable === 1 || index > 0 ? (
                         <button
                           type="button"
                           className="btn btn-outline-danger  btn-sm ms-3"
                           onClick={(e) => {
                             e.stopPropagation(); // Prevent collapse/expand on delete
+                            deleteBudget(budget.id);
                             deleteBudget(budget.id);
                           }}
                         >
@@ -220,10 +279,15 @@ export const Budgets = () => {
                   </div>
 
                   {expandedBudgetId === budget.id && (
+                  {expandedBudgetId === budget.id && (
                     <div className="accordion-collapse collapse show">
                       <div className="accordion-body p-3 container">
                         <div className="row">
                           <div className="col-md-6">
+                            <Field label="Budget name">
+                              <Input
+                                type="text"
+                                value={budget.budget_name || ""}
                             <Field label="Budget name">
                               <Input
                                 type="text"
@@ -233,21 +297,29 @@ export const Budgets = () => {
                                     budget.id,
                                     "budget_name",
                                     e.target.value
+                                    budget.id,
+                                    "budget_name",
+                                    e.target.value
                                   )
                                 }
+                                placeholder="ex. Groceries, Medical expenses"
+                              />
                                 placeholder="ex. Groceries, Medical expenses"
                               />
                             </Field>
                           </div>
                           <div className="col-md-6">
                             <Field label="Budget amount">
+                            <Field label="Budget amount">
                               <div className="input-group">
                                 <span className="input-group-text">$</span>
                                 <Input
                                   type="number"
                                   value={budget.amount || ""}
+                                  value={budget.amount || ""}
                                   onChange={(e) =>
                                     handleInputChange(
+                                      budget.id,
                                       budget.id,
                                       "amount",
                                       e.target.value
@@ -268,8 +340,11 @@ export const Budgets = () => {
                               <Input
                                 type="date"
                                 value={budget.end_date || ""}
+                                value={budget.end_date || ""}
                                 onChange={(e) =>
                                   handleInputChange(
+                                    budget.id,
+                                    "end_date",
                                     budget.id,
                                     "end_date",
                                     e.target.value
@@ -288,8 +363,10 @@ export const Budgets = () => {
             <div className="d-flex justify-content-center">
               <Link
                 onClick={addBudget}
+                onClick={addBudget}
                 className="btn btn-outline-primary mt-3 mb-5"
               >
+                {budgets.length === 0
                 {budgets.length === 0
                   ? "Create an budget"
                   : "Add another budget"}
