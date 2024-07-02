@@ -34,29 +34,13 @@ async function fetchBudgetItems(user_id, token) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
+    console.log("Fetched data:", data); // Debugging log
     return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error("Failed to fetch budget items:", error);
     return [];
   }
 }
-
-// Budget category options
-// const budgetCategoryOptions = [
-//   { id: 0, name: "Select category", disabled: true },
-//   { id: 1, name: "Rent" },
-//   { id: 2, name: "Hydro" },
-//   { id: 3, name: "Internet" },
-//   { id: 4, name: "Mobile" },
-//   { id: 5, name: "Groceries" },
-//   { id: 6, name: "Daily Necessities" },
-//   { id: 7, name: "Education" },
-//   { id: 8, name: "Health" },
-//   { id: 9, name: "Clothing" },
-//   { id: 10, name: "Hobbies" },
-//   { id: 11, name: "Savings" },
-//   { id: 12, name: "Others" },
-// ];
 
 export const Budgets = () => {
   const [state, setState] = useOnboardingState();
@@ -66,9 +50,7 @@ export const Budgets = () => {
   const user_id = currentUser.id;
 
   const [budgets, setBudgets] = useState(
-    state.budgets || [
-      { id: 1, budget_name: "", total_amount: "", end_date: "" },
-    ]
+    state.budgets || [{ id: 1, budget_name: "", amount: "", end_date: "" }]
   );
   const [expandedBudgetId, setExpandedBudgetId] = useState(budgets[0]?.id || 1);
 
@@ -78,7 +60,7 @@ export const Budgets = () => {
       const formattedBudgets = fetchedBudgets.map((budget, index) => ({
         id: budget.budget_id || index + 1,
         budget_name: budget.budget_name || "",
-        total_amount: budget.total_amount || "",
+        amount: budget.amount || "",
         deletable: budget.deletable || "",
         end_date: budget.end_date ? formatDate(budget.end_date) : "",
       }));
@@ -88,7 +70,7 @@ export const Budgets = () => {
       setBudgets(
         formattedBudgets.length > 0
           ? formattedBudgets
-          : [{ id: 1, budget_name: "", total_amount: "", end_date: "" }]
+          : [{ id: 1, budget_name: "", amount: "", end_date: "" }]
       );
       setExpandedBudgetId(
         formattedBudgets.length > 0 ? formattedBudgets[0]?.id : 1
@@ -112,7 +94,7 @@ export const Budgets = () => {
     const newBudget = {
       id: newId,
       budget_name: "",
-      total_amount: "",
+      amount: "",
       end_date: "",
     };
     const updatedBudgets = [...budgets, newBudget];
@@ -164,7 +146,7 @@ export const Budgets = () => {
     const transformedBudgets = budgets.map((budget) => ({
       budget_id: budget.id,
       budget_name: budget.budget_name || null,
-      total_amount: budget.total_amount,
+      amount: budget.amount,
       end_date: budget.end_date || null,
     }));
 
@@ -253,11 +235,11 @@ export const Budgets = () => {
                                 <span className="input-group-text">$</span>
                                 <Input
                                   type="number"
-                                  value={budget.total_amount || ""}
+                                  value={budget.amount || ""}
                                   onChange={(e) =>
                                     handleInputChange(
                                       budget.id,
-                                      "total_amount",
+                                      "amount",
                                       e.target.value
                                     )
                                   }
