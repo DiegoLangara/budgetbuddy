@@ -254,7 +254,7 @@ export const Incomes = () => {
                       <div className="accordion-body p-3 container">
                         <div className="row">
                           <div className="col-md-6">
-                            <Field label="Your income">
+                            <Field label="Income name">
                               <Input
                                 type="text"
                                 value={income.income_name || ""}

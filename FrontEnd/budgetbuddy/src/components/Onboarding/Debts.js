@@ -50,17 +50,6 @@ const debtCategoryOptions = [
   { id: 5, name: "Others" },
 ];
 
-// const debtPeriodOptions = [
-//   { id: 0, name: "Select period", disabled: true },
-//   { id: 1, name: "one-off" },
-//   { id: 2, name: "daily" },
-//   { id: 3, name: "weekly" },
-//   { id: 4, name: "bi-weekly" },
-//   { id: 5, name: "monthly" },
-//   { id: 6, name: "quarterly" },
-//   { id: 7, name: "annually" },
-// ];
-
 export const Debts = () => {
   const [state, setState] = useOnboardingState();
   const navigate = useNavigate();
@@ -69,7 +58,7 @@ export const Debts = () => {
   const user_id = currentUser.id;
 
   const [debts, setDebts] = useState(
-    state.debts || [{ id: 1, debt_type_id: 0 }]
+    state.debts || [{ id: 1, debt_types_id: 0 }]
   );
   const [expandedDebtId, setExpandedDebtId] = useState(debts[0]?.id || 1);
 
@@ -78,9 +67,9 @@ export const Debts = () => {
       const fetchedDebts = await fetchDebts(user_id, token);
       const formattedDebts = fetchedDebts.map((debt, index) => ({
         id: debt.debt_id || index + 1,
-        debt_type_id: debt.debt_type_id ?? 0,
+        debt_name: debt.debt_name || "",
+        debt_types_id: debt.debt_types_id ?? 0,
         amount: debt.amount || "",
-        // period: debt.period ?? 0,
         deletable: debt.deletable || "",
         due_date: debt.due_date ? formatDate(debt.due_date) : "",
       }));
@@ -90,7 +79,7 @@ export const Debts = () => {
       setDebts(
         formattedDebts.length > 0
           ? formattedDebts
-          : [{ id: 1, debt_type_id: 0 }]
+          : [{ id: 1, debt_types_id: 0 }]
       );
       setExpandedDebtId(formattedDebts.length > 0 ? formattedDebts[0]?.id : 1);
       setState({ ...state, debts: formattedDebts });
@@ -109,7 +98,7 @@ export const Debts = () => {
   const addDebt = () => {
     const newId =
       debts.length > 0 ? Math.max(...debts.map((g) => g.id)) + 1 : 1;
-    const newDebt = { id: newId, debt_type_id: 0 };
+    const newDebt = { id: newId, debt_types_id: 0 };
     const updatedDebts = [...debts, newDebt];
     updatedDebts.sort((a, b) => a.id - b.id); // Ensure order is maintained
     setDebts(updatedDebts);
@@ -153,9 +142,18 @@ export const Debts = () => {
 
   const saveData = async (event) => {
     event.preventDefault();
+    // Transform data to the required schema
+    const transformedDebts = debts.map((debt) => ({
+      debt_id: debt.id,
+      debt_name: debt.debt_name || null,
+      debt_types_id: debt.debt_types_id,
+      amount: debt.amount,
+      due_date: formatDate(debt.due_date) || null,
+    }));
+
     const combinedData = {
       ...state,
-      debts: debts,
+      debts: transformedDebts,
     };
     setState(combinedData);
     await saveToDatabase(combinedData);
@@ -164,12 +162,6 @@ export const Debts = () => {
 
   const toggleDebt = (id) => {
     setExpandedDebtId(expandedDebtId === id ? null : id);
-  };
-
-  // Helper function to get the category name by id
-  const getCategoryNameById = (id) => {
-    const category = debtCategoryOptions.find((option) => option.id === id);
-    return category ? category.name : "";
   };
 
   return (
@@ -201,10 +193,8 @@ export const Debts = () => {
                   >
                     <div className="d-flex justify-content-between align-items-center">
                       <h5 style={{ margin: ".2rem 0" }}>
-                        Debt {index + 1}
-                        {debt.debt_type_id
-                          ? ` - ${getCategoryNameById(debt.debt_type_id)}`
-                          : ""}
+                        Debt {index + 1}{" "}
+                        {debt.debt_name ? " - " + debt.debt_name : ""}
                       </h5>
                       {debt.deletable === 1 || index > 0 ? (
                         <button
@@ -227,14 +217,30 @@ export const Debts = () => {
                       <div className="accordion-body p-3 container">
                         <div className="row">
                           <div className="col-md-6">
-                            <Field label="Debt Category">
-                              <select
-                                className="form-select w-100 p-2 border border-secondary-subtle rounded rounded-2"
-                                value={debt.debt_type_id || 0}
+                            <Field label="Debt name">
+                              <Input
+                                type="text"
+                                value={debt.debt_name || ""}
                                 onChange={(e) =>
                                   handleInputChange(
                                     debt.id,
-                                    "debt_type_id",
+                                    "debt_name",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="e.g. RBC credit card"
+                              />
+                            </Field>
+                          </div>
+                          <div className="col-md-6">
+                            <Field label="Debt category">
+                              <select
+                                className="form-select w-100 p-2 border border-secondary-subtle rounded rounded-2"
+                                value={debt.debt_types_id || 0}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    debt.id,
+                                    "debt_types_id",
                                     Number(e.target.value)
                                   )
                                 }
@@ -251,8 +257,10 @@ export const Debts = () => {
                               </select>
                             </Field>
                           </div>
+                        </div>
+                        <div className="row">
                           <div className="col-md-6">
-                            <Field label="Debt Amount">
+                            <Field label="Debt amount">
                               <div className="input-group">
                                 <span className="input-group-text">$</span>
                                 <Input
@@ -273,35 +281,8 @@ export const Debts = () => {
                               </div>
                             </Field>
                           </div>
-                        </div>
-                        <div className="row">
-                          {/* <div className="col-md-6">
-                            <Field label="Payment Period">
-                              <select
-                                className="form-select w-100 p-2 border border-secondary-subtle rounded rounded-2"
-                                value={debt.period || 0}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    debt.id,
-                                    "period",
-                                    Number(e.target.value)
-                                  )
-                                }
-                              >
-                                {debtPeriodOptions.map((option) => (
-                                  <option
-                                    key={option.id}
-                                    value={option.id}
-                                    disabled={option.disabled}
-                                  >
-                                    {option.name}
-                                  </option>
-                                ))}
-                              </select>
-                            </Field>
-                          </div> */}
                           <div className="col-md-6">
-                            <Field label="Due Date">
+                            <Field label="Due date">
                               <Input
                                 type="date"
                                 value={debt.due_date || ""}

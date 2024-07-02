@@ -162,7 +162,7 @@ export const Budgets = () => {
     event.preventDefault();
     // Transform data to the required schema
     const transformedBudgets = budgets.map((budget) => ({
-      budget_id: budget.budget_id,
+      budget_id: budget.id,
       budget_name: budget.budget_name || null,
       total_amount: budget.total_amount,
       end_date: budget.end_date || null,
@@ -232,7 +232,7 @@ export const Budgets = () => {
                       <div className="accordion-body p-3 container">
                         <div className="row">
                           <div className="col-md-6">
-                            <Field label="Your budget">
+                            <Field label="Budget name">
                               <Input
                                 type="text"
                                 value={budget.budget_name || ""}
