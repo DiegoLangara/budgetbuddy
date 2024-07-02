@@ -1,6 +1,6 @@
 import React from "react";
 
-export const Field = ({ children, label, error }) => {
+export const Field = ({ children, label }) => {
   const id = getChildId(children);
 
   return (
@@ -9,15 +9,12 @@ export const Field = ({ children, label, error }) => {
         {label}
       </label>
       {children}
-      {error && <small className="text-danger">{error.message}</small>}
     </div>
   );
 };
 
-// get id prop from a child element
-export const getChildId = (children) => {
+// Utility to get the `id` prop from child component
+const getChildId = (children) => {
   const child = React.Children.only(children);
-  if ("id" in child?.props) {
-    return child.props.id;
-  }
+  return child?.props?.id || "";
 };

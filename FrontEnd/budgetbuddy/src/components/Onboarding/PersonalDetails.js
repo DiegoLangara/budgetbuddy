@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useOnboardingState } from "../../Hooks/useOnboardingState";
 import { Field } from "../OnboardingParts/Field";
 import { Form } from "../OnboardingParts/Form";
@@ -45,9 +45,19 @@ export const PersonalDetails = () => {
   const { currentUser } = useAuth();
   const token = currentUser.token;
   const user_id = currentUser.id;
-  console.log(token, user_id);
+  // console.log(token, user_id);
+
   // Local state to manage form inputs
   const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    dob: "",
+    country: "",
+    occupation: "",
+  });
+
+  // State to manage form errors
+  const [formErrors, setFormErrors] = useState({
     firstname: "",
     lastname: "",
     dob: "",
@@ -78,6 +88,31 @@ export const PersonalDetails = () => {
       ...prevData,
       [name]: value,
     }));
+    setFormErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
+  };
+  // Errors for form validation
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.firstname) {
+      errors.firstname = "Input required";
+    }
+    if (!formData.lastname) {
+      errors.lastname = "Input required";
+    }
+    if (!formData.dob) {
+      errors.dob = "Input required";
+    }
+    if (!formData.country) {
+      errors.country = "Input required";
+    }
+    if (!formData.occupation) {
+      errors.occupation = "Input required";
+    }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const saveToDatabase = async (data) => {
@@ -106,6 +141,9 @@ export const PersonalDetails = () => {
 
   const saveData = async (e) => {
     e.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
     const updatedData = {
       ...state,
       ...formData,
@@ -131,7 +169,8 @@ export const PersonalDetails = () => {
                 placeholder="First Name"
                 value={formData.firstname}
                 onChange={handleChange}
-                className="form-control"
+                error={formErrors.firstname}
+                required
               />
             </Field>
           </div>
@@ -144,7 +183,8 @@ export const PersonalDetails = () => {
                 placeholder="Last Name"
                 value={formData.lastname}
                 onChange={handleChange}
-                className="form-control"
+                error={formErrors.lastname}
+                required
               />
             </Field>
           </div>
@@ -156,7 +196,8 @@ export const PersonalDetails = () => {
                 id="dob"
                 value={formData.dob}
                 onChange={handleChange}
-                className="form-control"
+                error={formErrors.dob}
+                required
               />
             </Field>
           </div>
@@ -169,7 +210,8 @@ export const PersonalDetails = () => {
                 placeholder="e.g. Canada"
                 value={formData.country}
                 onChange={handleChange}
-                className="form-control"
+                error={formErrors.country}
+                required
               />
             </Field>
           </div>
@@ -182,7 +224,8 @@ export const PersonalDetails = () => {
                 placeholder="e.g. Sales Manager"
                 value={formData.occupation}
                 onChange={handleChange}
-                className="form-control"
+                error={formErrors.occupation}
+                required
               />
             </Field>
           </div>
@@ -191,11 +234,8 @@ export const PersonalDetails = () => {
       <div className="container mt-5">
         <div className="row">
           <div className="col-md-12 text-right">
-            <Button
-              type="submit"
-              className="btn btn-primary d-inline-flex p-2 justify-items-end"
-            >
-              Save & Next {">"}
+            <Button type="submit" className="btn btn-primary p-2 w-100">
+              Continue
             </Button>
           </div>
         </div>
