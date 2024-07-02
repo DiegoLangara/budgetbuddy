@@ -21,7 +21,7 @@ export const CompleteProcess = () => {
       </p>
       <Button
         type="button"
-        className="btn btn-primary mt-5 p-3 w-100"
+        className="btn btn-primary mt-5 p-2 w-100"
         onClick={handleNavigate}
       >
         Proceed to Home

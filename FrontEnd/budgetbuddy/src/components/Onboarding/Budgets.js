@@ -6,6 +6,7 @@ import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
 import { Button } from "../OnboardingParts/Button";
 import { useAuth } from "../../contexts/AuthContext";
+import Swal from "sweetalert2";
 
 // Utility function to format the date
 const formatDate = (isoDate) => {
@@ -104,15 +105,24 @@ export const Budgets = () => {
   };
 
   const deleteBudget = (id) => {
-    const confirmMessage = window.confirm("Are you sure to delete this item?");
-    if (confirmMessage) {
-      const updatedBudgets = budgets.filter((budget) => budget.id !== id);
-      setBudgets(updatedBudgets);
-      setState({ ...state, budgets: updatedBudgets });
-      setExpandedBudgetId(
-        updatedBudgets.length > 0 ? updatedBudgets[0].id : null
-      );
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3A3B3C",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const updatedBudgets = budgets.filter((budget) => budget.id !== id);
+        setBudgets(updatedBudgets);
+        setState({ ...state, budgets: updatedBudgets });
+        setExpandedBudgetId(
+          updatedBudgets.length > 0 ? updatedBudgets[0].id : null
+        );
+      }
+    });
   };
 
   const saveToDatabase = async (data) => {

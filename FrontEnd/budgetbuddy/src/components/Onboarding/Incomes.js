@@ -6,6 +6,7 @@ import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
 import { Button } from "../OnboardingParts/Button";
 import { useAuth } from "../../contexts/AuthContext";
+import Swal from "sweetalert2";
 
 // Fetch incomes from the backend
 async function fetchIncomes(user_id, token) {
@@ -139,15 +140,24 @@ export const Incomes = () => {
   };
 
   const deleteIncome = (id) => {
-    const confirmMessage = window.confirm("Are you sure to delete this item?");
-    if (confirmMessage) {
-      const updatedIncomes = incomes.filter((income) => income.id !== id);
-      setIncomes(updatedIncomes);
-      setState({ ...state, incomes: updatedIncomes });
-      setExpandedIncomeId(
-        updatedIncomes.length > 0 ? updatedIncomes[0].id : null
-      );
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3A3B3C",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const updatedIncomes = incomes.filter((income) => income.id !== id);
+        setIncomes(updatedIncomes);
+        setState({ ...state, incomes: updatedIncomes });
+        setExpandedIncomeId(
+          updatedIncomes.length > 0 ? updatedIncomes[0].id : null
+        );
+      }
+    });
   };
 
   const saveToDatabase = async (data) => {
@@ -337,7 +347,7 @@ export const Incomes = () => {
                                   {incomePeriodOptions.map((option) => (
                                     <option
                                       key={option.id}
-                                      value={option.name}
+                                      value={option.id}
                                       disabled={option.disabled}
                                     >
                                       {option.name}
@@ -379,7 +389,7 @@ export const Incomes = () => {
                 {"<"} Return
               </Link>
               <Button type="submit" className="btn btn-primary">
-                Save & Next {">"}
+                Continue
               </Button>
             </div>
           </div>
