@@ -6,7 +6,7 @@ import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
 import { Button } from "../OnboardingParts/Button";
 import { useAuth } from "../../contexts/AuthContext";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
 // Utility function to format the date
 const formatDate = (isoDate) => {
@@ -71,6 +71,7 @@ export const Goals = () => {
   useEffect(() => {
     async function loadGoals() {
       const fetchedGoals = await fetchGoals(user_id, token);
+      console.log("Fetched goal data:", fetchGoals); // Debug output
       const formattedGoals = fetchedGoals.map((goal, index) => ({
         id: goal.goal_id || index + 1,
         goal_name: goal.goal_name || "",
@@ -113,15 +114,14 @@ export const Goals = () => {
   };
 
   const deleteGoal = (id) => {
-
-    const confirmMessage = Swal.fire({
+    Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
+      confirmButtonColor: "#3A3B3C",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!"
+      confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
         const updatedGoals = goals.filter((goal) => goal.id !== id);
@@ -130,8 +130,6 @@ export const Goals = () => {
         setExpandedGoalId(updatedGoals.length > 0 ? updatedGoals[0].id : null);
       }
     });
-
-  
   };
 
   const saveToDatabase = async (data) => {

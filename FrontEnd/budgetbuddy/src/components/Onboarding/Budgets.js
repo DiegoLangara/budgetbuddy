@@ -6,6 +6,7 @@ import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
 import { Button } from "../OnboardingParts/Button";
 import { useAuth } from "../../contexts/AuthContext";
+import Swal from "sweetalert2";
 
 // Utility function to format the date
 const formatDate = (isoDate) => {
@@ -20,7 +21,7 @@ const formatDate = (isoDate) => {
 async function fetchBudgetItems(user_id, token) {
   try {
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budget/}`,
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/`,
       {
         method: "GET",
         headers: {
@@ -34,6 +35,7 @@ async function fetchBudgetItems(user_id, token) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
+    console.log("Fetched data:", data); // Debugging log
     return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error("Failed to fetch budget items:", error);
@@ -41,110 +43,92 @@ async function fetchBudgetItems(user_id, token) {
   }
 }
 
-// Budget category options
-const budgetCategoryOptions = [
-  { id: 0, name: "Select category", disabled: true },
-  { id: 1, name: "Rent" },
-  { id: 2, name: "Hydro" },
-  { id: 3, name: "Internet" },
-  { id: 4, name: "Mobile" },
-  { id: 5, name: "Groceries" },
-  { id: 6, name: "Daily Necessities" },
-  { id: 7, name: "Education" },
-  { id: 8, name: "Health" },
-  { id: 9, name: "Clothing" },
-  { id: 10, name: "Hobbies" },
-  { id: 11, name: "Savings" },
-  { id: 12, name: "Others" },
-];
-
-// Budget period options
-// const budgetPeriodOptions = [
-//   { id: 0, name: "Select period", disabled: true },
-//   { id: 1, name: "one-off" },
-//   { id: 2, name: "daily" },
-//   { id: 3, name: "weekly" },
-//   { id: 4, name: "bi-weekly" },
-//   { id: 5, name: "monthly" },
-//   { id: 6, name: "quarterly" },
-//   { id: 7, name: "annually" },
-// ];
-
-export const Budget = () => {
+export const Budgets = () => {
   const [state, setState] = useOnboardingState();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const token = currentUser.token;
   const user_id = currentUser.id;
 
-  const [expenses, setExpenses] = useState(
-    state.expenses || [{ id: 1, expense_type_id: 0 }]
+  const [budgets, setBudgets] = useState(
+    state.budgets || [{ id: 1, budget_name: "", amount: "", end_date: "" }]
   );
-  const [expandedExpenseId, setExpandedExpenseId] = useState(
-    expenses[0]?.id || 1
-  );
+  const [expandedBudgetId, setExpandedBudgetId] = useState(budgets[0]?.id || 1);
 
   useEffect(() => {
     async function loadBudgetItems() {
-      const fetchedExpenses = await fetchBudgetItems(user_id, token);
-      const formattedExpenses = fetchedExpenses.map((expense, index) => ({
-        id: expense.budget_id || index + 1,
-        expense_type_id: expense.expense_type_id ?? 0,
-        amount: expense.amount || "",
-        period: expense.period ?? 0,
-        deletable: expense.deletable || "",
-        target_date: expense.target_date ? formatDate(expense.target_date) : "",
+      const fetchedBudgets = await fetchBudgetItems(user_id, token);
+      const formattedBudgets = fetchedBudgets.map((budget, index) => ({
+        id: budget.budget_id || index + 1,
+        budget_name: budget.budget_name || "",
+        amount: budget.amount || "",
+        deletable: budget.deletable || "",
+        end_date: budget.end_date ? formatDate(budget.end_date) : "",
       }));
-      // Sort expenses by id in ascending order
-      formattedExpenses.sort((a, b) => a.id - b.id);
+      // Sort budgets by id in ascending order
+      formattedBudgets.sort((a, b) => a.id - b.id);
 
-      setExpenses(
-        formattedExpenses.length > 0
-          ? formattedExpenses
-          : [{ id: 1, expense_type_id: 0 }]
+      setBudgets(
+        formattedBudgets.length > 0
+          ? formattedBudgets
+          : [{ id: 1, budget_name: "", amount: "", end_date: "" }]
       );
-      setExpandedExpenseId(
-        formattedExpenses.length > 0 ? formattedExpenses[0]?.id : 1
+      setExpandedBudgetId(
+        formattedBudgets.length > 0 ? formattedBudgets[0]?.id : 1
       );
-      setState({ ...state, expenses: formattedExpenses });
+      setState({ ...state, budgets: formattedBudgets });
     }
     loadBudgetItems();
   }, [user_id, token, setState]);
 
   const handleInputChange = (id, field, value) => {
-    setExpenses((prevExpenses) =>
-      prevExpenses.map((expense) =>
-        expense.id === id ? { ...expense, [field]: value } : expense
+    setBudgets((prevBudgets) =>
+      prevBudgets.map((budget) =>
+        budget.id === id ? { ...budget, [field]: value } : budget
       )
     );
   };
 
-  const addExpense = () => {
+  const addBudget = () => {
     const newId =
-      expenses.length > 0 ? Math.max(...expenses.map((g) => g.id)) + 1 : 1;
-    const newExpense = { id: newId, expense_type_id: 0 };
-    const updatedExpenses = [...expenses, newExpense];
-    updatedExpenses.sort((a, b) => a.id - b.id); // Ensure order is maintained
-    setExpenses(updatedExpenses);
-    setExpandedExpenseId(newExpense.id);
+      budgets.length > 0 ? Math.max(...budgets.map((g) => g.id)) + 1 : 1;
+    const newBudget = {
+      id: newId,
+      budget_name: "",
+      amount: "",
+      end_date: "",
+    };
+    const updatedBudgets = [...budgets, newBudget];
+    updatedBudgets.sort((a, b) => a.id - b.id); // Ensure order is maintained
+    setBudgets(updatedBudgets);
+    setExpandedBudgetId(newBudget.id);
   };
 
-  const deleteExpense = (id) => {
-    const confirmMessage = window.confirm("Are you sure to delete this item?");
-    if (confirmMessage) {
-      const updatedExpenses = expenses.filter((expense) => expense.id !== id);
-      setExpenses(updatedExpenses);
-      setState({ ...state, expenses: updatedExpenses });
-      setExpandedExpenseId(
-        updatedExpenses.length > 0 ? updatedExpenses[0].id : null
-      );
-    }
+  const deleteBudget = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3A3B3C",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const updatedBudgets = budgets.filter((budget) => budget.id !== id);
+        setBudgets(updatedBudgets);
+        setState({ ...state, budgets: updatedBudgets });
+        setExpandedBudgetId(
+          updatedBudgets.length > 0 ? updatedBudgets[0].id : null
+        );
+      }
+    });
   };
 
   const saveToDatabase = async (data) => {
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budget/`,
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/`,
         {
           method: "POST",
           headers: {
@@ -152,10 +136,10 @@ export const Budget = () => {
             token: token,
             user_id: user_id,
           },
-          body: JSON.stringify({ expenses: data.expenses }),
+          body: JSON.stringify({ budgets: data.budgets }),
         }
       );
-      console.log(JSON.stringify({ expenses: data.expenses }));
+      console.log(JSON.stringify({ budgets: data.budgets }));
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -168,23 +152,25 @@ export const Budget = () => {
 
   const saveData = async (event) => {
     event.preventDefault();
+    // Transform data to the required schema
+    const transformedBudgets = budgets.map((budget) => ({
+      budget_id: budget.id,
+      budget_name: budget.budget_name || null,
+      amount: budget.amount,
+      end_date: budget.end_date || null,
+    }));
+
     const combinedData = {
       ...state,
-      expenses: expenses,
+      budgets: transformedBudgets,
     };
     setState(combinedData);
     await saveToDatabase(combinedData);
     navigate("/onboarding/debts");
   };
 
-  const toggleExpense = (id) => {
-    setExpandedExpenseId(expandedExpenseId === id ? null : id);
-  };
-
-  // Helper function to get the category name by id
-  const getCategoryNameById = (id) => {
-    const category = budgetCategoryOptions.find((option) => option.id === id);
-    return category ? category.name : "";
+  const toggleBudget = (id) => {
+    setExpandedBudgetId(expandedBudgetId === id ? null : id);
   };
 
   return (
@@ -193,18 +179,19 @@ export const Budget = () => {
         <div className="row">
           <div className="col">
             <div className="d-flex justify-content-between align-items-center mt-4 mb-3">
-              <h3>Set Your Budget</h3>
+              <h3>Set Your Budgets</h3>
+              <h3>Set Your Budgets</h3>
               <Link to="/onboarding/debts" className="btn btn-secondary">
                 Skip to next
               </Link>
             </div>
 
-            {expenses.map((expense, index) => (
-              <div key={expense.id} className="accordion mb-3">
+            {budgets.map((budget, index) => (
+              <div key={budget.id} className="accordion mb-3">
                 <div className="accordion-item border border-secondary-subtle">
                   <div
                     className="accordion-header"
-                    onClick={() => toggleExpense(expense.id)}
+                    onClick={() => toggleBudget(budget.id)}
                     style={{
                       cursor: "pointer",
                       background: "#e7e7e7",
@@ -213,18 +200,16 @@ export const Budget = () => {
                   >
                     <div className="d-flex justify-content-between align-items-center">
                       <h5 style={{ margin: ".2rem 0" }}>
-                        Budget {index + 1}
-                        {expense.expense_type_id
-                          ? ` - ${getCategoryNameById(expense.expense_type_id)}`
-                          : ""}
+                        Budget {index + 1}{" "}
+                        {budget.budget_name ? " - " + budget.budget_name : ""}
                       </h5>
-                      {expense.deletable === 1 || index > 0 ? (
+                      {budget.deletable === 1 || index > 0 ? (
                         <button
                           type="button"
                           className="btn btn-outline-danger  btn-sm ms-3"
                           onClick={(e) => {
                             e.stopPropagation(); // Prevent collapse/expand on delete
-                            deleteExpense(expense.id);
+                            deleteBudget(budget.id);
                           }}
                         >
                           Delete
@@ -235,45 +220,36 @@ export const Budget = () => {
                     </div>
                   </div>
 
-                  {expandedExpenseId === expense.id && (
+                  {expandedBudgetId === budget.id && (
                     <div className="accordion-collapse collapse show">
                       <div className="accordion-body p-3 container">
                         <div className="row">
                           <div className="col-md-6">
-                            <Field label="Predicted expense category">
-                              <select
-                                className="form-select w-100 p-2 border border-secondary-subtle rounded-2"
-                                value={expense.expense_type_id || 0}
+                            <Field label="Budget name">
+                              <Input
+                                type="text"
+                                value={budget.budget_name || ""}
                                 onChange={(e) =>
                                   handleInputChange(
-                                    expense.id,
-                                    "expense_type_id",
-                                    Number(e.target.value)
+                                    budget.id,
+                                    "budget_name",
+                                    e.target.value
                                   )
                                 }
-                              >
-                                {budgetCategoryOptions.map((option) => (
-                                  <option
-                                    key={option.id}
-                                    value={option.id}
-                                    disabled={option.disabled}
-                                  >
-                                    {option.name}
-                                  </option>
-                                ))}
-                              </select>
+                                placeholder="ex. Groceries, Medical expenses"
+                              />
                             </Field>
                           </div>
                           <div className="col-md-6">
-                            <Field label="Maximum expense amount">
+                            <Field label="Budget amount">
                               <div className="input-group">
                                 <span className="input-group-text">$</span>
                                 <Input
                                   type="number"
-                                  value={expense.amount || ""}
+                                  value={budget.amount || ""}
                                   onChange={(e) =>
                                     handleInputChange(
-                                      expense.id,
+                                      budget.id,
                                       "amount",
                                       e.target.value
                                     )
@@ -289,37 +265,14 @@ export const Budget = () => {
                         </div>
                         <div className="row">
                           <div className="col-md-6">
-                            {/* <Field label="How often would you pay for it?">
-                              <select
-                                className="form-select w-100 p-2 border border-secondary-subtle rounded-2"
-                                value={expense.period || 0}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    expense.id,
-                                    "period",
-                                    Number(e.target.value)
-                                  )
-                                }
-                              >
-                                {budgetPeriodOptions.map((option) => (
-                                  <option
-                                    key={option.id}
-                                    value={option.id}
-                                    disabled={option.disabled}
-                                  >
-                                    {option.name}
-                                  </option>
-                                ))}
-                              </select>
-                            </Field> */}
                             <Field label="End date" className="col">
                               <Input
                                 type="date"
-                                value={expense.target_date || ""}
+                                value={budget.end_date || ""}
                                 onChange={(e) =>
                                   handleInputChange(
-                                    expense.id,
-                                    "target_date",
+                                    budget.id,
+                                    "end_date",
                                     e.target.value
                                   )
                                 }
@@ -335,10 +288,10 @@ export const Budget = () => {
             ))}
             <div className="d-flex justify-content-center">
               <Link
-                onClick={addExpense}
+                onClick={addBudget}
                 className="btn btn-outline-primary mt-3 mb-5"
               >
-                {expenses.length === 0
+                {budgets.length === 0
                   ? "Create an budget"
                   : "Add another budget"}
               </Link>
