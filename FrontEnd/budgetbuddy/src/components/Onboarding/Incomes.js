@@ -220,11 +220,17 @@ export const Incomes = () => {
         <div className="row">
           <div className="col">
             <div className="d-flex justify-content-between align-items-center mt-4 mb-3">
-              <h3>Set Your Incomes</h3>
-              <Link to="/onboarding/budgets" className="btn btn-secondary">
-                Skip to next
+              <h3 style={{ fontSize: "2.5rem" }}>Set Your Incomes</h3>
+              <Link
+                to="/onboarding/budgets"
+                className="btn btn-outline-secondary"
+              >
+                Skip for now
               </Link>
             </div>
+            <p className="mb-4" style={{ fontSize: "1.2rem" }}>
+              How much do you earn?
+            </p>
 
             {incomes.map((income, index) => (
               <div key={income.id} className="accordion mb-3">
@@ -384,11 +390,11 @@ export const Incomes = () => {
             <div className="d-flex justify-content-between mt-4">
               <Link
                 to="/onboarding/goals"
-                className="btn btn-outline-secondary"
+                className="btn btn-outline-secondary w-50"
               >
-                {"<"} Return
+                Go back
               </Link>
-              <Button type="submit" className="btn btn-primary">
+              <Button type="submit" className="btn btn-primary w-50 ml-3">
                 Continue
               </Button>
             </div>
