@@ -13,10 +13,14 @@ import Signup from "./components/SignIn/Signup";
 import ForgotPassword from "./components/SignIn/ForgotPassword";
 import UpdateProfile from "./components/SignIn/UpdateProfile";
 import "bootstrap/dist/css/bootstrap.min.css";
+
+import './css/global.css';
+
 import { HomePage } from "./pages/HomePage";
 import { useMediaQuery, CssBaseline, Box } from '@mui/material';
 import { Header } from "./components/Common/Header";
 import { Sidebar } from "./components/Common/Sidebar";
+
 
 function App() {
 

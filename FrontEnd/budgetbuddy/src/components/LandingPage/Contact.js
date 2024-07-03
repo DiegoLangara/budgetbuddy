@@ -1,14 +1,23 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React from "react";
+// import { Link } from "react-router-dom";
+// import '../../css/ContactUs.css';
+// import ContactForm from '../../components/LandingPage/ContactForm.js'
+
 
 const Contact = () => {
   return (
-    <section id="contact" className="contact-section text-center">
+    <section id="contact" className="contact-section">
       <div className="container">
-        <h2>Contact Us</h2>
-        <p>Want to know more? Reach out to us!</p>
-        <Link to="/contact" className="btn btn-primary">Contact Us</Link>
+        <div className="row contact-row">
+            <div className="contact-item col" >
+              <h3>Interested in inquiring about our services?</h3>
+              <p>We’d love to hear your feedback.</p>
+            </div>
+            <div className="contact-image">
+              {/* <ContactForm/> */}
+            </div>
+        </div>
+
       </div>
     </section>
   );

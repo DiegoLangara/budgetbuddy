@@ -1,37 +1,19 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
+
+import React from "react";
+import Navbar from "./Navbar";
+import "../../css/Header.css";
+
 
 const Header = () => {
   return (
     <header className="landing-header text-center">
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <div className="container">
-          <Link className="navbar-brand" to="/">BudgetBuddy</Link>
-          <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav ml-auto">
-              <li className="nav-item">
-                <Link className="nav-link" to="#features">Features</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="#team">Team</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="#contact">Contact Us</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link btn btn-primary text-white" to="/login">Login</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link btn btn-success text-white" to="/signup">Sign Up</Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+
+      <Navbar />
       <div className="header-content">
-        <h1>Welcome to Budget Buddy</h1>
-        <p>A platform for effortlessly tracking, saving, managing expenses and achieving your financial goals.</p>
+        <h1>Easily manage your finances with us.</h1>
+        <p>Effortlessly track, manage expenses and achieve financial goals for you or your company.</p>
+        <a href="/signup" className="btn btn-primary">Download PDF Proposal</a>
+
       </div>
     </header>
   );

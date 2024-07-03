@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import "../../css/Signup.css";
+import logo from "../../Assets/Logonn.png";
 
 export default function Signup() {
   const emailRef = useRef();
@@ -57,12 +58,15 @@ export default function Signup() {
 
   return (
     <div className="signup-background">
-      <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: "100vh" }}>
+      <Container className="d-flex align-items-center justify-content-center signup-background-container" style={{ minHeight: "100vh" }}>
         <div className="w-100" style={{ maxWidth: "400px" }}>
           <Card>
             <Card.Body>
-              <h2 className="text-center mb-4">Budget Buddy</h2>
-              <h3 className="text-center mb-4">Register</h3>
+              <div className="d-flex align-items-center mb-4">
+                <img src={logo} alt="Budget Buddy Logo" className="img-black me-2 w-2vw" />
+                <h3 className="text-left mb-0">Budget Buddy</h3>
+              </div>
+              <h1 className="text-left mb-4">Register</h1>
               {error && <Alert variant="danger">{error}</Alert>}
               <Form onSubmit={handleSubmit}>
                 <Form.Group id="email" className="mb-3">
@@ -76,10 +80,12 @@ export default function Signup() {
                       type={showPassword ? "text" : "password"}
                       ref={passwordRef}
                       required
+                      className="no-border-radius-right"
                     />
                     <Button
                       variant="outline-secondary"
                       onClick={() => setShowPassword(!showPassword)}
+                      className="no-border-radius-left"
                     >
                       <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
                     </Button>
@@ -92,10 +98,12 @@ export default function Signup() {
                       type={showPasswordConfirm ? "text" : "password"}
                       ref={passwordConfirmRef}
                       required
+                      className="no-border-radius-right"
                     />
                     <Button
                       variant="outline-secondary"
                       onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                      className="no-border-radius-left"
                     >
                       <FontAwesomeIcon icon={showPasswordConfirm ? faEye : faEyeSlash} />
                     </Button>
@@ -104,15 +112,15 @@ export default function Signup() {
                 <Form.Group id="terms" className="mb-3">
                   <Form.Check type="checkbox" label="Accept terms and conditions" required />
                 </Form.Group>
-                <Button disabled={loading} className="w-100 mt-3" type="submit">
+                <Button disabled={loading} className="w-100 mt-3 submit-btn-signup" type="submit">
                   Register
                 </Button>
               </Form>
             </Card.Body>
+            <div className="w-100 text-center mt-2 pb-4">
+              Already have an account? <Link to="/login">Log In</Link>
+            </div>
           </Card>
-          <div className="w-100 text-center mt-2">
-            Already have an account? <Link to="/login">Log In</Link>
-          </div>
         </div>
       </Container>
     </div>
