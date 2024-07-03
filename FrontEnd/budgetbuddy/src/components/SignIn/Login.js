@@ -6,6 +6,8 @@ import Swal from 'sweetalert2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import "../../css/Login.css";
+import logo from "../../Assets/Logonn.png";
+
 
 export default function Login() {
   const emailRef = useRef();
@@ -39,12 +41,15 @@ export default function Login() {
 
   return (
     <div className="login-background">
-      <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: "100vh" }}>
-        <div className="w-100" style={{ maxWidth: "400px" }}>
+      <Container className="d-flex align-items-center justify-content-center login-background-container" style={{ minHeight: "100vh" }}>
+        <div className="w-100" style={{ maxWidth: "100%" }}>
           <Card>
             <Card.Body>
-              <h2 className="text-center mb-4">Budget Buddy</h2>
-              <h3 className="text-center mb-4">Login</h3>
+            < div className="d-flex align-items-center mb-4">
+                <img src={logo} alt="Budget Buddy Logo" className="img-black me-2 w-2vw" />
+                <h3 className="text-left mb-0">Budget Buddy</h3>
+              </div>
+              <h1 className="text-left mb-4">Login</h1>
               {error && <Alert variant="danger">{error}</Alert>}
               <Form onSubmit={handleSubmit}>
                 <Form.Group id="email" className="mb-3">
@@ -58,27 +63,30 @@ export default function Login() {
                       type={showPassword ? "text" : "password"}
                       ref={passwordRef}
                       required
+                      className="no-border-radius-right"
                     />
                     <Button
                       variant="outline-secondary"
                       onClick={() => setShowPassword(!showPassword)}
+                      className="no-border-radius-left"
                     >
                       <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
                     </Button>
                   </InputGroup>
+                  <div className="mt-3 d-flex justify-content-between mb-4">
+                    <Form.Check type="checkbox" label="Remember Me" />
+                    <Link to="/forgot-password">Forgot Password?</Link>
+                  </div>
                 </Form.Group>
-                <Button disabled={loading} className="w-100 mt-3" type="submit">
+                <Button disabled={loading} className="w-100 mt-3 submit-btn-login" type="submit">
                   Log In
                 </Button>
               </Form>
-              <div className="w-100 text-center mt-3">
-                <Link to="/forgot-password">Forgot Password?</Link>
-              </div>
             </Card.Body>
-          </Card>
-          <div className="w-100 text-center mt-2">
-            Need an account? <Link to="/signup">Sign Up</Link>
+          <div className="w-100 text-center mt-2 pb-5">
+            Need an account? <Link to="/signup">Register</Link>
           </div>
+          </Card>
         </div>
       </Container>
     </div>

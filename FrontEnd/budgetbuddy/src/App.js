@@ -14,7 +14,7 @@ import Signup from "./components/SignIn/Signup";
 import ForgotPassword from "./components/SignIn/ForgotPassword";
 import UpdateProfile from "./components/SignIn/UpdateProfile";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import './css/global.css';
 function App() {
   return (
     <Router>

@@ -1,35 +1,72 @@
-.team-section h3{
-    width: 118px;
+@import url('https://fonts.googleapis.com/css2?family=Geologica:wght@700&display=swap');
+
+.team-section h3 {
+    width: 100%;
     font-size: 20px;
     line-height: 32px;
     color: #000;
     text-align: left;
-}
-.team-section p{
+    margin-bottom: 1rem;
+  }
+  
+  .team-section p {
     font-size: 16px;
     color: #000;
     text-align: left;
-
-}
-
-
-
-
-.team-section h2{
-    width: 420px;
+    width: 70%;
+  }
+  
+  .team-section h2 {
     font-size: 60px;
     line-height: 70px;
     font-weight: 500;
-    color: #29638a;
-    text-align: left !important;
+    color: #001E30;
+    text-align: center;
     padding: 0 0 2rem 0;
-}
-
-.team-section img{
+  }
+  
+  .team-section img {
     width: 100%;
-    max-width: 100%;
-    height: 288px;
+    height: 100%;
     object-fit: cover;
-}
+    border-radius: 10%;
+  }
+
+  .team-section h1{
+    position: relative;
+    font-size: 72px;
+    letter-spacing: -0.02em;
+    line-height: 108px;
+    font-family: Geologica;
+    color: #001e30;
+  }
 
 
+  .team-member div {
+    margin-bottom: 2rem;
+  }
+  
+  .team-title {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 2rem;
+  }
+  
+  .team-title img {
+    width: auto;
+    height: 60%;
+  }
+  
+  @media (max-width: 768px) {
+    .team-title {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    .team-title img {
+      margin-left: 0;
+      margin-top: 10px;
+    }
+  }
+  

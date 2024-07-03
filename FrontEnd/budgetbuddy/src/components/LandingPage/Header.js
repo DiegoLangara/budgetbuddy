@@ -7,9 +7,9 @@ const Header = () => {
     <header className="landing-header text-center">
       <Navbar />
       <div className="header-content">
-        <h2>Welcome to </h2>
-        <h1>Budget Buddy</h1>
-        <p>A platform for effortlessly tracking, saving, managing expenses and achieving your financial goals.</p>
+        <h1>Easily manage your finances with us.</h1>
+        <p>Effortlessly track, manage expenses and achieve financial goals for you or your company.</p>
+        <a href="/signup" className="btn btn-primary">Download PDF Proposal</a>
       </div>
     </header>
   );

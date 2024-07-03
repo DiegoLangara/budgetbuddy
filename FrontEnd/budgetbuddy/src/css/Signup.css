@@ -1,9 +1,4 @@
 
-.signup-background {
-    /* background: url('/path/to/your/background-image.jpg') no-repeat center center fixed; */
-    background-size: cover;
-  }
-  
   .card {
     background: white;
     border-radius: 10px;
@@ -24,3 +19,53 @@
     padding: 10px;
   }
   
+  .signup-background-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-height: 100vh;
+    padding-left: 45%;
+  }
+  .signup-background{
+    opacity: 0.85;
+    background: var(--Schemes-On-Primary-Container, #29638a);
+    background-image: url(../Assets/background-signup.png);
+    mix-blend-mode: multiply;
+    background-blend-mode: multiply;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  div.card-body{
+    margin: 1.5rem;
+  }
+
+.img-black {
+  filter: invert(100%);
+  width: 2vw;
+  margin-right: 0.5rem;
+
+}
+
+.submit-btn-signup{
+  background-color: #0f172a;
+}
+
+.no-border-radius-right,
+.no-border-radius-left {
+    border-color: #ced4da;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.no-border-radius-right {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: none;
+}
+
+.no-border-radius-left {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: none;
+}
