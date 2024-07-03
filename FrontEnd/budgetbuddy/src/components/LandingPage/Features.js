@@ -1,31 +1,49 @@
-import React from 'react';
+
+import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import '../../css/Features.css';
+import incomeReport from '../../Assets/iphoneLayer.png';
+import ExpensesReport from '../../Assets/BudgetManagement.png';
+import Goal from '../../Assets/Goal.png';
+
 
 const Features = () => {
   return (
     <section id="features" className="features-section text-center">
       <div className="container">
-        <h2>Features</h2>
-        <div className="row">
-          <div className="col-md-4">
-            <div className="feature-item">
+
+        <div className="section-heading">
+          <h2>Features</h2>
+        </div>
+        <div className="feature-row">
+          <div className="feature-item">
+            <div className="feature-content feature-content-1">
               <h3>Track Expenses</h3>
-              <p>Effortlessly track your expenses so that you can manage them effectively.</p>
-              <img src="/FrontEnd/budgetbuddy/src/Assets/Income Report.png" alt="Track Expenses" />
+              <p>Effortlessly track your expenses on-the-go so you can manage them effectively.</p>
+            </div>
+            <div className="feature-image">
+              <img src={incomeReport} alt="Track Expenses" />
             </div>
           </div>
-          <div className="col-md-4">
-            <div className="feature-item">
+          <div className="feature-item reverse">
+            <div className="feature-content feature-content-2">
               <h3>Budget Management</h3>
               <p>Effectively manage your budget and expenses and get proper insights.</p>
-              <img src="path_to_image" alt="Budget Management" />
+            </div>
+            <div className="feature-image feature-image-2">
+              <img src={ExpensesReport} alt="Budget Management" />
             </div>
           </div>
-          <div className="col-md-4">
-            <div className="feature-item">
+        </div>
+        <div className="row feature-row">
+          <div className="feature-item">
+            <div className="feature-content feature-content-3">
               <h3>Goal Management</h3>
               <p>Easily set up, manage and achieve your financial goals.</p>
-              <img src="path_to_image" alt="Goal Management" />
+            </div>
+            <div className="feature-image feature-image-3">
+              <img src={Goal} alt="Goal Management" />
+
             </div>
           </div>
         </div>
