@@ -156,7 +156,12 @@ export const PersonalDetails = () => {
   return (
     <Form onSubmit={saveData} className="my-4 mx-2">
       <div>
-        <h3 className="mb-4">Personal Details</h3>
+        <h3 className="mb-4 pt-5" style={{ fontSize: "2.5rem" }}>
+          Personal Details
+        </h3>
+        <p className="mb-5" style={{ fontSize: "1.2rem" }}>
+          Before we begin, let’s go over your basic details.
+        </p>
       </div>
       <div className="container">
         <div className="row">

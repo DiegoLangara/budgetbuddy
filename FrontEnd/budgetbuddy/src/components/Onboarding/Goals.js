@@ -178,11 +178,17 @@ export const Goals = () => {
         <div className="row">
           <div className="col">
             <div className="d-flex justify-content-between align-items-center mt-4 mb-3">
-              <h3>Set Your Goals</h3>
-              <Link to="/onboarding/incomes" className="btn btn-secondary">
-                Skip to next
+              <h3 style={{ fontSize: "2.5rem" }}>Set Your Goals</h3>
+              <Link
+                to="/onboarding/incomes"
+                className="btn btn-outline-secondary"
+              >
+                Skip for now
               </Link>
             </div>
+            <p className="mb-4" style={{ fontSize: "1.2rem" }}>
+              What would you like to achieve?
+            </p>
 
             {goals.map((goal, index) => (
               <div key={goal.id} className="accordion mb-3">
@@ -347,15 +353,15 @@ export const Goals = () => {
 
         <div className="row">
           <div className="col">
-            <div className="d-flex justify-content-between mt-4">
+            <div className="d-flex justify-content-between mt-4 gap-1">
               <Link
                 to="/onboarding/personal-details"
-                className="btn btn-outline-secondary"
+                className="btn btn-outline-secondary w-50"
               >
-                {"<"} Return
+                Go back
               </Link>
-              <Button type="submit" className="btn btn-primary">
-                Save & Next {">"}
+              <Button type="submit" className="btn btn-primary w-50 ml-3">
+                Continue
               </Button>
             </div>
           </div>
