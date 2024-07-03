@@ -4,7 +4,7 @@ import { Button } from "../OnboardingParts/Button";
 export const CompleteProcess = () => {
   const navigate = useNavigate();
   const handleNavigate = () => {
-    navigate("/dashboard");
+    navigate("/home/dashboard");
   };
   return (
     <div className="text-center" style={{ margin: "5rem" }}>
