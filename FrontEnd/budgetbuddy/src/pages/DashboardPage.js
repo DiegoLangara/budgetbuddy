@@ -8,15 +8,18 @@ import { Income } from "../components/Dashboard/Income";
 import { FinancialSuggestions } from "../components/Dashboard/FinancialSuggestions";
 
 export const DashboardPage = () => {
+
   return (
-    <StyledMainSection>
-      <Goals />
-      <Category />
-      <Budget />
-      <TrackExpenses />
-      <Income />
-      <FinancialSuggestions />
-    </StyledMainSection>
+    <>
+      <StyledMainSection>
+        <Goals />
+        <Category />
+        <Budget />
+        <TrackExpenses />
+        <Income />
+        <FinancialSuggestions />
+      </StyledMainSection>
+    </>
   );
 };
 
