@@ -1,12 +1,15 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../css/Footer.css';
 import logo from '../../Assets/Logonn.png';
+
 const Footer = () => {
   return (
     <footer className="footer bg-light text-center">
       <div className="container">
+
         <div className="firstContainer navbar-expand-lg navbar-light bg-light">
           <div className="row">
             <img src={logo} alt="logo" className="logo" />
@@ -27,6 +30,7 @@ const Footer = () => {
           </div>  
           </div>
           <p>© 2024 MewTwo | BudgetBuddy. All Rights Reserved</p>
+
       </div>
     </footer>
   );

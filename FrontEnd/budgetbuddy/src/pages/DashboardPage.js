@@ -1,7 +1,32 @@
 import React from "react";
+import { Goals } from "../components/Dashboard/Goals";
+import { Budget } from "../components/Dashboard/Budget";
+import { TrackExpenses } from "../components/Dashboard/TrackExpenses";
+import { Category } from "../components/Dashboard/Category";
+import styled from "styled-components";
+import { Income } from "../components/Dashboard/Income";
+import { FinancialSuggestions } from "../components/Dashboard/FinancialSuggestions";
 
-const DashboardPage = () => {
-  return <h1>DashboardPage TEST</h1>;
+export const DashboardPage = () => {
+
+  return (
+    <>
+      <StyledMainSection>
+        <Goals />
+        <Category />
+        <Budget />
+        <TrackExpenses />
+        <Income />
+        <FinancialSuggestions />
+      </StyledMainSection>
+    </>
+  );
 };
 
-export default DashboardPage;
+const StyledMainSection = styled.div`
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 1rem;
+  width: calc(100% - 4rem);
+  margin: 2rem;
+`;

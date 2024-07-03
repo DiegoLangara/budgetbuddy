@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import DashboardPage from "./pages/DashboardPage";
 import { WelcomePage } from "./pages/WelcomePage";
 import { OnboardingPage } from "./pages/OnboardingPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -14,8 +13,24 @@ import Signup from "./components/SignIn/Signup";
 import ForgotPassword from "./components/SignIn/ForgotPassword";
 import UpdateProfile from "./components/SignIn/UpdateProfile";
 import "bootstrap/dist/css/bootstrap.min.css";
+
 import './css/global.css';
+
+import { HomePage } from "./pages/HomePage";
+import { useMediaQuery, CssBaseline, Box } from '@mui/material';
+import { Header } from "./components/Common/Header";
+import { Sidebar } from "./components/Common/Sidebar";
+
+
 function App() {
+
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const isMobile = useMediaQuery('(max-width:600px)');
+
+  const toggleDrawer = () => {
+    setDrawerOpen(!drawerOpen);
+  };
+
   return (
     <Router>
       <AuthProvider>
@@ -59,10 +74,29 @@ function App() {
             }
           />
           <Route
-            path="/dashboard"
+            path="/home/*"
             element={
               <PrivateRoute>
-                <DashboardPage />
+                <CssBaseline />
+                <Header toggleDrawer={toggleDrawer} />
+                <Box display="flex">
+                  <Sidebar
+                    variant={isMobile ? 'temporary' : 'persistent'}
+                    open={isMobile ? drawerOpen : true}
+                    toggleDrawer={toggleDrawer}
+                    drawerWidth={240}
+                  />
+                  <Box
+                    component="main"
+                    sx={{
+                      flexGrow: 1,
+                      p: 3,
+                      width: { sm: `calc(100% - 240px)` },
+                    }}
+                  >
+                    <HomePage />
+                  </Box>
+                </Box>
               </PrivateRoute>
             }
           />

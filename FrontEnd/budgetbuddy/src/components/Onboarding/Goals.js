@@ -6,6 +6,7 @@ import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
 import { Button } from "../OnboardingParts/Button";
 import { useAuth } from "../../contexts/AuthContext";
+import Swal from "sweetalert2";
 
 // Utility function to format the date
 const formatDate = (isoDate) => {
@@ -66,15 +67,18 @@ export const Goals = () => {
   );
   const [expandedGoalId, setExpandedGoalId] = useState(goals[0]?.id || 1);
 
+  // Fetch goals on component mount
   useEffect(() => {
     async function loadGoals() {
       const fetchedGoals = await fetchGoals(user_id, token);
+      console.log("Fetched goal data:", fetchGoals); // Debug output
       const formattedGoals = fetchedGoals.map((goal, index) => ({
         id: goal.goal_id || index + 1,
         goal_name: goal.goal_name || "",
         goal_type_id: goal.goal_type_id ?? 0,
         target_amount: goal.target_amount || "",
         current_amount: goal.current_amount || "",
+        deletable: goal.deletable || "",
         target_date: goal.target_date ? formatDate(goal.target_date) : "",
       }));
       // Sort goals by id in ascending order
@@ -110,13 +114,22 @@ export const Goals = () => {
   };
 
   const deleteGoal = (id) => {
-    const confirmMessage = window.confirm("Are you sure to delete this item?");
-    if (confirmMessage) {
-      const updatedGoals = goals.filter((goal) => goal.id !== id);
-      setGoals(updatedGoals);
-      setState({ ...state, goals: updatedGoals });
-      setExpandedGoalId(updatedGoals.length > 0 ? updatedGoals[0].id : null);
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3A3B3C",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const updatedGoals = goals.filter((goal) => goal.id !== id);
+        setGoals(updatedGoals);
+        setState({ ...state, goals: updatedGoals });
+        setExpandedGoalId(updatedGoals.length > 0 ? updatedGoals[0].id : null);
+      }
+    });
   };
 
   const saveToDatabase = async (data) => {
@@ -133,6 +146,7 @@ export const Goals = () => {
           body: JSON.stringify({ goals: data.goals }),
         }
       );
+      console.log(JSON.stringify({ goals: data.goals }));
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -164,11 +178,17 @@ export const Goals = () => {
         <div className="row">
           <div className="col">
             <div className="d-flex justify-content-between align-items-center mt-4 mb-3">
-              <h3>Set Your Goals</h3>
-              <Link to="/onboarding/incomes" className="btn btn-secondary">
-                Skip to next
+              <h3 style={{ fontSize: "2.5rem" }}>Set Your Goals</h3>
+              <Link
+                to="/onboarding/incomes"
+                className="btn btn-outline-secondary"
+              >
+                Skip for now
               </Link>
             </div>
+            <p className="mb-4" style={{ fontSize: "1.2rem" }}>
+              What would you like to achieve?
+            </p>
 
             {goals.map((goal, index) => (
               <div key={goal.id} className="accordion mb-3">
@@ -183,14 +203,21 @@ export const Goals = () => {
                     }}
                   >
                     <div className="d-flex justify-content-between align-items-center">
-                      <h5 style={{ margin: ".2rem 0" }}>Goal {index + 1}</h5>
-                      <button
-                        className="btn btn-outline-danger btn-sm"
-                        type="button"
-                        onClick={() => deleteGoal(goal.id)}
-                      >
-                        Delete
-                      </button>
+                      <h5 style={{ margin: ".2rem 0" }}>
+                        Goal {index + 1}{" "}
+                        {goal.goal_name ? " - " + goal.goal_name : ""}
+                      </h5>
+                      {goal.deletable === 1 || index > 0 ? (
+                        <button
+                          className="btn btn-outline-danger btn-sm"
+                          type="button"
+                          onClick={() => deleteGoal(goal.id)}
+                        >
+                          Delete
+                        </button>
+                      ) : (
+                        ""
+                      )}
                     </div>
                   </div>
                   {expandedGoalId === goal.id && (
@@ -326,15 +353,15 @@ export const Goals = () => {
 
         <div className="row">
           <div className="col">
-            <div className="d-flex justify-content-between mt-4">
+            <div className="d-flex justify-content-between mt-4 gap-1">
               <Link
                 to="/onboarding/personal-details"
-                className="btn btn-outline-secondary"
+                className="btn btn-outline-secondary w-50"
               >
-                {"<"} Return
+                Go back
               </Link>
-              <Button type="submit" className="btn btn-primary">
-                Save & Next {">"}
+              <Button type="submit" className="btn btn-primary w-50 ml-3">
+                Continue
               </Button>
             </div>
           </div>

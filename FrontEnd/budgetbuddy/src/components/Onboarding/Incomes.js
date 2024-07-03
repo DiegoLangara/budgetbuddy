@@ -6,6 +6,7 @@ import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
 import { Button } from "../OnboardingParts/Button";
 import { useAuth } from "../../contexts/AuthContext";
+import Swal from "sweetalert2";
 
 // Fetch incomes from the backend
 async function fetchIncomes(user_id, token) {
@@ -35,22 +36,51 @@ async function fetchIncomes(user_id, token) {
 // Income categories options
 const incomeCategoryOptions = [
   { id: 0, name: "Select category", disabled: true },
-  { id: 1, name: "Salary" },
-  { id: 2, name: "Wages" },
-  { id: 3, name: "Tips" },
-  { id: 4, name: "Investments" },
-  { id: 5, name: "Rental properties" },
-  { id: 6, name: "Others" },
+  { id: 1, name: "Salary/Wages" },
+  { id: 2, name: "Bonuses" },
+  { id: 3, name: "Freelance Income" },
+  { id: 4, name: "Business Income" },
+  { id: 5, name: "Investment Income" },
+  { id: 6, name: "Rental Income" },
+  { id: 7, name: "Pension" },
+  { id: 8, name: "Social Security" },
+  { id: 9, name: "Child Support" },
+  { id: 10, name: "Others" },
 ];
 
 // Income period options
 const incomePeriodOptions = [
   { id: 0, name: "Select period", disabled: true },
-  { id: 1, name: "Weekly" },
-  { id: 2, name: "Monthly" },
-  { id: 3, name: "Yearly" },
-  { id: 4, name: "One-time" },
+  { id: 1, name: "one-off" },
+  { id: 2, name: "daily" },
+  { id: 3, name: "weekly" },
+  { id: 4, name: "bi-weekly" },
+  { id: 5, name: "monthly" },
+  { id: 6, name: "quarterly" },
+  { id: 7, name: "annually" },
 ];
+
+// Map period IDs to names
+const periodIdToName = {
+  1: "one-off",
+  2: "daily",
+  3: "weekly",
+  4: "bi-weekly",
+  5: "monthly",
+  6: "quarterly",
+  7: "annually",
+};
+
+// Map period names to IDs
+const periodNameToId = {
+  "one-off": 1,
+  daily: 2,
+  weekly: 3,
+  "bi-weekly": 4,
+  monthly: 5,
+  quarterly: 6,
+  annually: 7,
+};
 
 export const Incomes = () => {
   const [state, setState] = useOnboardingState();
@@ -69,9 +99,11 @@ export const Incomes = () => {
       const fetchedIncomes = await fetchIncomes(user_id, token);
       const formattedIncomes = fetchedIncomes.map((income, index) => ({
         id: income.income_id || index + 1,
+        income_name: income.income_name || "",
         income_type_id: income.income_type_id ?? 0,
         amount: income.amount || "",
-        period: income.period ?? 0,
+        period: periodNameToId[income.period] ?? 0,
+        deletable: income.deletable || "",
       }));
       // Sort incomes by id in ascending order
       formattedIncomes.sort((a, b) => a.id - b.id);
@@ -108,15 +140,24 @@ export const Incomes = () => {
   };
 
   const deleteIncome = (id) => {
-    const confirmMessage = window.confirm("Are you sure to delete this item?");
-    if (confirmMessage) {
-      const updatedIncomes = incomes.filter((income) => income.id !== id);
-      setIncomes(updatedIncomes);
-      setState({ ...state, incomes: updatedIncomes });
-      setExpandedIncomeId(
-        updatedIncomes.length > 0 ? updatedIncomes[0].id : null
-      );
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3A3B3C",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const updatedIncomes = incomes.filter((income) => income.id !== id);
+        setIncomes(updatedIncomes);
+        setState({ ...state, incomes: updatedIncomes });
+        setExpandedIncomeId(
+          updatedIncomes.length > 0 ? updatedIncomes[0].id : null
+        );
+      }
+    });
   };
 
   const saveToDatabase = async (data) => {
@@ -133,6 +174,7 @@ export const Incomes = () => {
           body: JSON.stringify({ incomes: data.incomes }),
         }
       );
+      console.log(JSON.stringify({ incomes: data.incomes }));
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -145,13 +187,27 @@ export const Incomes = () => {
 
   const saveData = async (event) => {
     event.preventDefault();
+    // Transform data to the required schema
+    const transformedIncomes = incomes.map((income) => ({
+      income_id: income.id,
+      income_name: income.income_name || null,
+      income_type_id: income.income_type_id,
+      amount: income.amount,
+      period: periodIdToName[income.period],
+      income_type_name:
+        incomeCategoryOptions.find(
+          (category) => category.id === income.income_type_id
+        )?.name || "",
+    }));
+
     const combinedData = {
       ...state,
-      incomes: incomes,
+      incomes: transformedIncomes,
     };
+
     setState(combinedData);
     await saveToDatabase(combinedData);
-    navigate("/onboarding/budget");
+    navigate("/onboarding/budgets");
   };
 
   const toggleIncome = (id) => {
@@ -164,11 +220,17 @@ export const Incomes = () => {
         <div className="row">
           <div className="col">
             <div className="d-flex justify-content-between align-items-center mt-4 mb-3">
-              <h3>Set Your Incomes</h3>
-              <Link to="/onboarding/budget" className="btn btn-secondary">
-                Skip to next
+              <h3 style={{ fontSize: "2.5rem" }}>Set Your Incomes</h3>
+              <Link
+                to="/onboarding/budgets"
+                className="btn btn-outline-secondary"
+              >
+                Skip for now
               </Link>
             </div>
+            <p className="mb-4" style={{ fontSize: "1.2rem" }}>
+              How much do you earn?
+            </p>
 
             {incomes.map((income, index) => (
               <div key={income.id} className="accordion mb-3">
@@ -183,23 +245,46 @@ export const Incomes = () => {
                     }}
                   >
                     <div className="d-flex justify-content-between align-items-center">
-                      <h5 style={{ margin: ".2rem 0" }}>Income {index + 1}</h5>
-                      <button
-                        className="btn btn-outline-danger btn-sm"
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteIncome(income.id);
-                        }}
-                      >
-                        Delete
-                      </button>
+                      <h5 style={{ margin: ".2rem 0" }}>
+                        Income {index + 1}{" "}
+                        {income.income_name ? " - " + income.income_name : ""}
+                      </h5>
+                      {income.deletable === 1 || index > 0 ? (
+                        <button
+                          className="btn btn-outline-danger btn-sm"
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteIncome(income.id);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      ) : (
+                        ""
+                      )}
                     </div>
                   </div>
                   {expandedIncomeId === income.id && (
                     <div className="accordion-collapse collapse show">
                       <div className="accordion-body p-3 container">
                         <div className="row">
+                          <div className="col-md-6">
+                            <Field label="Income name">
+                              <Input
+                                type="text"
+                                value={income.income_name || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    income.id,
+                                    "income_name",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="ex. House rental"
+                              />
+                            </Field>
+                          </div>
                           <div className="col-md-6">
                             <Field label="Income category">
                               <div>
@@ -227,6 +312,8 @@ export const Incomes = () => {
                               </div>
                             </Field>
                           </div>
+                        </div>
+                        <div className="row">
                           <div className="col-md-6">
                             <Field label="Income amount">
                               <div className="input-group">
@@ -249,8 +336,6 @@ export const Incomes = () => {
                               </div>
                             </Field>
                           </div>
-                        </div>
-                        <div className="row">
                           <div className="col-md-6">
                             <Field label="How often do you earn it?">
                               <div>
@@ -305,12 +390,12 @@ export const Incomes = () => {
             <div className="d-flex justify-content-between mt-4">
               <Link
                 to="/onboarding/goals"
-                className="btn btn-outline-secondary"
+                className="btn btn-outline-secondary w-50"
               >
-                {"<"} Return
+                Go back
               </Link>
-              <Button type="submit" className="btn btn-primary">
-                Save & Next {">"}
+              <Button type="submit" className="btn btn-primary w-50 ml-3">
+                Continue
               </Button>
             </div>
           </div>
