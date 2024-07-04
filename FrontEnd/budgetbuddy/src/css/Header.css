@@ -6,8 +6,8 @@
   text-align: left;
   justify-content: center;
   position: relative;
-  height: 100vh;
-  padding: 10% 0 0 18%; ;
+  height: fit-content;
+  padding: 10% 0 10% 18%; 
 }
 
   

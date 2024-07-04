@@ -1,9 +1,19 @@
+.signup-background{
+  opacity: 0.85;
+  background: var(--Schemes-On-Primary-Container, #29638a);
+  background-image: url(../Assets/background-signup.png);
+  mix-blend-mode: multiply;
+  background-blend-mode: multiply;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
 
-  .card {
+  /* .card {
     background: white;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
+  } */
   
   .btn-primary {
     background-color: #001F3F;
@@ -24,18 +34,14 @@
     justify-content: flex-end;
     align-items: center;
     min-height: 100vh;
-    padding-left: 45%;
   }
-  .signup-background{
-    opacity: 0.85;
-    background: var(--Schemes-On-Primary-Container, #29638a);
-    background-image: url(../Assets/background-signup.png);
-    mix-blend-mode: multiply;
-    background-blend-mode: multiply;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+
+  .Card-cont {
+    width: 100%;
+    max-width: 400px; /* Adjust this value as needed */
+    margin-right: 5%; /* Adjust this value for responsive space */
   }
+
   div.card-body{
     margin: 1.5rem;
   }

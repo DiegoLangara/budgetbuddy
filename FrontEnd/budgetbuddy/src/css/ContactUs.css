@@ -1,67 +1,64 @@
-.contact-section .container h2 {
-    width: 315px;
+.contact-section{       
+    background-image: url(../Assets/BB-ContactUs-Desktop\ 1.png), linear-gradient(to left, rgba(13, 32, 0, 0), #001E30 55%);
+    background-position: right, left;
+    background-size: contain, cover;
+    background-repeat: no-repeat, no-repeat;
+    text-align: left;
+    justify-content: center;
     position: relative;
+    height: fit-content;
+    padding: 10% 0 10% 0 !important; 
+}
+.contact-section .container h2 {
     font-size: 60px;
     letter-spacing: -0.01em;
     line-height: 70px;
     font-weight: 500;
-    /* font-family: Geologica; */
     color: #29638a;
-    text-align: left;
-    display: inline-block;
     padding-bottom: 2rem;
 }
-
+.contact-section .container{
+    padding: 6rem 0 0 4rem;
+    
+}
 
 .contact-row {
     width: 100%;
-    position: relative;
-    background-color: #cbe6ff;
-    height: 511px;
-    opacity: 0.7;
-    mix-blend-mode: multiply;
+    display: flex;
+    flex-direction: column;
 }
 
-.contact-item h3{
-    width: 80%;
-    position: relative;
+.contact-row .contact-item p{
+    color: #fff ;
+}
+
+.contact-item h3 {
+    width: 50%;
     font-size: 48px;
     letter-spacing: -0.01em;
     font-weight: 500;
-    color: #000;
+    color: #fff;
     text-align: left;
-    display: inline-block;
-    padding: 4rem 0 0 2rem;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    position: relative;
-    padding: 6rem 0 0 4rem;
-}     
-
+}
 
 .contact-section .btn {
-    background-color: #243d25; /* color similar al del botón */
+    background-color: #243d25;
     color: white;
     padding: 10px 20px;
     text-decoration: none;
     border-radius: 5px;
     margin-top: 20px;
     position: absolute;
-    top: 50%; /* Ajustar según la imagen */
-    left: 15%; /* Ajustar según la imagen */
+    top: 50%;
+    left: 15%;
     background-color: #0d2000;
-    /* width: 100%; */
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-  }
+}
 
-  .contact-image {
-    position: relative;
-    top: 10%; /* Ajustar según la imagen */
-    right: 10%; /* Ajustar según la imagen */
-    overflow: hidden;
-    
-  }
+

@@ -15,7 +15,6 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import "../../css/Login.css";
 import logo from "../../Assets/Logonn.png";
 
-
 export default function Login() {
   const emailRef = useRef();
   const passwordRef = useRef();
@@ -48,13 +47,11 @@ export default function Login() {
 
   return (
     <div className="login-background">
-
-      <Container className="d-flex align-items-center justify-content-center login-background-container" style={{ minHeight: "100vh" }}>
-        <div className="w-100" style={{ maxWidth: "100%" }}>
-
+      <Container className="d-flex justify-content-end align-items-center login-background-container" style={{ minHeight: "100vh" }}>
+        <div className="Card-cont">
           <Card>
             <Card.Body>
-            < div className="d-flex align-items-center mb-4">
+              <div className="d-flex mb-4">
                 <img src={logo} alt="Budget Buddy Logo" className="img-black me-2 w-2vw" />
                 <h3 className="text-left mb-0">Budget Buddy</h3>
               </div>
@@ -94,9 +91,9 @@ export default function Login() {
                 </Button>
               </Form>
             </Card.Body>
-          <div className="w-100 text-center mt-2 pb-5">
-            Need an account? <Link to="/signup">Register</Link>
-          </div>
+            <div className="w-100 text-center mt-2 pb-5">
+              Need an account? <Link to="/signup">Register</Link>
+            </div>
           </Card>
         </div>
       </Container>
