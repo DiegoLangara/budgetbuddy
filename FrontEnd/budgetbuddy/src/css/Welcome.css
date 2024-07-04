@@ -1,0 +1,28 @@
+.welcome-background {
+  background: var(--Schemes-On-Primary-Container, #29638a);
+  background-image: url(../Assets/welcome_onboarding.jpeg);
+  mix-blend-mode: multiply;
+  background-blend-mode: multiply;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.85;
+}
+
+.welcome-background-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding-left: 45%;
+  padding-right: 2rem;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 0rem;
+  height: auto;
+  max-width: 600px;
+}
