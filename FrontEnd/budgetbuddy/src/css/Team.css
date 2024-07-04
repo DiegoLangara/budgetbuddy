@@ -3,17 +3,16 @@
 .team-section h3 {
     width: 100%;
     font-size: 20px;
-    line-height: 32px;
+    /* line-height: 32px; */
     color: #000;
     text-align: left;
-    margin-bottom: 1rem;
+    /* margin-bottom: 1rem; */
   }
   
   .team-section p {
-    font-size: 16px;
+    font-size: 14px;
     color: #000;
     text-align: left;
-    width: 70%;
   }
   
   .team-section h2 {
@@ -41,14 +40,10 @@
     color: #001e30;
   }
 
-
-  .team-member div {
-    margin-bottom: 2rem;
-  }
   
   .team-title {
     display: flex;
-    align-items: center;
+    /* align-items: center; */
     justify-content: flex-start;
     margin-bottom: 2rem;
   }
@@ -56,6 +51,7 @@
   .team-title img {
     width: auto;
     height: 60%;
+    padding-right: 1%;
   }
   
   @media (max-width: 768px) {

@@ -17,10 +17,11 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
   const navigate = useNavigate();
 
   const validatePassword = (password) => {
-    const re = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const re = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\W).{8,}$/;
     return re.test(password);
   };
 
@@ -32,7 +33,7 @@ export default function Signup() {
     }
 
     if (!validatePassword(passwordRef.current.value)) {
-      return setError("Password must be at least 8 characters long and contain at least one letter and one number");
+      return setError("Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, and a special character.");
     }
 
     try {
@@ -58,11 +59,11 @@ export default function Signup() {
 
   return (
     <div className="signup-background">
-      <Container className="d-flex align-items-center justify-content-center signup-background-container" style={{ minHeight: "100vh" }}>
-        <div className="w-100" style={{ maxWidth: "400px" }}>
+      <Container className="d-flex justify-content-end align-items-center signup-background-container" style={{ minHeight: "100vh" }}>
+        <div className="Card-cont">
           <Card>
             <Card.Body>
-              <div className="d-flex align-items-center mb-4">
+              <div className="d-flex mb-4">
                 <img src={logo} alt="Budget Buddy Logo" className="img-black me-2 w-2vw" />
                 <h3 className="text-left mb-0">Budget Buddy</h3>
               </div>
@@ -81,6 +82,8 @@ export default function Signup() {
                       ref={passwordRef}
                       required
                       className="no-border-radius-right"
+                      onFocus={() => setPasswordFocused(true)}
+                      onBlur={() => setPasswordFocused(false)}
                     />
                     <Button
                       variant="outline-secondary"
@@ -90,6 +93,16 @@ export default function Signup() {
                       <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
                     </Button>
                   </InputGroup>
+                  {passwordFocused && (
+                    <div className="password-requirements mt-2">
+                      Your password must be at least 8 characters long and must include:
+                      <ul className="list-unstyled">
+                        <li>An uppercase letter</li>
+                        <li>A lowercase letter</li>
+                        <li>A special character</li>
+                      </ul>
+                    </div>
+                  )}
                 </Form.Group>
                 <Form.Group id="password-confirm" className="mb-3">
                   <Form.Label>Confirm Password</Form.Label>
