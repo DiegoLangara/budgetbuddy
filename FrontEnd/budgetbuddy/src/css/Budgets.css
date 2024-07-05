@@ -1,6 +1,7 @@
-.welcome-background {
+/* Budgets.css */
+.budgets-background {
   background: var(--Schemes-On-Primary-Container, #29638a);
-  background-image: url(../Assets/welcome_onboarding.jpeg);
+  background-image: url(../Assets/budgets_onboarding.jpeg);
   mix-blend-mode: multiply;
   background-blend-mode: multiply;
   background-size: cover;
@@ -9,7 +10,7 @@
   opacity: 0.85;
 }
 
-.welcome-background-container {
+.budgets-background-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -26,4 +27,26 @@
   min-height: 80vh;
   min-width: 500px;
   max-width: 600px;
+}
+
+.img-black {
+  filter: invert(100%);
+  width: 2vw;
+}
+
+.w-2vw {
+  width: 2vw;
+}
+
+.form-group label {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.btn-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
 }

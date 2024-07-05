@@ -9,7 +9,6 @@ import logo from "../../Assets/Logonn.png";
 import "../../css/Debts.css";
 import { useAuth } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
-import { Progress } from "./Progress"; // Assume similar to Goals.js
 
 // Utility function to format the date
 const formatDate = (isoDate) => {
@@ -54,7 +53,7 @@ const debtCategoryOptions = [
   { id: 5, name: "Others" },
 ];
 
-export const Debts = () => {
+export const DebtsBM = () => {
   const [state, setState] = useOnboardingState();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
@@ -170,7 +169,7 @@ export const Debts = () => {
     };
     setState(combinedData);
     await saveToDatabase(combinedData);
-    navigate("/onboarding/complete-process");
+    navigate("/home/budget");
   };
 
   const toggleDebt = (id) => {
@@ -190,19 +189,13 @@ export const Debts = () => {
               />
               <h3 className="text-left mb-0 ml-1">Debt Manager</h3>
             </div>
-            <Progress /> {/* Add if you have similar progress component */}
+            {/* <Progress /> */}
             <Form onSubmit={saveData} className="my-3 pb-0">
               <div className="container">
                 <div className="row">
                   <div className="col px-0">
                     <div className="d-flex justify-content-between align-items-center mt-2 mb-0">
                       <h3 style={{ fontSize: "2.2rem" }}>Set Your Debts</h3>
-                      <Link
-                        to="/onboarding/complete-process"
-                        className="btn btn-outline-secondary"
-                      >
-                        Skip for now
-                      </Link>
                     </div>
                     <p className="mb-3" style={{ fontSize: "1rem" }}>
                       When and how much do you need to pay?
@@ -349,16 +342,16 @@ export const Debts = () => {
                   <div className="col px-0 mt-5 pt-1">
                     <div className="d-flex justify-content-between mt-5 pt-5">
                       <Link
-                        to="/onboarding/budgets"
+                        to="/home/budget"
                         className="btn btn-outline-secondary w-50"
                       >
                         Go back
                       </Link>
                       <BootstrapButton
                         type="submit"
-                        className="btn btn-primary w-50 ml-3"
+                        className="btn btn-primary w-50 ml-3 w-50"
                       >
-                        Continue
+                        Save
                       </BootstrapButton>
                     </div>
                   </div>

@@ -25,8 +25,11 @@ export const Welcome = () => {
                 />
                 <h3 className="text-left mb-0 ml-1">Budget Buddy</h3>
               </div>
-              <div className="content mb-5">
-                <h1 className="text-left mt-2 mb-4">
+              <div className="content mt-5 mb-5">
+                <h1
+                  className="text-left mt-5 mb-4"
+                  style={{ fontSize: "3.7rem" }}
+                >
                   Easily manage your finances with us.
                 </h1>
                 <p className="text-left mb-5">
@@ -34,7 +37,7 @@ export const Welcome = () => {
                   has to offer, it is optimal for you to fill in your data.
                 </p>
               </div>
-              <div className="d-flex justify-content-center mt-5">
+              <div className="d-flex justify-content-center mt-5 pt-2">
                 <BootstrapButton
                   onClick={startOnboarding}
                   variant="primary"
