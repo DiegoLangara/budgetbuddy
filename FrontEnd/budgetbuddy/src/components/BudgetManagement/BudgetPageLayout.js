@@ -9,9 +9,9 @@ export const BudgetPageLayout = () => {
         to="/home/goals-bm"
         className="btn btn-outline-secondary"
         style={{
-          padding: "4rem",
-          width: "200px",
-          height: "160px",
+          padding: "20% 0 30%",
+          width: "10vw",
+          height: "10vh",
         }}
       >
         Goals
@@ -20,9 +20,9 @@ export const BudgetPageLayout = () => {
         to="/home/incomes-bm"
         className="btn btn-outline-secondary"
         style={{
-          padding: "4rem",
-          width: "200px",
-          height: "160px",
+          padding: "20% 0 30%",
+          width: "10vw",
+          height: "10vh",
         }}
       >
         Incomes
@@ -31,9 +31,9 @@ export const BudgetPageLayout = () => {
         to="/home/budgets-bm"
         className="btn btn-outline-secondary"
         style={{
-          padding: "4rem",
-          width: "200px",
-          height: "160px",
+          padding: "20% 0 30%",
+          width: "10vw",
+          height: "10vh",
         }}
       >
         Budgets
@@ -42,9 +42,9 @@ export const BudgetPageLayout = () => {
         to="/home/debts-bm"
         className="btn btn-outline-secondary"
         style={{
-          padding: "4rem",
-          width: "200px",
-          height: "160px",
+          padding: "20% 0 30%",
+          width: "10vw",
+          height: "10vh",
         }}
       >
         Debts
