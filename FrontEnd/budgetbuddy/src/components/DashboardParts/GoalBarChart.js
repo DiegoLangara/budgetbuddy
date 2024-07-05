@@ -2,7 +2,7 @@ import React from "react";
 import ReactApexChart from "react-apexcharts";
 
 export const GoalBarChart = ({ description, savings, goal }) => {
-  const percentage = (savings / goal) * 100;
+  const percentage = Math.round((savings / goal) * 100);
 
   const options = {
     chart: {

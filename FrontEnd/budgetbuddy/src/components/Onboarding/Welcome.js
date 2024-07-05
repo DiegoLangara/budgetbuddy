@@ -1,6 +1,8 @@
 import React from "react";
-import { Button as BootstrapButton } from "react-bootstrap";
+import { Card, Container, Button as BootstrapButton } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import "../../css/Welcome.css";
+import logo from "../../Assets/Logonn.png";
 
 export const Welcome = () => {
   const navigate = useNavigate();
@@ -10,27 +12,41 @@ export const Welcome = () => {
   };
 
   return (
-    <div
-      className="container text-left"
-      style={{ margin: "10rem auto", padding: "0 3rem" }}
-    >
-      <h1 style={{ fontSize: "3.5rem" }}>
-        Easily manage your finances with us.
-      </h1>
-      <p style={{ fontSize: "1.1rem", margin: "3rem 0" }}>
-        In order to provide the best budgeting services BudgetBuddy has to
-        offer, it is optimal for you to fill in your data.
-      </p>
-      <div className="d-flex justify-content-center">
-        <BootstrapButton
-          onClick={startOnboarding}
-          variant="primary"
-          className="btn btn-dark btn-lg"
-          style={{ width: "100%" }}
-        >
-          Start
-        </BootstrapButton>
-      </div>
+    <div className="welcome-background">
+      <Container className="d-flex align-items-center justify-content-center welcome-background-container">
+        <div>
+          <Card className="card">
+            <Card.Body className="d-flex flex-column">
+              <div className="d-flex align-items-center mb-4">
+                <img
+                  src={logo}
+                  alt="Budget Buddy Logo"
+                  className="img-black w-2vw"
+                />
+                <h3 className="text-left mb-0 ml-1">Budget Buddy</h3>
+              </div>
+              <div className="content mb-5">
+                <h1 className="text-left mt-2 mb-4">
+                  Easily manage your finances with us.
+                </h1>
+                <p className="text-left mb-5">
+                  In order to provide the best budgeting services BudgetBuddy
+                  has to offer, it is optimal for you to fill in your data.
+                </p>
+              </div>
+              <div className="d-flex justify-content-center mt-5">
+                <BootstrapButton
+                  onClick={startOnboarding}
+                  variant="primary"
+                  className="w-100 submit-btn-welcome"
+                >
+                  Get Started
+                </BootstrapButton>
+              </div>
+            </Card.Body>
+          </Card>
+        </div>
+      </Container>
     </div>
   );
 };
