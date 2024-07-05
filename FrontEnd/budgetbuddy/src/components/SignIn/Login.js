@@ -1,12 +1,5 @@
 import React, { useRef, useState } from "react";
-import {
-  Form,
-  Button,
-  Card,
-  Alert,
-  Container,
-  InputGroup,
-} from "react-bootstrap";
+import { Form, Button, Card, Alert, Container, InputGroup } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -86,6 +79,7 @@ export default function Login() {
                     <Link to="/forgot-password">Forgot Password?</Link>
                   </div>
                 </Form.Group>
+                {/*Place social media icons for google, facebook and apple, using font awesome*/}
                 <Button disabled={loading} className="w-100 mt-3 submit-btn-login" type="submit">
                   Log In
                 </Button>
