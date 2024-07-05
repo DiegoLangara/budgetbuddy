@@ -168,7 +168,7 @@ export const BudgetsBM = () => {
     };
     setState(combinedData);
     await saveToDatabase(combinedData);
-    navigate("/onboarding/debts");
+    navigate("/home/budget");
   };
 
   const toggleBudget = (id) => {
@@ -317,10 +317,16 @@ export const BudgetsBM = () => {
                     <div className="d-flex justify-content-between mt-5 pt-1">
                       <Link
                         to="/home/budget"
-                        className="btn btn-outline-secondary w-100"
+                        className="btn btn-outline-secondary w-50"
                       >
                         Go back
                       </Link>
+                      <BootstrapButton
+                        type="submit"
+                        className="btn btn-primary w-50 ml-3 w-50"
+                      >
+                        Save
+                      </BootstrapButton>
                     </div>
                   </div>
                 </div>
