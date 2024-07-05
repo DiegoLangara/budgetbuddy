@@ -8,12 +8,18 @@
   background-position: center;
   background-repeat: no-repeat;
 }
+.password-requirements{
+  color: #64748b;
+  font-size: 12px;
+}
 
-  /* .card {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  } */
+.password-requirements ul {
+  padding-left: 20px;
+  list-style-type: disc; 
+  color: #64748b; 
+  font-size: 12px;
+}
+
   
   .btn-primary {
     background-color: #001F3F;
