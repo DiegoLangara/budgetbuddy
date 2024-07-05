@@ -25,6 +25,8 @@ const StyledMainSection = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
-  width: calc(100% - 4rem);
-  margin: 2rem;
+  padding: 3vh 16.5vw 0 16.5vw;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
 `;
