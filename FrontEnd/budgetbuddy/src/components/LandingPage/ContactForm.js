@@ -34,7 +34,7 @@ const ContactForm = () => {
             name="comments"
             rows="3"
             className="textarea-unique"
-            placeholder="How can we improove your experience?"
+            placeholder="How can we improve your experience?"
             required
           />
         </div>

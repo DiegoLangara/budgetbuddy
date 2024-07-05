@@ -52,7 +52,7 @@ const StyledDrawer = styled(Drawer)`
   white-space: nowrap;
   overflow-x: hidden;
   transition: width 0.3s;
-  z-index: 1300;  /* Ensure it is on top of other content */
+  z-index: 1300; 
   & .MuiDrawer-paper {
     width: 60px;
     transition: width 0.3s;
