@@ -1,12 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, IconButton, Typography, Avatar, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import PrintIcon from '@mui/icons-material/Print';
 import { useMediaQuery } from '@mui/material';
 import styled from 'styled-components';
+import { useAuth } from "../../contexts/AuthContext";
 
 export const Header = ({ toggleDrawer }) => {
+  const { currentUser } = useAuth();
+  const token = currentUser.token;
+  const user_id = currentUser.id;
+  const [user, setUser] = useState({});
   const isMobile = useMediaQuery('(max-width:600px)');
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(
+          `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/user/`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              token: token,
+              user_id: user_id,
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log("Fetched data:", data);
+        setUser(data);
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+      }
+    };
+
+    fetchUser();
+  }, [token, user_id]);
 
   return (
     <HeaderContainer>
@@ -22,13 +55,13 @@ export const Header = ({ toggleDrawer }) => {
               Welcome back buddy!
             </Typography>
             <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>
-              Davis
+              {user.firstname}
             </Typography>
           </WelcomeMessage>
           <Spacer />
           <Button
             variant="contained"
-            sx={{ backgroundColor: 'black', color: 'white', margin: '2rem' }}
+            sx={{ backgroundColor: 'black', color: 'white', marginRight: '16px' }}
             startIcon={<PrintIcon />}
           >
             Print
@@ -48,7 +81,7 @@ const HeaderContainer = styled.div`
 const StyledAppBar = styled(AppBar)`
   background-color: #3A608F !important;
   border-radius: 10px;
-  padding: 0 16px; /* Padding dentro del AppBar */
+  padding: 1rem 3rem; 
 `;
 
 const StyledToolbar = styled(Toolbar)`
