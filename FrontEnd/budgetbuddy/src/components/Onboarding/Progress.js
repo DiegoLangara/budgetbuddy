@@ -22,13 +22,13 @@ export const Progress = () => {
   const progressPercentage = ((currentStepIndex + 1) / steps.length) * 100;
 
   return (
-    <div className="container my-4 pt-1">
+    <div className="container px-0">
       <ProgressBar
         now={progressPercentage}
         label={`${Math.round(progressPercentage)}%`}
         striped
-        animated
-        style={{ height: "1.5rem" }}
+        // animated
+        style={{ height: "1rem" }}
       />
     </div>
   );

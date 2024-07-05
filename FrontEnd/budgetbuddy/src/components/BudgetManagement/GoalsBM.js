@@ -9,7 +9,6 @@ import logo from "../../Assets/Logonn.png";
 import "../../css/Goals.css";
 import { useAuth } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
-import { Progress } from "./Progress";
 
 // Utility function to format the date
 const formatDate = (isoDate) => {
@@ -58,7 +57,7 @@ const goalTypeOptions = [
   { id: 10, name: "Other" },
 ];
 
-export const Goals = () => {
+export const GoalsBM = () => {
   const [state, setState] = useOnboardingState();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
@@ -188,19 +187,13 @@ export const Goals = () => {
               />
               <h3 className="text-left mb-0 ml-1">Budget Buddy</h3>
             </div>
-            <Progress />
+            {/* <Progress /> */}
             <Form onSubmit={saveData} className="my-3 pb-0">
               <div className="container">
                 <div className="row">
                   <div className="col px-0">
                     <div className="d-flex justify-content-between align-items-center mt-2 mb-0">
                       <h3 style={{ fontSize: "2.2rem" }}>Set Your Goals</h3>
-                      <Link
-                        to="/onboarding/incomes"
-                        className="btn btn-outline-secondary"
-                      >
-                        Skip for now
-                      </Link>
                     </div>
                     <p className="mb-3" style={{ fontSize: "1rem" }}>
                       What would you like to achieve?
@@ -376,17 +369,11 @@ export const Goals = () => {
                   <div className="col px-0 mt-5">
                     <div className="d-flex justify-content-between mt-3">
                       <Link
-                        to="/onboarding/personal-details"
-                        className="btn btn-outline-secondary w-50"
+                        to="/home/budget"
+                        className="btn btn-outline-secondary w-100"
                       >
                         Go back
                       </Link>
-                      <BootstrapButton
-                        type="submit"
-                        className="btn btn-primary w-50 ml-3"
-                      >
-                        Continue
-                      </BootstrapButton>
                     </div>
                   </div>
                 </div>

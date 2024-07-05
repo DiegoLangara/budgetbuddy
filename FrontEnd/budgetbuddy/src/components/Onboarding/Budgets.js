@@ -4,9 +4,12 @@ import { useOnboardingState } from "../../Hooks/useOnboardingState";
 import { Field } from "../OnboardingParts/Field";
 import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
-import { Button } from "../OnboardingParts/Button";
+import { Card, Container, Button as BootstrapButton } from "react-bootstrap";
+import logo from "../../Assets/Logonn.png";
+import "../../css/Budgets.css";
 import { useAuth } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
+import { Progress } from "./Progress"; // Assume similar to Goals.js
 
 // Utility function to format the date
 const formatDate = (isoDate) => {
@@ -174,152 +177,171 @@ export const Budgets = () => {
   };
 
   return (
-    <Form onSubmit={saveData}>
-      <div className="container">
-        <div className="row">
-          <div className="col">
-            <div className="d-flex justify-content-between align-items-center mt-4 mb-3">
-              <h3 style={{ fontSize: "2.5rem" }}>Set Your Budgets</h3>
-              <Link
-                to="/onboarding/debts"
-                className="btn btn-outline-secondary"
-              >
-                Skip for now
-              </Link>
+    <div className="budgets-background">
+      <Container className="d-flex align-items-center justify-content-center budgets-background-container">
+        <Card className="card">
+          <Card.Body className="mb-0">
+            <div className="d-flex align-items-center mb-3">
+              <img
+                src={logo}
+                alt="Budget Buddy Logo"
+                className="img-black w-2vw"
+              />
+              <h3 className="text-left mb-0 ml-1">Budget Buddy</h3>
             </div>
-            <p className="mb-4" style={{ fontSize: "1.2rem" }}>
-              How much would you like to save?
-            </p>
-
-            {budgets.map((budget, index) => (
-              <div key={budget.id} className="accordion mb-3">
-                <div className="accordion-item border border-secondary-subtle">
-                  <div
-                    className="accordion-header"
-                    onClick={() => toggleBudget(budget.id)}
-                    style={{
-                      cursor: "pointer",
-                      background: "#e7e7e7",
-                      padding: "0.5rem",
-                    }}
-                  >
-                    <div className="d-flex justify-content-between align-items-center">
-                      <h5 style={{ margin: ".2rem 0" }}>
-                        Budget {index + 1}{" "}
-                        {budget.budget_name ? " - " + budget.budget_name : ""}
-                      </h5>
-                      {budget.deletable === 1 || index > 0 ? (
-                        <button
-                          type="button"
-                          className="btn btn-outline-danger  btn-sm ms-3"
-                          onClick={(e) => {
-                            e.stopPropagation(); // Prevent collapse/expand on delete
-                            deleteBudget(budget.id);
-                          }}
-                        >
-                          Delete
-                        </button>
-                      ) : (
-                        ""
-                      )}
+            <Progress /> {/* Add if you have similar progress component */}
+            <Form onSubmit={saveData} className="my-3 pb-0">
+              <div className="container">
+                <div className="row">
+                  <div className="col px-0">
+                    <div className="d-flex justify-content-between align-items-center mt-2 mb-0">
+                      <h3 style={{ fontSize: "2.2rem" }}>Set Your Budgets</h3>
+                      <Link
+                        to="/onboarding/debts"
+                        className="btn btn-outline-secondary"
+                      >
+                        Skip for now
+                      </Link>
                     </div>
-                  </div>
+                    <p className="mb-3" style={{ fontSize: "1rem" }}>
+                      How much would you like to save?
+                    </p>
 
-                  {expandedBudgetId === budget.id && (
-                    <div className="accordion-collapse collapse show">
-                      <div className="accordion-body p-3 container">
-                        <div className="row">
-                          <div className="col-md-6">
-                            <Field label="Budget name">
-                              <Input
-                                type="text"
-                                value={budget.budget_name || ""}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    budget.id,
-                                    "budget_name",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="ex. Groceries, Medical expenses"
-                              />
-                            </Field>
+                    {budgets.map((budget, index) => (
+                      <div key={budget.id} className="accordion mb-0">
+                        <div className="mt-1">
+                          <div
+                            className="accordion-header mb-1"
+                            onClick={() => toggleBudget(budget.id)}
+                            style={{
+                              cursor: "pointer",
+                              padding: ".3rem 0",
+                              borderBottom: "1px solid black",
+                            }}
+                          >
+                            <div className="d-flex justify-content-between align-items-center">
+                              <h5 style={{ margin: ".2rem 0" }}>
+                                Budget {index + 1}{" "}
+                                {expandedBudgetId !== budget.id &&
+                                budget.budget_name
+                                  ? " - " + budget.budget_name
+                                  : ""}
+                              </h5>
+                              {budget.deletable === 1 || index > 0 ? (
+                                <button
+                                  className="btn btn-outline-danger btn-sm"
+                                  type="button"
+                                  onClick={() => deleteBudget(budget.id)}
+                                >
+                                  Delete
+                                </button>
+                              ) : (
+                                ""
+                              )}
+                            </div>
                           </div>
-                          <div className="col-md-6">
-                            <Field label="Budget amount">
-                              <div className="input-group">
-                                <span className="input-group-text">$</span>
-                                <Input
-                                  type="number"
-                                  value={budget.amount || ""}
-                                  onChange={(e) =>
-                                    handleInputChange(
-                                      budget.id,
-                                      "amount",
-                                      e.target.value
-                                    )
-                                  }
-                                  placeholder="e.g. 1200"
-                                  step="100"
-                                  min="0"
-                                  className="form-control"
-                                />
+                          {expandedBudgetId === budget.id && (
+                            <div className="accordion-collapse collapse show">
+                              <div className="accordion-body pt-2 px-0 container">
+                                <div className="form-row">
+                                  <div className="col-md-6 form-group mb-0">
+                                    <Field label="Budget name" className="mb-0">
+                                      <Input
+                                        type="text"
+                                        value={budget.budget_name || ""}
+                                        onChange={(e) =>
+                                          handleInputChange(
+                                            budget.id,
+                                            "budget_name",
+                                            e.target.value
+                                          )
+                                        }
+                                        placeholder="ex. Groceries, Medical expenses"
+                                      />
+                                    </Field>
+                                  </div>
+                                  <div className="col-md-6 form-group mb-0">
+                                    <Field label="Budget amount">
+                                      <div className="input-group">
+                                        <span className="input-group-text bg-white">
+                                          $
+                                        </span>
+                                        <Input
+                                          type="number"
+                                          value={budget.amount || ""}
+                                          onChange={(e) =>
+                                            handleInputChange(
+                                              budget.id,
+                                              "amount",
+                                              e.target.value
+                                            )
+                                          }
+                                          placeholder="e.g. 1200"
+                                          className="form-control"
+                                          step="100"
+                                          min="0"
+                                        />
+                                      </div>
+                                    </Field>
+                                  </div>
+                                </div>
+                                <div className="form-row">
+                                  <div className="col-md-6 form-group mb-0">
+                                    <Field label="End date" className="col">
+                                      <Input
+                                        type="date"
+                                        value={budget.end_date || ""}
+                                        onChange={(e) =>
+                                          handleInputChange(
+                                            budget.id,
+                                            "end_date",
+                                            e.target.value
+                                          )
+                                        }
+                                      />
+                                    </Field>
+                                  </div>
+                                </div>
                               </div>
-                            </Field>
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-md-6">
-                            <Field label="End date" className="col">
-                              <Input
-                                type="date"
-                                value={budget.end_date || ""}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    budget.id,
-                                    "end_date",
-                                    e.target.value
-                                  )
-                                }
-                              />
-                            </Field>
-                          </div>
+                            </div>
+                          )}
                         </div>
                       </div>
+                    ))}
+
+                    <div className="d-flex justify-content-center">
+                      <Link to="#" className="mt-2" onClick={addBudget}>
+                        {budgets.length === 0
+                          ? "Create a budget"
+                          : "Add another budget"}
+                      </Link>
                     </div>
-                  )}
+                  </div>
+                </div>
+
+                <div className="row btn-row">
+                  <div className="col px-0 mt-5 pt-5">
+                    <div className="d-flex justify-content-between mt-5 pt-1">
+                      <Link
+                        to="/onboarding/incomes"
+                        className="btn btn-outline-secondary w-50"
+                      >
+                        Go back
+                      </Link>
+                      <BootstrapButton
+                        type="submit"
+                        className="btn btn-primary w-50 ml-3"
+                      >
+                        Continue
+                      </BootstrapButton>
+                    </div>
+                  </div>
                 </div>
               </div>
-            ))}
-            <div className="d-flex justify-content-center">
-              <Link
-                onClick={addBudget}
-                className="btn btn-outline-primary mt-3 mb-5"
-              >
-                {budgets.length === 0
-                  ? "Create an budget"
-                  : "Add another budget"}
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="col">
-            <div className="d-flex justify-content-between mt-4">
-              <Link
-                to="/onboarding/incomes"
-                className="btn btn-outline-secondary w-50"
-              >
-                Go back
-              </Link>
-              <Button type="submit" className="btn btn-primary w-50 ml-3">
-                Continue
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Form>
+            </Form>
+          </Card.Body>
+        </Card>
+      </Container>
+    </div>
   );
 };

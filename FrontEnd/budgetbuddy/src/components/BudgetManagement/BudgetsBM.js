@@ -6,10 +6,9 @@ import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
 import { Card, Container, Button as BootstrapButton } from "react-bootstrap";
 import logo from "../../Assets/Logonn.png";
-import "../../css/Debts.css";
+import "../../css/Budgets.css";
 import { useAuth } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
-import { Progress } from "./Progress"; // Assume similar to Goals.js
 
 // Utility function to format the date
 const formatDate = (isoDate) => {
@@ -20,11 +19,11 @@ const formatDate = (isoDate) => {
   return `${year}-${month}-${day}`;
 };
 
-// Fetch debts from API
-async function fetchDebts(user_id, token) {
+// Fetch budget items from the backend
+async function fetchBudgetItems(user_id, token) {
   try {
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debts/`,
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/`,
       {
         method: "GET",
         headers: {
@@ -38,78 +37,76 @@ async function fetchDebts(user_id, token) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
+    console.log("Fetched data:", data); // Debugging log
     return Array.isArray(data) ? data : [];
   } catch (error) {
-    console.error("Failed to fetch debts:", error);
+    console.error("Failed to fetch budget items:", error);
     return [];
   }
 }
 
-const debtCategoryOptions = [
-  { id: 0, name: "Select a category", disabled: true },
-  { id: 1, name: "Mortgages" },
-  { id: 2, name: "Car loans" },
-  { id: 3, name: "Personal loans" },
-  { id: 4, name: "Credit card" },
-  { id: 5, name: "Others" },
-];
-
-export const Debts = () => {
+export const BudgetsBM = () => {
   const [state, setState] = useOnboardingState();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const token = currentUser.token;
   const user_id = currentUser.id;
 
-  const [debts, setDebts] = useState(
-    state.debts || [{ id: 1, debt_types_id: 0 }]
+  const [budgets, setBudgets] = useState(
+    state.budgets || [{ id: 1, budget_name: "", amount: "", end_date: "" }]
   );
-  const [expandedDebtId, setExpandedDebtId] = useState(debts[0]?.id || 1);
+  const [expandedBudgetId, setExpandedBudgetId] = useState(budgets[0]?.id || 1);
 
   useEffect(() => {
-    async function loadDebts() {
-      const fetchedDebts = await fetchDebts(user_id, token);
-      const formattedDebts = fetchedDebts.map((debt, index) => ({
-        id: debt.debt_id || index + 1,
-        debt_name: debt.debt_name || "",
-        debt_types_id: debt.debt_types_id ?? 0,
-        amount: debt.amount || "",
-        deletable: debt.deletable || "",
-        due_date: debt.due_date ? formatDate(debt.due_date) : "",
+    async function loadBudgetItems() {
+      const fetchedBudgets = await fetchBudgetItems(user_id, token);
+      const formattedBudgets = fetchedBudgets.map((budget, index) => ({
+        id: budget.budget_id || index + 1,
+        budget_name: budget.budget_name || "",
+        amount: budget.amount || "",
+        deletable: budget.deletable || "",
+        end_date: budget.end_date ? formatDate(budget.end_date) : "",
       }));
-      // Sort incomes by id in ascending order
-      formattedDebts.sort((a, b) => a.id - b.id);
+      // Sort budgets by id in ascending order
+      formattedBudgets.sort((a, b) => a.id - b.id);
 
-      setDebts(
-        formattedDebts.length > 0
-          ? formattedDebts
-          : [{ id: 1, debt_types_id: 0 }]
+      setBudgets(
+        formattedBudgets.length > 0
+          ? formattedBudgets
+          : [{ id: 1, budget_name: "", amount: "", end_date: "" }]
       );
-      setExpandedDebtId(formattedDebts.length > 0 ? formattedDebts[0]?.id : 1);
-      setState({ ...state, debts: formattedDebts });
+      setExpandedBudgetId(
+        formattedBudgets.length > 0 ? formattedBudgets[0]?.id : 1
+      );
+      setState({ ...state, budgets: formattedBudgets });
     }
-    loadDebts();
+    loadBudgetItems();
   }, [user_id, token, setState]);
 
   const handleInputChange = (id, field, value) => {
-    setDebts((prevDebts) =>
-      prevDebts.map((debt) =>
-        debt.id === id ? { ...debt, [field]: value } : debt
+    setBudgets((prevBudgets) =>
+      prevBudgets.map((budget) =>
+        budget.id === id ? { ...budget, [field]: value } : budget
       )
     );
   };
 
-  const addDebt = () => {
+  const addBudget = () => {
     const newId =
-      debts.length > 0 ? Math.max(...debts.map((g) => g.id)) + 1 : 1;
-    const newDebt = { id: newId, debt_types_id: 0 };
-    const updatedDebts = [...debts, newDebt];
-    updatedDebts.sort((a, b) => a.id - b.id); // Ensure order is maintained
-    setDebts(updatedDebts);
-    setExpandedDebtId(newDebt.id);
+      budgets.length > 0 ? Math.max(...budgets.map((g) => g.id)) + 1 : 1;
+    const newBudget = {
+      id: newId,
+      budget_name: "",
+      amount: "",
+      end_date: "",
+    };
+    const updatedBudgets = [...budgets, newBudget];
+    updatedBudgets.sort((a, b) => a.id - b.id); // Ensure order is maintained
+    setBudgets(updatedBudgets);
+    setExpandedBudgetId(newBudget.id);
   };
 
-  const deleteDebt = (id) => {
+  const deleteBudget = (id) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -120,10 +117,12 @@ export const Debts = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        const updatedDebts = debts.filter((debt) => debt.id !== id);
-        setDebts(updatedDebts);
-        setState({ ...state, debts: updatedDebts });
-        setExpandedDebtId(updatedDebts.length > 0 ? updatedDebts[0].id : null);
+        const updatedBudgets = budgets.filter((budget) => budget.id !== id);
+        setBudgets(updatedBudgets);
+        setState({ ...state, budgets: updatedBudgets });
+        setExpandedBudgetId(
+          updatedBudgets.length > 0 ? updatedBudgets[0].id : null
+        );
       }
     });
   };
@@ -131,7 +130,7 @@ export const Debts = () => {
   const saveToDatabase = async (data) => {
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debts/`,
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/`,
         {
           method: "POST",
           headers: {
@@ -139,10 +138,10 @@ export const Debts = () => {
             token: token,
             user_id: user_id,
           },
-          body: JSON.stringify({ debts: data.debts }),
+          body: JSON.stringify({ budgets: data.budgets }),
         }
       );
-      console.log(JSON.stringify({ debts: data.debts }));
+      console.log(JSON.stringify({ budgets: data.budgets }));
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -156,64 +155,57 @@ export const Debts = () => {
   const saveData = async (event) => {
     event.preventDefault();
     // Transform data to the required schema
-    const transformedDebts = debts.map((debt) => ({
-      debt_id: debt.id,
-      debt_name: debt.debt_name || null,
-      debt_types_id: debt.debt_types_id,
-      amount: debt.amount,
-      due_date: formatDate(debt.due_date) || null,
+    const transformedBudgets = budgets.map((budget) => ({
+      budget_id: budget.id,
+      budget_name: budget.budget_name || null,
+      amount: budget.amount,
+      end_date: budget.end_date || null,
     }));
 
     const combinedData = {
       ...state,
-      debts: transformedDebts,
+      budgets: transformedBudgets,
     };
     setState(combinedData);
     await saveToDatabase(combinedData);
-    navigate("/onboarding/complete-process");
+    navigate("/onboarding/debts");
   };
 
-  const toggleDebt = (id) => {
-    setExpandedDebtId(expandedDebtId === id ? null : id);
+  const toggleBudget = (id) => {
+    setExpandedBudgetId(expandedBudgetId === id ? null : id);
   };
 
   return (
-    <div className="debts-background">
-      <Container className="d-flex align-items-center justify-content-center debts-background-container">
+    <div className="budgets-background">
+      <Container className="d-flex align-items-center justify-content-center budgets-background-container">
         <Card className="card">
           <Card.Body className="mb-0">
             <div className="d-flex align-items-center mb-3">
               <img
                 src={logo}
-                alt="Debt Manager Logo"
+                alt="Budget Buddy Logo"
                 className="img-black w-2vw"
               />
-              <h3 className="text-left mb-0 ml-1">Debt Manager</h3>
+              <h3 className="text-left mb-0 ml-1">Budget Buddy</h3>
             </div>
-            <Progress /> {/* Add if you have similar progress component */}
+            {/* <Progress />  */}
             <Form onSubmit={saveData} className="my-3 pb-0">
               <div className="container">
                 <div className="row">
                   <div className="col px-0">
                     <div className="d-flex justify-content-between align-items-center mt-2 mb-0">
-                      <h3 style={{ fontSize: "2.2rem" }}>Set Your Debts</h3>
-                      <Link
-                        to="/onboarding/complete-process"
-                        className="btn btn-outline-secondary"
-                      >
-                        Skip for now
-                      </Link>
+                      <h3 style={{ fontSize: "2.2rem" }}>Set Your Budgets</h3>
                     </div>
                     <p className="mb-3" style={{ fontSize: "1rem" }}>
-                      When and how much do you need to pay?
+                      How much would you like to save?
                     </p>
 
-                    {debts.map((debt, index) => (
-                      <div key={debt.id} className="accordion mb-0">
+                    {budgets.map((budget, index) => (
+                      <div key={budget.id} className="accordion mb-0">
                         <div className="mt-1">
                           <div
                             className="accordion-header mb-1"
-                            onClick={() => toggleDebt(debt.id)}
+                            onClick={() => toggleBudget(budget.id)}
                             style={{
                               cursor: "pointer",
                               padding: ".3rem 0",
@@ -222,16 +214,17 @@ export const Debts = () => {
                           >
                             <div className="d-flex justify-content-between align-items-center">
                               <h5 style={{ margin: ".2rem 0" }}>
-                                Debt {index + 1}{" "}
-                                {expandedDebtId !== debt.id && debt.debt_name
-                                  ? " - " + debt.debt_name
+                                Budget {index + 1}{" "}
+                                {expandedBudgetId !== budget.id &&
+                                budget.budget_name
+                                  ? " - " + budget.budget_name
                                   : ""}
                               </h5>
-                              {debt.deletable === 1 || index > 0 ? (
+                              {budget.deletable === 1 || index > 0 ? (
                                 <button
                                   className="btn btn-outline-danger btn-sm"
                                   type="button"
-                                  onClick={() => deleteDebt(debt.id)}
+                                  onClick={() => deleteBudget(budget.id)}
                                 >
                                   Delete
                                 </button>
@@ -240,70 +233,43 @@ export const Debts = () => {
                               )}
                             </div>
                           </div>
-                          {expandedDebtId === debt.id && (
+                          {expandedBudgetId === budget.id && (
                             <div className="accordion-collapse collapse show">
                               <div className="accordion-body pt-2 px-0 container">
                                 <div className="form-row">
                                   <div className="col-md-6 form-group mb-0">
-                                    <Field label="Debt name" className="mb-0">
+                                    <Field label="Budget name" className="mb-0">
                                       <Input
                                         type="text"
-                                        value={debt.debt_name || ""}
+                                        value={budget.budget_name || ""}
                                         onChange={(e) =>
                                           handleInputChange(
-                                            debt.id,
-                                            "debt_name",
+                                            budget.id,
+                                            "budget_name",
                                             e.target.value
                                           )
                                         }
-                                        placeholder="e.g. RBC credit card"
+                                        placeholder="ex. Groceries, Medical expenses"
                                       />
                                     </Field>
                                   </div>
                                   <div className="col-md-6 form-group mb-0">
-                                    <Field label="Debt category">
-                                      <select
-                                        className="form-select w-100 p-2 border border-secondary-subtle rounded rounded-2"
-                                        value={debt.debt_types_id || 0}
-                                        onChange={(e) =>
-                                          handleInputChange(
-                                            debt.id,
-                                            "debt_types_id",
-                                            Number(e.target.value)
-                                          )
-                                        }
-                                      >
-                                        {debtCategoryOptions.map((option) => (
-                                          <option
-                                            key={option.id}
-                                            value={option.id}
-                                            disabled={option.disabled}
-                                          >
-                                            {option.name}
-                                          </option>
-                                        ))}
-                                      </select>
-                                    </Field>
-                                  </div>
-                                </div>
-                                <div className="form-row">
-                                  <div className="col-md-6 form-group mb-0">
-                                    <Field label="Debt amount">
+                                    <Field label="Budget amount">
                                       <div className="input-group">
                                         <span className="input-group-text bg-white">
                                           $
                                         </span>
                                         <Input
                                           type="number"
-                                          value={debt.amount || ""}
+                                          value={budget.amount || ""}
                                           onChange={(e) =>
                                             handleInputChange(
-                                              debt.id,
+                                              budget.id,
                                               "amount",
                                               e.target.value
                                             )
                                           }
-                                          placeholder="e.g. 1500"
+                                          placeholder="e.g. 1200"
                                           className="form-control"
                                           step="100"
                                           min="0"
@@ -311,19 +277,20 @@ export const Debts = () => {
                                       </div>
                                     </Field>
                                   </div>
+                                </div>
+                                <div className="form-row">
                                   <div className="col-md-6 form-group mb-0">
-                                    <Field label="Due date">
+                                    <Field label="End date" className="col">
                                       <Input
                                         type="date"
-                                        value={debt.due_date || ""}
+                                        value={budget.end_date || ""}
                                         onChange={(e) =>
                                           handleInputChange(
-                                            debt.id,
-                                            "due_date",
+                                            budget.id,
+                                            "end_date",
                                             e.target.value
                                           )
                                         }
-                                        className="form-control"
                                       />
                                     </Field>
                                   </div>
@@ -336,30 +303,24 @@ export const Debts = () => {
                     ))}
 
                     <div className="d-flex justify-content-center">
-                      <Link to="#" className="mt-2" onClick={addDebt}>
-                        {debts.length === 0
-                          ? "Create a debt"
-                          : "Add another debt"}
+                      <Link to="#" className="mt-2" onClick={addBudget}>
+                        {budgets.length === 0
+                          ? "Create a budget"
+                          : "Add another budget"}
                       </Link>
                     </div>
                   </div>
                 </div>
 
                 <div className="row btn-row">
-                  <div className="col px-0 mt-5 pt-1">
-                    <div className="d-flex justify-content-between mt-5 pt-5">
+                  <div className="col px-0 mt-5 pt-5">
+                    <div className="d-flex justify-content-between mt-5 pt-1">
                       <Link
-                        to="/onboarding/budgets"
-                        className="btn btn-outline-secondary w-50"
+                        to="/home/budget"
+                        className="btn btn-outline-secondary w-100"
                       >
                         Go back
                       </Link>
-                      <BootstrapButton
-                        type="submit"
-                        className="btn btn-primary w-50 ml-3"
-                      >
-                        Continue
-                      </BootstrapButton>
                     </div>
                   </div>
                 </div>
