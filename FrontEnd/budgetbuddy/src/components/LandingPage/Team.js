@@ -81,7 +81,6 @@ const Team = () => {
                   <p className="mb-0">UI/UX Designer</p>
                 </div>
               </div>
-              ;
             </div>
             <div className="col-md-3">
               <div className="team-member">
@@ -126,7 +125,6 @@ const Team = () => {
                   <p className="mb-0">Lead Developer</p>
                 </div>
               </div>
-              ;
             </div>
             <div className="col-md-3">
               <div className="team-member">
