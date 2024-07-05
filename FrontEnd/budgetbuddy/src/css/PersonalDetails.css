@@ -1,6 +1,6 @@
-.welcome-background {
+.personal-details-background {
   background: var(--Schemes-On-Primary-Container, #29638a);
-  background-image: url(../Assets/welcome_onboarding.jpeg);
+  background-image: url(../Assets/personaldetails_onboarding.jpeg);
   mix-blend-mode: multiply;
   background-blend-mode: multiply;
   background-size: cover;
@@ -9,7 +9,7 @@
   opacity: 0.85;
 }
 
-.welcome-background-container {
+.personal-details-background-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -26,4 +26,19 @@
   min-height: 80vh;
   min-width: 500px;
   max-width: 600px;
+}
+
+.img-black {
+  width: 2vw;
+  filter: invert(100%);
+}
+
+.w-2vw {
+  width: 2vw;
+}
+
+.form-group label {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
