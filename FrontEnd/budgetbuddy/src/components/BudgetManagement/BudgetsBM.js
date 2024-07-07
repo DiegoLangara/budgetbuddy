@@ -197,7 +197,7 @@ export const BudgetsBM = () => {
                       <h3 style={{ fontSize: "2.2rem" }}>Set Your Budgets</h3>
                     </div>
                     <p className="mb-3" style={{ fontSize: "1rem" }}>
-                      How much would you like to save?
+                      What is the maximum set amount of consumption?
                     </p>
 
                     {budgets.map((budget, index) => (
@@ -249,7 +249,7 @@ export const BudgetsBM = () => {
                                             e.target.value
                                           )
                                         }
-                                        placeholder="ex. Groceries, Medical expenses"
+                                        placeholder="ex. Groceries"
                                       />
                                     </Field>
                                   </div>

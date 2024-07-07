@@ -14,18 +14,16 @@ import ForgotPassword from "./components/SignIn/ForgotPassword";
 import UpdateProfile from "./components/SignIn/UpdateProfile";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import './css/global.css';
+import "./css/global.css";
 
 import { HomePage } from "./pages/HomePage";
-import { useMediaQuery, CssBaseline, Box } from '@mui/material';
+import { useMediaQuery, CssBaseline, Box } from "@mui/material";
 import { Header } from "./components/Common/Header";
 import { Sidebar } from "./components/Common/Sidebar";
 
-
 function App() {
-
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const isMobile = useMediaQuery('(max-width:600px)');
+  const isMobile = useMediaQuery("(max-width:600px)");
 
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
@@ -81,7 +79,7 @@ function App() {
                 <Header toggleDrawer={toggleDrawer} />
                 <Box display="flex">
                   <Sidebar
-                    variant={isMobile ? 'temporary' : 'persistent'}
+                    variant={isMobile ? "temporary" : "persistent"}
                     open={isMobile ? drawerOpen : true}
                     toggleDrawer={toggleDrawer}
                     drawerWidth={240}

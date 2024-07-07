@@ -1,4 +1,19 @@
 .personal-details-background {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Ensure pseudo-element doesn't affect layout */
+}
+
+.personal-details-background::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: var(--Schemes-On-Primary-Container, #29638a);
   background-image: url(../Assets/personaldetails_onboarding.jpeg);
   mix-blend-mode: multiply;
@@ -7,6 +22,7 @@
   background-position: center;
   background-repeat: no-repeat;
   opacity: 0.85;
+  z-index: -1; /* Ensure it stays behind the content */
 }
 
 .personal-details-background-container {
@@ -16,6 +32,9 @@
   min-height: 100vh;
   padding-left: 45%;
   padding-right: 2rem;
+
+  position: relative;
+  z-index: 1; /* Ensure content stays above the pseudo-element */
 }
 
 .card {
@@ -26,6 +45,7 @@
   min-height: 80vh;
   min-width: 500px;
   max-width: 600px;
+  opacity: 1;
 }
 
 .img-black {
