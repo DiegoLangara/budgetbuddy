@@ -62,6 +62,7 @@ export const ExpendituresByCategory = ({ suggestion, financialData }) => {
   const options = {
     chart: {
       type: "donut",
+      redrawOnParentResize: true,
     },
     labels: labels,
   };
@@ -78,6 +79,4 @@ const StyledExpendituresByCategory = styled.div`
   border: 1px solid #333;
   border-radius: 5px;
   padding: 1rem;
-  grid-column: 1 / 2;
-  display: grid;
 `;

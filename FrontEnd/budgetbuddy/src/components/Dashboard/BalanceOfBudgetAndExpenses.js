@@ -90,6 +90,7 @@ export const BalanceOfBudgetAndExpenses = () => {
     chart: {
       type: 'bar',
       height: 350,
+      redrawOnParentResize: true,
     },
     plotOptions: {
       bar: {
@@ -120,5 +121,4 @@ const StyledBar = styled.div`
   border: 1px solid #333;
   border-radius: 5px;
   padding: 1rem;
-  grid-column: 1 / 2;
 `;

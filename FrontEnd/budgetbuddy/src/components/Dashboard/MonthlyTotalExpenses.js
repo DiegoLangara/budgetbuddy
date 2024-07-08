@@ -15,6 +15,7 @@ export const MonthlyTotalExpenses = () => {
       toolbar: {
         show: false,
       },
+      redrawOnParentResize: true,
     },
     xaxis: {
       categories: [
@@ -42,7 +43,7 @@ export const MonthlyTotalExpenses = () => {
         distributed: true,
       },
     },
-    colors: ["#1ABC9C", "#9B59B6"], // Custom colors for each bar
+    colors: ["#1ABC9C", "#9B59B6"],
   };
 
   return (
@@ -57,5 +58,4 @@ const StyledMonthlyTotalExpenses = styled.div`
   border: 1px solid #333;
   border-radius: 5px;
   padding: 1rem;
-  grid-column: 2 / 3;
 `;

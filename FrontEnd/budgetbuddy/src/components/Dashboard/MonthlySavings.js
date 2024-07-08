@@ -60,6 +60,7 @@ export const MonthlySavings = () => {
       toolbar: {
         show: false,
       },
+      redrawOnParentResize: true,
     },
     xaxis: {
       categories: [
@@ -102,5 +103,4 @@ const StyledMonthlySavings = styled.div`
   border: 1px solid #333;
   border-radius: 5px;
   padding: 1rem;
-  grid-column: 2 / 3;
 `;
