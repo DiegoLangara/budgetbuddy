@@ -1,27 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ApexChart from 'react-apexcharts';
 import styled from 'styled-components';
 import { useAuth } from '../../contexts/AuthContext';
 
-const formatDate = (isoDate) => {
-  const date = new Date(isoDate);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate() + 1).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
-
 // Fetch expenses from the backend
-const fetchExpenses = async (user_id, token) => {
+const fetchBudgetExpenses = async (user_id, token, start_date, end_date) => {
   try {
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/expenses/`,
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/dashboard/budgetexpenses/`,
       {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           token: token,
           user_id: user_id,
+          start_date: start_date,
+          end_date: end_date,
         },
       }
     );
@@ -36,54 +30,35 @@ const fetchExpenses = async (user_id, token) => {
   }
 }
 
-export const BalanceOfBudgetAndExpenses = () => {
+export const BalanceOfBudgetAndExpenses = ({ startDate, endDate }) => {
   const { currentUser } = useAuth();
   const token = currentUser?.token;
   const user_id = currentUser?.id;
 
   const [expenses, setExpenses] = useState([]);
 
-  // TODO Fetch expenses from the backend
+  useEffect(() => {
+    if (token && user_id && startDate && endDate) {
+      async function loadExpenses() {
+        const fetchedExpenses = await fetchBudgetExpenses(user_id, token, startDate, endDate);
+        const formattedExpenses = fetchedExpenses.map((expense) => ({
+          budget_name: expense.budget_name || '',
+          expense: expense.expense || 0,
+          limit: expense.limit || 0,
+        }));
+        setExpenses(formattedExpenses);
+      }
+      loadExpenses();
+    }
+  }, [token, user_id, startDate, endDate]);
 
-  const fetchedData = [
-    {
-      "budget_name": "Rent",
-      "amount": 900,
-      "expenses": 900
-    },
-    {
-      "budget_name": "Groceries",
-      "amount": 300,
-      "expenses": 150
-    },
-    {
-      "budget_name": "Networking",
-      "amount": 100,
-      "expenses": 120
-    },
-    {
-      "budget_name": "Internet",
-      "amount": 50,
-      "expenses": 50
-    },
-    {
-      "budget_name": "Mobile",
-      "amount": 30,
-      "expenses": 40
-    },
-    {
-      "budget_name": "Restaurants",
-      "amount": 30,
-      "expenses": 15
-    },
-  ];
-  const categories = fetchedData.map((data) => data.budget_name);
-  const budgetData = fetchedData.map((data) => data.amount);
-  const expensesData = fetchedData.map((data) => data.expenses);
+  const budget_name = expenses.map((data) => data.budget_name);
+  const expense = expenses.map((data) => data.expense);
+  const limit = expenses.map((data) => data.limit);
 
   const series = [
-    { name: 'Budget', data: budgetData, },
-    { name: 'Expenses', data: expensesData, },
+    { name: 'Budget', data: limit },
+    { name: 'Expenses', data: expense },
   ];
 
   const options = {
@@ -101,7 +76,7 @@ export const BalanceOfBudgetAndExpenses = () => {
       enabled: false,
     },
     xaxis: {
-      categories: categories,
+      categories: budget_name,
     },
     colors: ['#22AB94', '#F23645'], // Blue and Red colors
     legend: {
