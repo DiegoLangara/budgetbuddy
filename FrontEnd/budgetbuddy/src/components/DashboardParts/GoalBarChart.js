@@ -1,5 +1,5 @@
 import React from "react";
-import ReactApexChart from "react-apexcharts";
+import ApexChart from "react-apexcharts";
 
 export const GoalBarChart = ({ description, savings, goal }) => {
   const percentage = Math.round((savings / goal) * 100);
@@ -17,22 +17,13 @@ export const GoalBarChart = ({ description, savings, goal }) => {
       bar: {
         horizontal: true,
         barHeight: "100%",
+        borderRadius: 20 / 2,
         colors: {
           backgroundBarColors: ["#CBE6FF"],
           backgroundBarOpacity: 1,
         },
       },
     },
-    // dataLabels: {
-    //   enabled: true,
-    //   formatter: function (val) {
-    //     return `${val}%`;
-    //   },
-    //   offsetX: 0,
-    //   style: {
-    //     colors: ["#CBE6FF"],
-    //   },
-    // },
     xaxis: {
       categories: ["Savings"],
       max: 100,
@@ -57,7 +48,7 @@ export const GoalBarChart = ({ description, savings, goal }) => {
       <div>
         $ {savings} / $ {goal}
       </div>
-      <ReactApexChart
+      <ApexChart
         options={options}
         series={series}
         type="bar"

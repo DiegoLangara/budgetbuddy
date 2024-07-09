@@ -10,7 +10,7 @@ import { Box } from "@mui/system";
 export const DashboardPage = () => {
 
   return (
-    <Box display="flex" flexDirection="column" gap={2} style={{ width: "100%", padding: "3vh 11vw 3vh calc(11vw + 60px", margin: "0 auto" }}>
+    <Box display="flex" flexDirection="column" gap={2} style={{ width: "100%", padding: "1vh 10vw 3vh calc(10vw + 60px", margin: "0 auto" }}>
       <Box sx={{ width: '100%' }}>
         <Goals />
       </Box>

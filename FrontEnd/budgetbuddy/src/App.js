@@ -84,14 +84,14 @@ function App() {
                     variant={isMobile ? 'temporary' : 'persistent'}
                     open={isMobile ? drawerOpen : true}
                     toggleDrawer={toggleDrawer}
-                    drawerWidth={240}
+                    drawerWidth={224}
                   />
                   <Box
                     component="main"
                     sx={{
                       flexGrow: 1,
                       p: 3,
-                      width: { sm: `calc(100% - 240px)` },
+                      width: { sm: `calc(100% - 224px)` },
                     }}
                   >
                     <HomePage />
