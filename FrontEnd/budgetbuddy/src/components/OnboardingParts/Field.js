@@ -5,7 +5,7 @@ export const Field = ({ children, label }) => {
 
   return (
     <div className="mb-3">
-      <label htmlFor={id} className="form-label">
+      <label htmlFor={id} className="form-label" style={{ fontSize: ".8rem" }}>
         {label}
       </label>
       {children}

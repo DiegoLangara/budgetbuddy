@@ -1,0 +1,31 @@
+/* Initial styles for large screens */
+
+.shrinked-nav {
+  display: none;
+}
+
+.container1 {
+  display: flex;
+  flex-direction: row;
+}
+
+/* Styles for smaller screens */
+@media (max-width: 1070px) {
+  .container1 {
+    flex-direction: column;
+  }
+
+  aside {
+    display: none;
+  }
+
+  .shrinked-nav {
+    display: block;
+  }
+
+  .shrinked-nav ul {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 2rem;
+  }
+}
