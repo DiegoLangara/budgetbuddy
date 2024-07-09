@@ -5,28 +5,34 @@ import { BalanceOfBudgetAndExpenses } from "../components/Dashboard/BalanceOfBud
 import { MonthlyTotalExpenses } from "../components/Dashboard/MonthlyTotalExpenses";
 import { ExpendituresByCategory } from "../components/Dashboard/ExpendituresByCategory";
 import { MonthlySavings } from "../components/Dashboard/MonthlySavings";
+import { Box } from "@mui/system";
 
 export const DashboardPage = () => {
 
   return (
-    <>
-      <StyledMainSection>
+    <Box display="flex" flexDirection="column" gap={2} style={{ width: "100%", padding: "1vh 10vw 3vh calc(10vw + 60px", margin: "0 auto" }}>
+      <Box sx={{ width: '100%' }}>
         <Goals />
-        <BalanceOfBudgetAndExpenses />
-        <MonthlyTotalExpenses />
-        <ExpendituresByCategory />
-        <MonthlySavings />
-      </StyledMainSection>
-    </>
+      </Box>
+
+      <Box display="flex" alignItems="stretch" gap={2}>
+        <Box sx={{ width: '50%' }}>
+          <BalanceOfBudgetAndExpenses />
+        </Box>
+
+        <Box sx={{ width: '50%' }}>
+          <MonthlyTotalExpenses />
+        </Box>
+      </Box>
+
+      <Box display="flex" gap={2}>
+        <Box sx={{ width: '50%' }}>
+          <ExpendituresByCategory />
+        </Box>
+        <Box sx={{ width: '50%' }}>
+          <MonthlySavings />
+        </Box>
+      </Box>
+    </Box>
   );
 };
-
-const StyledMainSection = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  padding: 3vh 16.5vw 0 16.5vw;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-`;

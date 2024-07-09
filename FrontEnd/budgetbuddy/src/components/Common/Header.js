@@ -74,7 +74,8 @@ export const Header = ({ toggleDrawer }) => {
 }
 
 const HeaderContainer = styled.div`
-  padding: 3vh 16.5vw 0 16.5vw; /* Ajusta el espacio según sea necesario */
+  width: 100%;
+  padding: 3vh 10vw 0 calc(10vw + 60px);
   margin: 0 auto;
 `;
 

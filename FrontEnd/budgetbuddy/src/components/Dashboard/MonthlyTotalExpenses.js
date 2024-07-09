@@ -13,8 +13,9 @@ export const MonthlyTotalExpenses = () => {
   const options = {
     chart: {
       toolbar: {
-        show: false,
+        show: true,
       },
+      redrawOnParentResize: true,
     },
     xaxis: {
       categories: [
@@ -42,7 +43,20 @@ export const MonthlyTotalExpenses = () => {
         distributed: true,
       },
     },
-    colors: ["#1ABC9C", "#9B59B6"], // Custom colors for each bar
+    colors: ["#22AB94"],
+    fill: {
+      type: 'gradient',
+      gradient: {
+        shade: 'dark',
+        type: "vertical",
+        shadeIntensity: 1,
+        gradientToColors: ['#22AB94'],
+        inverseColors: false,
+        opacityFrom: 1,
+        opacityTo: 1,
+        stops: [0, 100]
+      }
+    }
   };
 
   return (
@@ -54,8 +68,8 @@ export const MonthlyTotalExpenses = () => {
 };
 
 const StyledMonthlyTotalExpenses = styled.div`
-  border: 1px solid #333;
+  border: 1px solid #fff;
   border-radius: 5px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   padding: 1rem;
-  grid-column: 2 / 3;
 `;

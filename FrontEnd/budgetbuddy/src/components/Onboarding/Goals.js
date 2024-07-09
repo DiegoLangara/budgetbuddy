@@ -263,7 +263,7 @@ export const Goals = () => {
                                     <Field label="Goal category">
                                       <div className="mt-0">
                                         <select
-                                          className="form-select w-100 p-2 border border-secondary-subtle round round-2"
+                                          className="form-select w-100 p-2 border border-secondary-subtle rounded"
                                           value={goal.goal_type_id || 0}
                                           onChange={(e) =>
                                             handleInputChange(

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ReactApexChart from "react-apexcharts";
+import ApexChart from "react-apexcharts";
 import styled from "styled-components";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -58,8 +58,9 @@ export const MonthlySavings = () => {
     },
     chart: {
       toolbar: {
-        show: false,
+        show: true,
       },
+      redrawOnParentResize: true,
     },
     xaxis: {
       categories: [
@@ -87,20 +88,20 @@ export const MonthlySavings = () => {
         distributed: true,
       },
     },
-    colors: ["#fbbc04"],
+    colors: ["#F23645"],
   };
 
   return (
     <StyledMonthlySavings>
       <h3>Monthly Savings</h3>
-      <ReactApexChart options={options} series={monthlySavings} type="area" />
+      <ApexChart options={options} series={monthlySavings} type="area" />
     </StyledMonthlySavings>
   );
 };
 
 const StyledMonthlySavings = styled.div`
-  border: 1px solid #333;
+  border: 1px solid #fff;
   border-radius: 5px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   padding: 1rem;
-  grid-column: 2 / 3;
 `;
