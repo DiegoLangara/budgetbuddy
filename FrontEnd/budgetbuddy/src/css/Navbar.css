@@ -1,3 +1,4 @@
+/* Navbar styles */
 .navbar {
   background-color: #001E30 !important;
   padding: 1rem 0;
@@ -45,6 +46,10 @@ img.logo {
   font-weight: 500;
   line-height: 120%;
   letter-spacing: 0.8px;
+}
+
+.navbar-light .navbar-nav .nav-link {
+  color: #FFF !important;
 }
 
 .navbar-light .navbar-nav li:nth-child(5) .nav-link {
@@ -98,6 +103,123 @@ img.logo {
   border: none;
 }
 
+/* Estilos para el botón de hamburguesa */
+.navbar-toggler {
+  border: none;
+  outline: none;
+}
+
+.navbar-toggler-icon {
+  width: 30px;
+  height: 3px;
+  background-color: #FFF; /* Mantener el color blanco para el icono */
+  display: block;
+  position: relative;
+}
+
+.navbar-toggler-icon::before,
+.navbar-toggler-icon::after {
+  content: '';
+  width: 30px;
+  height: 3px;
+  background-color: #FFF; /* Mantener el color blanco para las líneas */
+  display: block;
+  position: absolute;
+  left: 0;
+}
+
+.navbar-toggler-icon::before {
+  top: -10px;
+}
+
+.navbar-toggler-icon::after {
+  bottom: -10px;
+}
+
+/* Estilos para el menú desplegable en vista móvil */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 0; /* Ensure the menu starts from the top */
+  right: 0;
+  width: 45%; /* Full width for better mobile view */
+  height: 100%;
+  background-color: #001E30; /* Mantener el color del fondo del menú */
+  padding: 20px;
+  z-index: 9999; /* Máximo z-index posible */
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.mobile-menu.show {
+  transform: translateX(0);
+  display: block; /* Mostrar el menú cuando tenga la clase 'show' */
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #FFF;
+  font-size: 2rem;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+}
+
+.mobile-nav {
+  list-style: none;
+  padding: 0;
+  margin-top: 60px; /* Ajuste para evitar solapamiento con el botón de cierre */
+}
+
+.mobile-nav .nav-item {
+  margin-bottom: 15px;
+}
+
+.mobile-nav .nav-link {
+  color: #FFF; /* Mantener el color blanco para los enlaces */
+  font-size: 18px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-nav .nav-link .nav-icon {
+  margin-right: 10px;
+}
+
+/* Mostrar el botón de hamburguesa y ocultar el menú de escritorio en vista móvil */
+@media (max-width: 750px) {
+  .navbar-toggler {
+    display: block;
+  }
+
+  .navbar-collapse {
+    display: none !important;
+  }
+
+  .mobile-menu {
+    display: block;
+  }
+
+  .navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000; /* Ensure it stays on top of other elements */
+  }
+
+  .navbar .logo {
+    margin: 1vh; 
+    height: 5vh; /* Ajustar tamaño del logo */
+  }
+
+  .navbar-light .navbar-brand {
+    font-size: 3vh; /* Ajustar tamaño del título */
+  }
+}
+
 @media (max-width: 768px) {
   .navbar-brand .brand-name {
     font-size: 24px;
@@ -115,4 +237,13 @@ img.logo {
   .nav-item .btn-success {
     font-size: 14px;
   }
+}
+
+.budgetbuddy {
+  position: relative;
+  font-size: 22.8px;
+  font-weight: 600;
+  font-family: Urbanist;
+  color: #fff;
+  text-align: left;
 }
