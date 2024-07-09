@@ -6,8 +6,8 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import { WelcomePage } from "./pages/WelcomePage";
 import { OnboardingPage } from "./pages/OnboardingPage";
-import ProfilePage from "./pages/ProfilePage";
-import SupportPage from "./pages/SupportPage";
+import { ProfilePage } from "./pages/ProfilePage";
+import { SupportPage } from "./pages/SupportPage";
 import PrivateRoute from "./components/SignIn/PrivateRoute";
 import Signup from "./components/SignIn/Signup";
 import ForgotPassword from "./components/SignIn/ForgotPassword";
@@ -84,14 +84,14 @@ function App() {
                     variant={isMobile ? 'temporary' : 'persistent'}
                     open={isMobile ? drawerOpen : true}
                     toggleDrawer={toggleDrawer}
-                    drawerWidth={240}
+                    drawerWidth={224}
                   />
                   <Box
                     component="main"
                     sx={{
                       flexGrow: 1,
                       p: 3,
-                      width: { sm: `calc(100% - 240px)` },
+                      width: { sm: `calc(100% - 224px)` },
                     }}
                   >
                     <HomePage />
