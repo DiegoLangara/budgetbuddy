@@ -289,7 +289,7 @@ export const Goals = () => {
                                 </div>
                                 <div className="form-row">
                                   <div className="col-md-6 form-group mb-0">
-                                    <Field label="Goal date" className="col">
+                                    <Field label="Target date" className="col">
                                       <Input
                                         type="date"
                                         value={goal.target_date || ""}
@@ -304,7 +304,7 @@ export const Goals = () => {
                                     </Field>
                                   </div>
                                   <div className="col-md-6 form-group mb-0">
-                                    <Field label="How much have you saved?">
+                                    <Field label="Saved amount">
                                       <div className="input-group">
                                         <span className="input-group-text bg-white">
                                           $
@@ -330,7 +330,7 @@ export const Goals = () => {
                                 </div>
                                 <div className="form-row">
                                   <div className="col-md-6 form-group mb-0">
-                                    <Field label="How much more do you need?">
+                                    <Field label="Target amount">
                                       <div className="input-group">
                                         <span className="input-group-text bg-white">
                                           $
