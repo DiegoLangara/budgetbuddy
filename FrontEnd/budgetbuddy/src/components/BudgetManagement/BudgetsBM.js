@@ -5,7 +5,6 @@ import { Field } from "../OnboardingParts/Field";
 import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
 import { Card, Container, Button as BootstrapButton } from "react-bootstrap";
-import logo from "../../Assets/Logonn.png";
 import "../../css/Budgets.css";
 import { useAuth } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
@@ -55,7 +54,7 @@ export const BudgetsBM = () => {
   const [budgets, setBudgets] = useState(
     state.budgets || [{ id: 1, budget_name: "", amount: "", end_date: "" }]
   );
-  const [expandedBudgetId, setExpandedBudgetId] = useState(budgets[0]?.id || 1);
+  const [editableBudgetId, setEditableBudgetId] = useState(null);
 
   useEffect(() => {
     async function loadBudgetItems() {
@@ -74,9 +73,6 @@ export const BudgetsBM = () => {
         formattedBudgets.length > 0
           ? formattedBudgets
           : [{ id: 1, budget_name: "", amount: "", end_date: "" }]
-      );
-      setExpandedBudgetId(
-        formattedBudgets.length > 0 ? formattedBudgets[0]?.id : 1
       );
       setState({ ...state, budgets: formattedBudgets });
     }
@@ -103,7 +99,35 @@ export const BudgetsBM = () => {
     const updatedBudgets = [...budgets, newBudget];
     updatedBudgets.sort((a, b) => a.id - b.id); // Ensure order is maintained
     setBudgets(updatedBudgets);
-    setExpandedBudgetId(newBudget.id);
+  };
+
+  const setEditableBudget = (id) => {
+    setEditableBudgetId(id);
+  };
+
+  const deleteBudgetFromDatabase = async (id) => {
+    try {
+      const response = await fetch(
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+            user_id: user_id,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to delete budget from the database");
+      }
+      console.log(
+        `Budget with ID ${id} deleted successfully from the database`
+      );
+    } catch (error) {
+      console.error("Failed to delete budget:", error);
+      throw error;
+    }
   };
 
   const deleteBudget = (id) => {
@@ -115,14 +139,23 @@ export const BudgetsBM = () => {
       confirmButtonColor: "#3A3B3C",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const updatedBudgets = budgets.filter((budget) => budget.id !== id);
-        setBudgets(updatedBudgets);
-        setState({ ...state, budgets: updatedBudgets });
-        setExpandedBudgetId(
-          updatedBudgets.length > 0 ? updatedBudgets[0].id : null
-        );
+        try {
+          await deleteBudgetFromDatabase(id); // Delete from database first
+          const updatedBudgets = budgets.filter((budget) => budget.id !== id);
+          setBudgets(updatedBudgets);
+          setState({ ...state, budgets: updatedBudgets });
+          if (editableBudgetId === id) {
+            setEditableBudgetId(null);
+          }
+        } catch (error) {
+          Swal.fire(
+            "Error",
+            "Failed to delete budget from the database",
+            "error"
+          );
+        }
       }
     });
   };
@@ -161,180 +194,188 @@ export const BudgetsBM = () => {
       amount: budget.amount,
       end_date: budget.end_date || null,
     }));
-
     const combinedData = {
       ...state,
       budgets: transformedBudgets,
     };
     setState(combinedData);
-    await saveToDatabase(combinedData);
-    navigate("/home/budget");
-  };
-
-  const toggleBudget = (id) => {
-    setExpandedBudgetId(expandedBudgetId === id ? null : id);
+    try {
+      await saveToDatabase(combinedData);
+      Swal.fire("Saved!", "Your data has been saved successfully.", "success");
+    } catch (error) {
+      Swal.fire("Error", "Failed to save data.", "error");
+    }
   };
 
   return (
-    <div className="budgets-background">
-      <Container className="d-flex align-items-center justify-content-center budgets-background-container">
-        <Card className="card">
-          <Card.Body className="mb-0">
-            <div className="d-flex align-items-center mb-3">
-              <img
-                src={logo}
-                alt="Budget Buddy Logo"
-                className="img-black w-2vw"
-              />
-              <h3 className="text-left mb-0 ml-1">Budget Buddy</h3>
-            </div>
-            {/* <Progress />  */}
-            <Form onSubmit={saveData} className="my-3 pb-0">
-              <div className="container">
-                <div className="row">
-                  <div className="col px-0">
-                    <div className="d-flex justify-content-between align-items-center mt-2 mb-0">
-                      <h3 style={{ fontSize: "2.2rem" }}>Set Your Budgets</h3>
+    <div
+      style={{
+        margin: "0 auto",
+        padding: "0 0 0 .4rem",
+        width: "100%",
+      }}
+    >
+      <Form onSubmit={saveData} className="my-2 pb-0">
+        <div className="d-flex justify-content-between mb-3">
+          <div>
+            <h3 style={{ fontSize: "2.1rem" }}>Set Your Budgets</h3>
+            <p className="mb-1" style={{ fontSize: ".95rem" }}>
+              What is the upper limit of consumption?
+            </p>
+          </div>
+          <div className="d-flex align-items-end ml-3 pb-2">
+            <Link
+              to="#"
+              className="btn btn-outline-secondary rounded-pill"
+              onClick={addBudget}
+              style={{ fontSize: ".9rem" }}
+            >
+              {budgets.length === 0
+                ? "+ Create a budget"
+                : "+ Add another budget"}
+            </Link>
+          </div>
+        </div>
+        <Container className="mx-0 px-0">
+          <div className="d-flex px-0 row">
+            {budgets.map((budget, index) => (
+              <Card
+                key={index}
+                className={`p-3 m-2 col card-bm ${
+                  editableBudgetId === budget.id ? "editable" : null
+                }`}
+                style={{ minHeight: "auto", maxWidth: "50%" }}
+              >
+                <div
+                  key={budget.id}
+                  className={`mb-0 ${
+                    editableBudgetId === budget.id ? "editable" : "non-editable"
+                  }`}
+                >
+                  <div className="mt-1">
+                    <div
+                      className="mb-3"
+                      style={{
+                        padding: ".3rem 0",
+                      }}
+                    >
+                      <div className="d-flex justify-content-between align-items-center">
+                        <h5 style={{ margin: ".2rem 0" }}>
+                          <strong>Budget {index + 1}</strong>{" "}
+                          <span style={{ fontSize: "1rem" }}>
+                            {budget.budget_name
+                              ? " - " + budget.budget_name
+                              : ""}
+                          </span>
+                        </h5>
+                        <div></div>
+                      </div>
                     </div>
-                    <p className="mb-3" style={{ fontSize: "1rem" }}>
-                      What is the maximum set amount of consumption?
-                    </p>
-
-                    {budgets.map((budget, index) => (
-                      <div key={budget.id} className="accordion mb-0">
-                        <div className="mt-1">
-                          <div
-                            className="accordion-header mb-1"
-                            onClick={() => toggleBudget(budget.id)}
-                            style={{
-                              cursor: "pointer",
-                              padding: ".3rem 0",
-                              borderBottom: "1px solid black",
-                            }}
-                          >
-                            <div className="d-flex justify-content-between align-items-center">
-                              <h5 style={{ margin: ".2rem 0" }}>
-                                Budget {index + 1}{" "}
-                                {expandedBudgetId !== budget.id &&
-                                budget.budget_name
-                                  ? " - " + budget.budget_name
-                                  : ""}
-                              </h5>
-                              {budget.deletable === 1 || index > 0 ? (
-                                <button
-                                  className="btn btn-outline-danger btn-sm"
-                                  type="button"
-                                  onClick={() => deleteBudget(budget.id)}
-                                >
-                                  Delete
-                                </button>
-                              ) : (
-                                ""
-                              )}
+                    <div>
+                      <div className="form-row">
+                        <div className="col-md-6 form-group mb-0">
+                          <Field label="Budget Name" className="mb-0">
+                            <Input
+                              type="text"
+                              value={budget.budget_name || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  budget.id,
+                                  "budget_name",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="ex. Groceries"
+                              disabled={editableBudgetId !== budget.id}
+                              style={{ fontSize: ".8rem" }}
+                            />
+                          </Field>
+                        </div>
+                        <div className="col-md-6 form-group mb-0">
+                          <Field label="Budget amount" className="mb-0">
+                            <div className="input-group">
+                              <span
+                                className="input-group-text bg-white"
+                                style={{ fontSize: ".8rem" }}
+                              >
+                                $
+                              </span>
+                              <Input
+                                type="number"
+                                value={budget.amount || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    budget.id,
+                                    "amount",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="e.g. 1200"
+                                className="form-control"
+                                step="100"
+                                min="0"
+                                disabled={editableBudgetId !== budget.id}
+                                style={{ fontSize: ".8rem" }}
+                              />
                             </div>
-                          </div>
-                          {expandedBudgetId === budget.id && (
-                            <div className="accordion-collapse collapse show">
-                              <div className="accordion-body pt-2 px-0 container">
-                                <div className="form-row">
-                                  <div className="col-md-6 form-group mb-0">
-                                    <Field label="Budget name" className="mb-0">
-                                      <Input
-                                        type="text"
-                                        value={budget.budget_name || ""}
-                                        onChange={(e) =>
-                                          handleInputChange(
-                                            budget.id,
-                                            "budget_name",
-                                            e.target.value
-                                          )
-                                        }
-                                        placeholder="ex. Groceries"
-                                      />
-                                    </Field>
-                                  </div>
-                                  <div className="col-md-6 form-group mb-0">
-                                    <Field label="Budget amount">
-                                      <div className="input-group">
-                                        <span className="input-group-text bg-white">
-                                          $
-                                        </span>
-                                        <Input
-                                          type="number"
-                                          value={budget.amount || ""}
-                                          onChange={(e) =>
-                                            handleInputChange(
-                                              budget.id,
-                                              "amount",
-                                              e.target.value
-                                            )
-                                          }
-                                          placeholder="e.g. 1200"
-                                          className="form-control"
-                                          step="100"
-                                          min="0"
-                                        />
-                                      </div>
-                                    </Field>
-                                  </div>
-                                </div>
-                                <div className="form-row">
-                                  <div className="col-md-6 form-group mb-0">
-                                    <Field label="End date" className="col">
-                                      <Input
-                                        type="date"
-                                        value={budget.end_date || ""}
-                                        onChange={(e) =>
-                                          handleInputChange(
-                                            budget.id,
-                                            "end_date",
-                                            e.target.value
-                                          )
-                                        }
-                                      />
-                                    </Field>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
+                          </Field>
                         </div>
                       </div>
-                    ))}
-
-                    <div className="d-flex justify-content-center">
-                      <Link to="#" className="mt-2" onClick={addBudget}>
-                        {budgets.length === 0
-                          ? "Create a budget"
-                          : "Add another budget"}
-                      </Link>
+                      <div className="form-row">
+                        <div className="col-md-6 form-group mb-0">
+                          <Field label="End date" className="col">
+                            <Input
+                              type="date"
+                              value={budget.end_date || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  budget.id,
+                                  "end_date",
+                                  e.target.value
+                                )
+                              }
+                              disabled={editableBudgetId !== budget.id}
+                              style={{ fontSize: ".8rem" }}
+                            />
+                          </Field>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-
-                <div className="row btn-row">
-                  <div className="col px-0 mt-5 pt-5">
-                    <div className="d-flex justify-content-between mt-5 pt-1">
-                      <Link
-                        to="/home/budget"
-                        className="btn btn-outline-secondary w-50"
-                      >
-                        Go back
-                      </Link>
-                      <BootstrapButton
-                        type="submit"
-                        className="btn btn-primary w-50 ml-3 w-50"
-                      >
-                        Save
-                      </BootstrapButton>
-                    </div>
-                  </div>
+                <div className="d-flex justify-content-end">
+                  <button
+                    className="btn btn-secondary btn-sm px-3 mr-2"
+                    type="button"
+                    onClick={() => setEditableBudget(budget.id)}
+                  >
+                    Edit
+                  </button>
+                  {budget.deletable === 1 || index > 0 ? (
+                    <button
+                      className="btn btn-danger btn-sm"
+                      type="button"
+                      onClick={() => deleteBudget(budget.id)}
+                    >
+                      Delete
+                    </button>
+                  ) : (
+                    ""
+                  )}
                 </div>
-              </div>
-            </Form>
-          </Card.Body>
-        </Card>
-      </Container>
+              </Card>
+            ))}
+          </div>
+        </Container>
+        <div className="d-flex justify-content-end">
+          <BootstrapButton
+            type="submit"
+            className="btn btn-primary w-25 rounded-pill mt-3"
+          >
+            Save
+          </BootstrapButton>
+        </div>
+      </Form>
     </div>
   );
 };
