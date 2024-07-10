@@ -116,6 +116,29 @@ export const Goals = () => {
     setExpandedGoalId(newGoal.id);
   };
 
+  const deleteGoalFromDatabase = async (id) => {
+    try {
+      const response = await fetch(
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/goals/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+            user_id: user_id,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to delete goal from the database");
+      }
+      console.log(`Goal with ID ${id} deleted successfully from the database`);
+    } catch (error) {
+      console.error("Failed to delete goal:", error);
+      throw error;
+    }
+  };
+
   const deleteGoal = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -125,12 +148,23 @@ export const Goals = () => {
       confirmButtonColor: "#3A3B3C",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const updatedGoals = goals.filter((goal) => goal.id !== id);
-        setGoals(updatedGoals);
-        setState({ ...state, goals: updatedGoals });
-        setExpandedGoalId(updatedGoals.length > 0 ? updatedGoals[0].id : null);
+        try {
+          await deleteGoalFromDatabase(id); // Delete from database first
+          const updatedGoals = goals.filter((goal) => goal.id !== id);
+          setGoals(updatedGoals);
+          setState({ ...state, goals: updatedGoals });
+          setExpandedGoalId(
+            updatedGoals.length > 0 ? updatedGoals[0].id : null
+          );
+        } catch (error) {
+          Swal.fire(
+            "Error",
+            "Failed to delete goal from the database",
+            "error"
+          );
+        }
       }
     });
   };
@@ -289,7 +323,7 @@ export const Goals = () => {
                                 </div>
                                 <div className="form-row">
                                   <div className="col-md-6 form-group mb-0">
-                                    <Field label="Goal date" className="col">
+                                    <Field label="Target date" className="col">
                                       <Input
                                         type="date"
                                         value={goal.target_date || ""}
@@ -304,7 +338,7 @@ export const Goals = () => {
                                     </Field>
                                   </div>
                                   <div className="col-md-6 form-group mb-0">
-                                    <Field label="How much have you saved?">
+                                    <Field label="Saved amount">
                                       <div className="input-group">
                                         <span className="input-group-text bg-white">
                                           $
@@ -330,7 +364,7 @@ export const Goals = () => {
                                 </div>
                                 <div className="form-row">
                                   <div className="col-md-6 form-group mb-0">
-                                    <Field label="How much more do you need?">
+                                    <Field label="Target amount">
                                       <div className="input-group">
                                         <span className="input-group-text bg-white">
                                           $

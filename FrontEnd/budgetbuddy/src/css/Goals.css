@@ -38,18 +38,34 @@
   z-index: 1; /* Ensure content stays above the pseudo-element */
 }
 
+.container-bm {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: stretch;
+}
+
 .card {
   background: white;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 0rem;
   min-height: 80vh;
-  min-width: 500px;
+  min-width: 380px;
   max-width: 600px;
 }
 
+.card-bm {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin: 1rem;
+  transition: flex-basis 0.3s ease;
+  width: 100%;
+  max-width: 50%;
+}
+
 .card.editable {
-  /* border: 2px solid #007bff; */
   box-shadow: 0 6px 10px rgba(41, 99, 138, 1);
 }
 
@@ -77,13 +93,16 @@ select:not(:disabled) {
   width: 2vw;
 }
 
-.w-2vw {
-  width: 2vw;
-}
-
 .form-group label {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
   margin-bottom: 0;
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+  .card-bm {
+    flex-basis: 100%;
+  }
 }
