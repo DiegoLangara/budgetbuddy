@@ -17,7 +17,7 @@ const ContactForm = () => {
           />
         </div>
         <div className="form-group-unique">
-          <label htmlFor="name" className="label-unique banner-unique">Full Name</label>
+          <label htmlFor="name" className="label-unique banner-unique">Name</label>
           <input
             type="text"
             id="name"
