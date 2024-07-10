@@ -38,6 +38,12 @@
   z-index: 1; /* Ensure content stays above the pseudo-element */
 }
 
+.container-bm {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: stretch;
+}
+
 .card {
   background: white;
   border-radius: 10px;
@@ -48,14 +54,15 @@
   max-width: 600px;
 }
 
-.card.card-bm {
+.card-bm {
   padding: 1rem;
   display: flex;
   flex-direction: column;
   flex: 1;
   margin: 1rem;
-  min-width: 320px;
-  max-width: 100%;
+  transition: flex-basis 0.3s ease;
+  width: 100%;
+  max-width: 50%;
 }
 
 .card.editable {
@@ -86,10 +93,6 @@ select:not(:disabled) {
   width: 2vw;
 }
 
-.w-2vw {
-  width: 2vw;
-}
-
 .form-group label {
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -99,7 +102,7 @@ select:not(:disabled) {
 
 /* Media queries */
 @media (max-width: 768px) {
-  .card {
-    min-width: 100%;
+  .card-bm {
+    flex-basis: 100%;
   }
 }

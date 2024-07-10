@@ -107,6 +107,31 @@ export const Budgets = () => {
     setExpandedBudgetId(newBudget.id);
   };
 
+  const deleteBudgetFromDatabase = async (id) => {
+    try {
+      const response = await fetch(
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+            user_id: user_id,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to delete budget from the database");
+      }
+      console.log(
+        `Budget with ID ${id} deleted successfully from the database`
+      );
+    } catch (error) {
+      console.error("Failed to delete budget:", error);
+      throw error;
+    }
+  };
+
   const deleteBudget = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -116,14 +141,23 @@ export const Budgets = () => {
       confirmButtonColor: "#3A3B3C",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const updatedBudgets = budgets.filter((budget) => budget.id !== id);
-        setBudgets(updatedBudgets);
-        setState({ ...state, budgets: updatedBudgets });
-        setExpandedBudgetId(
-          updatedBudgets.length > 0 ? updatedBudgets[0].id : null
-        );
+        try {
+          await deleteBudgetFromDatabase(id); // Delete from database first
+          const updatedBudgets = budgets.filter((budget) => budget.id !== id);
+          setBudgets(updatedBudgets);
+          setState({ ...state, budgets: updatedBudgets });
+          setExpandedBudgetId(
+            updatedBudgets.length > 0 ? updatedBudgets[0].id : null
+          );
+        } catch (error) {
+          Swal.fire(
+            "Error",
+            "Failed to delete budget from the database",
+            "error"
+          );
+        }
       }
     });
   };
@@ -204,7 +238,7 @@ export const Budgets = () => {
                       </Link>
                     </div>
                     <p className="mb-3" style={{ fontSize: "1rem" }}>
-                      What is the maximum set amount of consumption?
+                      What is the upper limit of consumption?
                     </p>
 
                     {budgets.map((budget, index) => (

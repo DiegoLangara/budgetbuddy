@@ -1,5 +1,6 @@
-/* Initial styles for large screens */
+/* BudgetPage.css */
 
+/* Initial styles for large screens */
 .shrinked-nav {
   display: none;
 }
@@ -10,7 +11,7 @@
 }
 
 /* Styles for smaller screens */
-@media (max-width: 1070px) {
+@media (max-width: 1200px) {
   .container1 {
     flex-direction: column;
   }

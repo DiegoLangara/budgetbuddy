@@ -142,6 +142,31 @@ export const Incomes = () => {
     setExpandedIncomeId(newIncome.id);
   };
 
+  const deleteIncomeFromDatabase = async (id) => {
+    try {
+      const response = await fetch(
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/incomes/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+            user_id: user_id,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to delete income from the database");
+      }
+      console.log(
+        `Income with ID ${id} deleted successfully from the database`
+      );
+    } catch (error) {
+      console.error("Failed to delete income:", error);
+      throw error;
+    }
+  };
+
   const deleteIncome = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -151,14 +176,23 @@ export const Incomes = () => {
       confirmButtonColor: "#3A3B3C",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const updatedIncomes = incomes.filter((income) => income.id !== id);
-        setIncomes(updatedIncomes);
-        setState({ ...state, incomes: updatedIncomes });
-        setExpandedIncomeId(
-          updatedIncomes.length > 0 ? updatedIncomes[0].id : null
-        );
+        try {
+          await deleteIncomeFromDatabase(id); // Delete from database first
+          const updatedIncomes = incomes.filter((income) => income.id !== id);
+          setIncomes(updatedIncomes);
+          setState({ ...state, incomes: updatedIncomes });
+          setExpandedIncomeId(
+            updatedIncomes.length > 0 ? updatedIncomes[0].id : null
+          );
+        } catch (error) {
+          Swal.fire(
+            "Error",
+            "Failed to delete income from the database",
+            "error"
+          );
+        }
       }
     });
   };
