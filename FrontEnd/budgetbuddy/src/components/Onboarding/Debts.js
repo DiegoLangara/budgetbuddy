@@ -109,6 +109,29 @@ export const Debts = () => {
     setExpandedDebtId(newDebt.id);
   };
 
+  const deleteDebtFromDatabase = async (id) => {
+    try {
+      const response = await fetch(
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debts/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+            user_id: user_id,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to delete debt from the database");
+      }
+      console.log(`Debt with ID ${id} deleted successfully from the database`);
+    } catch (error) {
+      console.error("Failed to delete debt:", error);
+      throw error;
+    }
+  };
+
   const deleteDebt = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -118,12 +141,23 @@ export const Debts = () => {
       confirmButtonColor: "#3A3B3C",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const updatedDebts = debts.filter((debt) => debt.id !== id);
-        setDebts(updatedDebts);
-        setState({ ...state, debts: updatedDebts });
-        setExpandedDebtId(updatedDebts.length > 0 ? updatedDebts[0].id : null);
+        try {
+          await deleteDebtFromDatabase(id); // Delete from database first
+          const updatedDebts = debts.filter((debt) => debt.id !== id);
+          setDebts(updatedDebts);
+          setState({ ...state, debts: updatedDebts });
+          setExpandedDebtId(
+            updatedDebts.length > 0 ? updatedDebts[0].id : null
+          );
+        } catch (error) {
+          Swal.fire(
+            "Error",
+            "Failed to delete debt from the database",
+            "error"
+          );
+        }
       }
     });
   };

@@ -5,7 +5,6 @@ import { Field } from "../OnboardingParts/Field";
 import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
 import { Card, Container, Button as BootstrapButton } from "react-bootstrap";
-import logo from "../../Assets/Logonn.png";
 import "../../css/Incomes.css";
 import { useAuth } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
@@ -28,6 +27,7 @@ async function fetchIncomes(user_id, token) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
+    console.log("Fetched data:", data); // Debugging log
     return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error("Failed to fetch incomes:", error);
@@ -141,6 +141,31 @@ export const IncomesBM = () => {
     setEditableIncomeId(id);
   };
 
+  const deleteIncomeFromDatabase = async (id) => {
+    try {
+      const response = await fetch(
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/incomes/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+            user_id: user_id,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to delete income from the database");
+      }
+      console.log(
+        `Income with ID ${id} deleted successfully from the database`
+      );
+    } catch (error) {
+      console.error("Failed to delete income:", error);
+      throw error;
+    }
+  };
+
   const deleteIncome = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -150,13 +175,22 @@ export const IncomesBM = () => {
       confirmButtonColor: "#3A3B3C",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const updatedIncomes = incomes.filter((income) => income.id !== id);
-        setIncomes(updatedIncomes);
-        setState({ ...state, incomes: updatedIncomes });
-        if (editableIncomeId === id) {
-          setEditableIncomeId(null);
+        try {
+          await deleteIncomeFromDatabase(id); // Delete from database first
+          const updatedIncomes = incomes.filter((income) => income.id !== id);
+          setIncomes(updatedIncomes);
+          setState({ ...state, incomes: updatedIncomes });
+          if (editableIncomeId === id) {
+            setEditableIncomeId(null);
+          }
+        } catch (error) {
+          Swal.fire(
+            "Error",
+            "Failed to delete income from the database",
+            "error"
+          );
         }
       }
     });
@@ -201,15 +235,17 @@ export const IncomesBM = () => {
           (category) => category.id === income.income_type_id
         )?.name || "",
     }));
-
     const combinedData = {
       ...state,
       incomes: transformedIncomes,
     };
-
     setState(combinedData);
-    await saveToDatabase(combinedData);
-    navigate("/home/budget");
+    try {
+      await saveToDatabase(combinedData);
+      Swal.fire("Saved!", "Your data has been saved successfully.", "success");
+    } catch (error) {
+      Swal.fire("Error", "Failed to save data.", "error");
+    }
   };
 
   return (
@@ -249,7 +285,7 @@ export const IncomesBM = () => {
                 className={`p-3 m-2 col card-bm ${
                   editableIncomeId === income.id ? "editable" : null
                 }`}
-                style={{ minHeight: "auto" }}
+                style={{ minHeight: "auto", maxWidth: "50%" }}
               >
                 <div
                   key={income.id}
@@ -277,75 +313,86 @@ export const IncomesBM = () => {
                       </div>
                     </div>
                     <div>
-                      <div>
-                        <div className="form-row">
-                          <div className="col-md-6 form-group mb-0">
-                            <Field label="Income name" className="mb-0">
-                              <Input
-                                type="text"
-                                value={income.income_name || ""}
+                      <div className="form-row">
+                        <div className="col-md-6 form-group mb-0">
+                          <Field label="Income name" className="mb-0">
+                            <Input
+                              type="text"
+                              id={income.id}
+                              value={income.income_name || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  income.id,
+                                  "income_name",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="ex. House rental"
+                              disabled={editableIncomeId !== income.id}
+                              style={{ fontSize: ".8rem" }}
+                            />
+                          </Field>
+                        </div>
+                        <div className="col-md-6 form-group mb-0">
+                          <Field label="Income category">
+                            <div className="mt-0">
+                              <select
+                                className="form-select w-100 p-2 border border-secondary-subtle rounded"
+                                id={income.id}
+                                value={income.income_type_id || 0}
                                 onChange={(e) =>
                                   handleInputChange(
                                     income.id,
-                                    "income_name",
-                                    e.target.value
+                                    "income_type_id",
+                                    Number(e.target.value)
                                   )
                                 }
-                                placeholder="ex. House rental"
                                 disabled={editableIncomeId !== income.id}
-                                style={{ fontSize: ".85rem" }}
-                              />
-                            </Field>
-                          </div>
-                          <div className="col-md-6 form-group mb-0">
-                            <Field label="Income category">
-                              <div className="mt-0">
-                                <select
-                                  // id={`income-category-${index}`}
-                                  className="form-select w-100 p-2 border border-secondary-subtle rounded"
-                                  value={income.income_type_id || ""}
-                                  onChange={(e) =>
-                                    handleInputChange(
-                                      income.id,
-                                      "income_type_id",
-                                      parseInt(e.target.value)
-                                    )
-                                  }
-                                  disabled={editableIncomeId !== income.id}
-                                  style={{ fontSize: ".8rem" }}
-                                >
-                                  {incomeCategoryOptions.map((option) => (
-                                    <option
-                                      key={option.id}
-                                      value={option.id}
-                                      disabled={option.disabled}
-                                    >
-                                      {option.name}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                            </Field>
-                          </div>
+                                style={{ fontSize: ".8rem" }}
+                              >
+                                {incomeCategoryOptions.map((option) => (
+                                  <option
+                                    key={option.id}
+                                    value={option.id}
+                                    disabled={option.disabled}
+                                  >
+                                    {option.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </Field>
                         </div>
                       </div>
                       <div className="form-row">
                         <div className="col-md-6 form-group mb-0">
                           <Field label="Income amount">
-                            <Input
-                              type="number"
-                              value={income.amount || ""}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  income.id,
-                                  "amount",
-                                  e.target.value
-                                )
-                              }
-                              placeholder="ex. 1000"
-                              disabled={editableIncomeId !== income.id}
-                              style={{ fontSize: ".85rem" }}
-                            />
+                            <div className="input-group">
+                              <span
+                                className="input-group-text bg-white"
+                                style={{ fontSize: ".8rem" }}
+                              >
+                                $
+                              </span>
+                              <Input
+                                type="number"
+                                id={income.id}
+                                value={income.amount || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    income.id,
+                                    "amount",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="ex. 2500"
+                                className="form-control"
+                                step="100"
+                                min="0"
+                                disabled={editableIncomeId !== income.id}
+                                style={{ fontSize: ".8rem" }}
+                              />
+                            </div>
                           </Field>
                         </div>
                         <div className="col-md-6 form-group mb-0">
@@ -353,8 +400,8 @@ export const IncomesBM = () => {
                             <div className="mt-0">
                               <select
                                 className="form-select w-100 p-2 border border-secondary-subtle rounded"
-                                id={`income-period-${index}`}
-                                value={income.period || ""}
+                                id={income.id}
+                                value={income.period || 0}
                                 onChange={(e) =>
                                   handleInputChange(
                                     income.id,
@@ -368,7 +415,7 @@ export const IncomesBM = () => {
                                 {incomePeriodOptions.map((option) => (
                                   <option
                                     key={option.id}
-                                    value={option.name}
+                                    value={option.id}
                                     disabled={option.disabled}
                                   >
                                     {option.name}
@@ -379,28 +426,28 @@ export const IncomesBM = () => {
                           </Field>
                         </div>
                       </div>
-                      <div className="d-flex justify-content-end">
-                        <button
-                          className="btn btn-secondary btn-sm px-3 mr-2"
-                          type="button"
-                          onClick={() => setEditableIncome(income.id)}
-                        >
-                          Edit
-                        </button>
-                        {income.deletable === 1 || index > 0 ? (
-                          <button
-                            className="btn btn-danger btn-sm"
-                            type="button"
-                            onClick={() => deleteIncome(income.id)}
-                          >
-                            Delete
-                          </button>
-                        ) : (
-                          ""
-                        )}
-                      </div>
                     </div>
                   </div>
+                </div>
+                <div className="d-flex justify-content-end">
+                  <button
+                    className="btn btn-secondary btn-sm px-3 mr-2"
+                    type="button"
+                    onClick={() => setEditableIncome(income.id)}
+                  >
+                    Edit
+                  </button>
+                  {income.deletable === 1 || index > 0 ? (
+                    <button
+                      className="btn btn-danger btn-sm"
+                      type="button"
+                      onClick={() => deleteIncome(income.id)}
+                    >
+                      Delete
+                    </button>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </Card>
             ))}
