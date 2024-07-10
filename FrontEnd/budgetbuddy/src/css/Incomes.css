@@ -48,14 +48,15 @@
   max-width: 600px;
 }
 
-.card.card-bm {
+.card-bm {
   padding: 1rem;
   display: flex;
   flex-direction: column;
   flex: 1;
   margin: 1rem;
-  min-width: 320px;
-  max-width: 100%;
+  transition: flex-basis 0.3s ease;
+  width: 100%;
+  max-width: 50%;
 }
 
 .card.editable {
