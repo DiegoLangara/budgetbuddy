@@ -45,7 +45,7 @@
 }
 
 .contact-section .btn {
-    background-color: #243d25;
+    background-color: #001E30;
     color: white;
     padding: 10px 20px;
     text-decoration: none;
@@ -61,4 +61,70 @@
     justify-content: center;
 }
 
+.contact-section img {
+    display: none;
+  }
 
+/* Default styles for the image (hidden on larger screens) */
+.contact-section img {
+    display: none;
+  }
+  
+  /* Styles for mobile view */
+  @media only screen and (max-width: 768px) {
+    .contact-section {
+      padding:0 !important;
+      background-image: none;
+    }
+    .contact-section .container{
+      padding:0 !important;
+      /* background-image: none; */
+    }
+    .contact-row {
+      background-color: #001E30;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+    .contact-item h3 {
+      width: 396px;
+        position: relative;
+        font-size: 48px;
+        letter-spacing: -0.01em;
+        line-height: 56px;
+        font-weight: 500;
+        font-family: Geologica;
+        color: #fff;
+        text-align: center;
+        display: inline-block;
+    }
+    .contact-item p {
+      color: #fff;
+      text-align: center;
+    }
+    .contact-image {
+      width: 100%;
+    }
+    .contact-section img {
+      display: block;
+      width: 100%;
+    }
+    .form-container-unique {
+        width: 100% !important;
+        /* background-color: #444; */
+        /* padding: 20px; */
+        /* border-radius: 8px; */
+        /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+    }
+    .submit-btn-unique {
+        background-color: #AED18D;
+        color: black;
+        padding: 3% 25%;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 1rem;
+    }
+  }
+  

@@ -1,3 +1,4 @@
+/* Estilos predeterminados */
 .login-background {
   opacity: 0.85;
   background: var(--Schemes-On-Primary-Container, #29638a);
@@ -12,7 +13,6 @@
 .card {
   background: white;
   border-radius: 10px;
-  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
 }
 
 .btn-primary {
@@ -38,14 +38,13 @@
 
 .Card-cont {
   width: 100%;
-  max-width: 400px; /* Adjust this value as needed */
-  margin-right: 5%; /* Adjust this value for responsive space */
+  max-width: 400px; /* Ajusta este valor según sea necesario */
+  margin-right: 5%; /* Ajusta este valor para el espacio responsivo */
 }
 
 .no-border-radius-right,
 .no-border-radius-left {
   border-color: #ced4da;
-  /* border-width: 1px; */
   border-style: solid;
 }
 
@@ -68,5 +67,84 @@
 @media (min-width: 1920px) {
   .container, .container-lg, .container-md, .container-sm, .container-xl {
     max-width: 65%;
+  }
+}
+
+/* Estilos específicos para móviles */
+@media only screen and (max-width: 768px) {
+  .login-background-container {
+    flex-direction: column;
+    justify-content: flex-end; /* Alinear elementos en la parte inferior */
+    align-items: center;
+    padding: 0;
+  }
+
+  .Card-cont {
+    max-width: 100% !important; /* Ancho completo */
+    margin: 0 !important; /* Sin margen en móviles */
+    padding: 0;
+  }
+
+  .card {
+    border-radius: 10px 10px 0 0 !important; /* Sin borde redondeado */
+    width: 100%; /* Ancho completo */
+  }
+
+  .submit-btn-login {
+    width: 100%;
+    text-align: center;
+  }
+
+  .d-flex.mb-4 {
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row; /* Asegura que los elementos estén en una fila */
+  }
+
+  .img-black.me-2.w-2vw {
+   /* Ajusta para móviles */
+    position: relative;
+    width: 7vw; /* Equivalente responsivo de 35.3px */
+    overflow: hidden;
+    flex-shrink: 0;
+    margin-right: 10px; /* Espacio entre el logo y el texto */
+  }
+  h1.text-left.mb-4, div.mb-4{
+    padding-bottom: 1.5rem;
+  }
+
+  h3.text-left.mb-0,
+  h1.text-left.mb-4 {
+    text-align: left;
+
+    position: relative;
+    letter-spacing: -0.02em;
+    font-family: Geologica;
+    color: #001e30;
+    text-align: left;
+  }
+
+  .mt-3.d-flex.justify-content-between.mb-4 {
+    flex-direction: row; /* Asegura que los elementos estén en una fila */
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    text-align: left;
+  }
+
+  .mt-3.d-flex.justify-content-between.mb-4 .form-check,
+  .mt-3.d-flex.justify-content-between.mb-4 a {
+    margin: 0; /* Sin margen extra */
+  }
+
+  .card {
+    min-width: fit-content !important;
+    min-height: fit-content !important;
+  }
+
+  .container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl {
+    width: 100%;
+    padding: 0;
+    margin: 0;
   }
 }
