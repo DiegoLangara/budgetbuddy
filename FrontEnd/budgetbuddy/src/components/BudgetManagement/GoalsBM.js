@@ -397,7 +397,6 @@ export const GoalsBM = () => {
                               />
                             </div>
                           </Field>
-                          <div></div>
                         </div>
                       </div>
                     </div>
