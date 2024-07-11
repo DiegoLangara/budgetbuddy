@@ -1,17 +1,7 @@
 /* ContactUs.css */
 
 .footer {
-<<<<<<< Updated upstream
-    background-color: #181C20 !important;
-    color: white;
-    height: 25vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 20px; /* Adjust padding as needed */
-=======
-  background-color: #181C20 !important;
+  background-color: #181c20 !important;
   color: white;
   height: 25vh;
   display: flex;
@@ -22,7 +12,7 @@
 }
 
 .firstContainer {
-  background-color: #181C20 !important;
+  background-color: #181c20 !important;
 }
 
 .footer .container {
@@ -85,12 +75,12 @@
   .footer {
     height: auto;
     padding: 1rem 0;
->>>>>>> Stashed changes
   }
-  .firstContainer{
-    background-color:#181C20 !important;
+
+  .firstContainer {
+    background-color: #181c20 !important;
   }
-  
+
   .footer .container {
     display: flex;
     flex-direction: column;
@@ -98,7 +88,7 @@
     height: 100%;
     width: 100%;
   }
-  
+
   .firstContainer {
     display: flex;
     justify-content: space-between;
@@ -106,26 +96,26 @@
     width: 100%;
     padding-right: 3%;
   }
-  
+
   .footer .row {
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 10px 0; /* Adjust margin as needed */
   }
-  
+
   .footer .row ul {
     display: flex;
     list-style: none;
     padding: 0;
     margin: 0;
   }
-  
+
   .footer .row ul li {
     margin: 0 10px; /* Adjust margin as needed */
     list-style-type: none;
   }
-  
+
   .footer p {
     font-size: 14px;
     line-height: 24px;
@@ -137,4 +127,4 @@
     margin-top: auto;
     padding-top: 20px; /* Adjust padding as needed */
   }
-  
+}
