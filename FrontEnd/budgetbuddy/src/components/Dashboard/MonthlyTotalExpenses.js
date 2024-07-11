@@ -7,7 +7,7 @@ import styled from "styled-components";
 const fetchMonthlyTotalExpenses = async (user_id, token) => {
   try {
     const response = await fetch(
-      `http://localhost:5001/api/dashboard/monthlyexpenses/`,
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/dashboard/monthlyexpenses/`,
       {
         method: "GET",
         headers: {
