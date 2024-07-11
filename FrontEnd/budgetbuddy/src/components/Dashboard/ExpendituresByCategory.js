@@ -7,7 +7,7 @@ import { useAuth } from "../../contexts/AuthContext";
 const fetchExpenditures = async (user_id, token, start_date, end_date) => {
   try {
     const response = await fetch(
-      `http://localhost:5001/api/dashboard/expendituresbycategory/`,
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/dashboard/expendituresbycategory/`,
       {
         method: "GET",
         headers: {
@@ -23,7 +23,6 @@ const fetchExpenditures = async (user_id, token, start_date, end_date) => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    console.log(data)
     return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error("Failed to fetch expenditures:", error);
