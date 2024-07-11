@@ -61,7 +61,7 @@ export function AuthProvider({ children }) {
           setCurrentUser({ id: data.user_id, token: data.token });
           data.onboarding === true
             ? navigate("/onboarding/welcome")
-            : navigate("/dashboard");
+            : navigate("/home/dashboard");
         });
       }
     } catch (error) {

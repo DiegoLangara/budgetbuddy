@@ -117,14 +117,15 @@ export const GoalsBM = () => {
     setEditableGoalId(id);
   };
 
-  const deleteGoalFromDatabase = async (id) => {
+  const deleteGoalFromDatabase = async (user_id, token, id) => {
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/goals/${id}`,
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/goal/`,
         {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
+            goal_id: id,
             token: token,
             user_id: user_id,
           },
@@ -152,7 +153,7 @@ export const GoalsBM = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await deleteGoalFromDatabase(id); // Delete from database first
+          await deleteGoalFromDatabase(user_id, token, id); // Delete from database first
           const updatedGoals = goals.filter((goal) => goal.id !== id);
           setGoals(updatedGoals);
           setState({ ...state, goals: updatedGoals });

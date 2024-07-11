@@ -1,8 +1,16 @@
 /* Default footer styles */
 .footer {
 
-  background-color: #181c20 !important;
+    background-color: #181C20 !important;
+    color: white;
+    height: 25vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px; /* Adjust padding as needed */
 
+  background-color: #181C20 !important;
   color: white;
   height: 25vh;
   display: flex;
@@ -114,7 +122,14 @@
   }
 
   .footer p {
-    text-align: center;
-    margin-top: 10px;
+    font-size: 14px;
+    line-height: 24px;
+    /* font-weight: 500; */
+    /* font-family: 'DM Sans'; */
+    color: #fff;
+    text-align: left;
+    mix-blend-mode: normal;
+    margin-top: auto;
+    padding-top: 20px; /* Adjust padding as needed */
   }
 }
