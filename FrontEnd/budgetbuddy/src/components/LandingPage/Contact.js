@@ -1,6 +1,7 @@
 import React from "react";
 import '../../css/ContactUs.css'; // Assuming this is where the Contact page styles are
-import ContactForm from '../../components/LandingPage/ContactForm.js'
+import ContactForm from '../../components/LandingPage/ContactForm.js';
+import backgroundImage from '../../Assets/BB-ContactUs-Desktop 1.png'; // Ensure the correct path
 
 const Contact = () => {
   return (
@@ -15,6 +16,7 @@ const Contact = () => {
               <ContactForm/>
             </div>
         </div>
+        <img src={backgroundImage} alt="Background" />
       </div>
     </section>
   );
