@@ -1,7 +1,7 @@
 /* ContactUs.css */
 
 .footer {
-<<<<<<< Updated upstream
+
     background-color: #181C20 !important;
     color: white;
     height: 25vh;
@@ -10,7 +10,7 @@
     justify-content: space-between;
     align-items: center;
     padding-bottom: 20px; /* Adjust padding as needed */
-=======
+
   background-color: #181C20 !important;
   color: white;
   height: 25vh;
@@ -85,7 +85,7 @@
   .footer {
     height: auto;
     padding: 1rem 0;
->>>>>>> Stashed changes
+
   }
   .firstContainer{
     background-color:#181C20 !important;
@@ -137,4 +137,4 @@
     margin-top: auto;
     padding-top: 20px; /* Adjust padding as needed */
   }
-  
+}
