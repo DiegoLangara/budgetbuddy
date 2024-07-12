@@ -460,8 +460,8 @@ export const Goals = () => {
                 </div>
 
                 <div className="row btn-row">
-                  <div className="col px-0 mt-5">
-                    <div className="d-flex justify-content-between mt-3">
+                  <div className="col px-0 mt-2">
+                    <div className="d-flex justify-content-between">
                       <Link
                         to="/onboarding/personal-details"
                         className="btn btn-outline-secondary w-50"

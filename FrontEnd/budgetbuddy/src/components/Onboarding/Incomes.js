@@ -482,7 +482,7 @@ export const Incomes = () => {
                 </div>
 
                 <div className="row btn-row">
-                  <div className="col px-0 mt-5 pt-5">
+                  <div className="col px-0">
                     <div className="d-flex justify-content-between mt-5 pt-1">
                       <Link
                         to="/onboarding/goals"

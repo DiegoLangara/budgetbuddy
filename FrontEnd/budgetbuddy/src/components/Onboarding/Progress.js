@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import { ProgressBar } from "react-bootstrap";
+import "../../css/Progress.css"; // Asegúrate de tener el archivo CSS en la ruta correcta
 
 export const Progress = () => {
   const location = useLocation();
@@ -18,18 +18,14 @@ export const Progress = () => {
     (step) => location.pathname === step.path
   );
 
-  // Calculate progress percentage
-  const progressPercentage = ((currentStepIndex + 1) / steps.length) * 100;
-
   return (
-    <div className="container px-0">
-      <ProgressBar
-        now={progressPercentage}
-        label={`${Math.round(progressPercentage)}%`}
-        striped
-        // animated
-        style={{ height: "1rem" }}
-      />
+    <div className="progress-container">
+      {steps.map((step, index) => (
+        <div
+          key={index}
+          className={`progress-step ${index <= currentStepIndex ? "active" : ""}`}
+        ></div>
+      ))}
     </div>
   );
 };

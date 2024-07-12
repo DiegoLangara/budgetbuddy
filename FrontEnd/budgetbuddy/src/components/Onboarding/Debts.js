@@ -417,7 +417,7 @@ export const Debts = () => {
 
                 <div className="row btn-row">
                   <div className="col px-0 mt-5 pt-1">
-                    <div className="d-flex justify-content-between mt-5 pt-5">
+                    <div className="d-flex justify-content-between">
                       <Link
                         to="/onboarding/budgets"
                         className="btn btn-outline-secondary w-50"

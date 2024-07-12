@@ -17,6 +17,7 @@ img.logo {
   line-height: 54px;
 }
 .navbar-light .navbar-brand:hover,
+.navbar-light .navbar-brand:visited,
 .navbar-light .navbar-brand:active {
   color: white !important;
 }
@@ -26,43 +27,48 @@ img.logo {
   font-size: 20px;
   font-weight: 400;
   line-height: 160%;
-  padding-right: 2vw;
-}
-
-.navbar-light .navbar-nav li:nth-child(3) .nav-link {
-  padding-right: 6vw;
+  /* padding-right: 2vw; */
 }
 
 .navbar-light .navbar-nav li:nth-child(4) .nav-link {
   border-radius: 6px;
-  border: 1px solid var(--material-theme-sys-light-on-tertiary-fixed-variant, #fff);
   background: var(--Schemes-On-Primary, transparent);
   display: flex;
-  width: 107px;
   height: 48px;
-  padding: 8px 16px;
   justify-content: center;
   align-items: center;
   font-weight: 500;
-  line-height: 120%;
+  line-height: 100%;
   letter-spacing: 0.8px;
 }
 
-.navbar-light .navbar-nav .nav-link {
-  color: #FFF !important;
+.navbar-light .navbar-nav .nav-link:hover {
+  color: #FFF;
 }
 
 .navbar-light .navbar-nav li:nth-child(5) .nav-link {
   display: flex;
   height: 48px;
   padding: 8px 16px;
+  background: var(--Schemes-On-Primary, transparent) !important;
+  border: 1px solid var(--Schemes-On-Primary, #FFF);
   justify-content: center;
   align-items: center;
   gap: 10px;
   border-radius: 6px;
   background: var(--Schemes-On-Secondary-Container, #AED18D);
-  margin-left: 1rem;
+  margin: 0 1rem 0 2rem;
 }
+
+#navbarNav > ul > li:nth-child(6) > a{
+  padding: 0.5rem 2rem ;
+}
+
+#navbarNav > ul > li:nth-child(5) > a{
+  padding: 0.5rem 2rem ;
+}
+
+
 
 .navbar-brand .logo img {
   width: 50px;
@@ -98,8 +104,8 @@ img.logo {
 }
 
 .nav-item .btn-success {
-  background-color: #3a6ea5;
-  color: #FFF;
+  background-color: #AED18D;
+  color: black !important;
   border: none;
 }
 
@@ -217,6 +223,18 @@ img.logo {
 
   .navbar-light .navbar-brand {
     font-size: 3vh; /* Ajustar tamaño del título */
+  }
+
+  /* Ocultar enlace "Home" en versiones de escritorio */
+  .navbar-nav .nav-item.d-lg-none {
+    display: none;
+  }
+
+  /* Mostrar enlace "Home" solo en versiones móviles */
+  @media (max-width: 750px) {
+    .navbar-nav .nav-item.d-lg-none {
+      display: block;
+    }
   }
 }
 
