@@ -4,6 +4,7 @@ import { Field } from "../components/OnboardingParts/Field";
 import { Input } from "../components/OnboardingParts/Input";
 import { Button } from "react-bootstrap";
 import { ExpenseTable } from "../components/Expenses/ExpenseTable";
+import { useNavigate } from "react-router-dom";
 
 const transactionCategories = [
   "All types",
@@ -19,6 +20,7 @@ export const ExpensesPage = () => {
   const [appliedStartDate, setAppliedStartDate] = useState("");
   const [appliedEndDate, setAppliedEndDate] = useState("");
   const [category, setCategory] = useState("All types");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const today = new Date();
@@ -43,6 +45,10 @@ export const ExpensesPage = () => {
     setCategory(e.target.value);
   };
 
+  const handleNavigate = () => {
+    navigate("/home/transactions");
+  };
+
   return (
     <div
       style={{
@@ -53,7 +59,11 @@ export const ExpensesPage = () => {
     >
       <div className="d-flex justify-content-between mb-4">
         <h2 className="mb-0">List of transactions</h2>
-        <button type="button" className="btn btn-secondary pl-3 pr-3">
+        <button
+          type="button"
+          onClick={handleNavigate}
+          className="btn btn-secondary pl-3 pr-3"
+        >
           {"+ "}Create
         </button>
       </div>
