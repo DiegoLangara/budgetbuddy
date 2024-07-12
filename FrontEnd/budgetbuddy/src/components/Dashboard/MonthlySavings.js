@@ -45,7 +45,6 @@ export const MonthlySavings = () => {
           total_savings: saving.total_savings || 0,
         }));
         setSavings(formattedSavings);
-        console.log(savings)
       }
       loadSavings();
     }
