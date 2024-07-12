@@ -6,26 +6,24 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import { WelcomePage } from "./pages/WelcomePage";
 import { OnboardingPage } from "./pages/OnboardingPage";
-import ProfilePage from "./pages/ProfilePage";
-import SupportPage from "./pages/SupportPage";
+import { ProfilePage } from "./pages/ProfilePage";
+import { SupportPage } from "./pages/SupportPage";
 import PrivateRoute from "./components/SignIn/PrivateRoute";
 import Signup from "./components/SignIn/Signup";
 import ForgotPassword from "./components/SignIn/ForgotPassword";
 import UpdateProfile from "./components/SignIn/UpdateProfile";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import './css/global.css';
+import "./css/global.css";
 
 import { HomePage } from "./pages/HomePage";
-import { useMediaQuery, CssBaseline, Box } from '@mui/material';
+import { useMediaQuery, CssBaseline, Box } from "@mui/material";
 import { Header } from "./components/Common/Header";
 import { Sidebar } from "./components/Common/Sidebar";
 
-
 function App() {
-
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const isMobile = useMediaQuery('(max-width:600px)');
+  const isMobile = useMediaQuery("(max-width:600px)");
 
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
@@ -81,17 +79,17 @@ function App() {
                 <Header toggleDrawer={toggleDrawer} />
                 <Box display="flex">
                   <Sidebar
-                    variant={isMobile ? 'temporary' : 'persistent'}
+                    variant={isMobile ? "temporary" : "persistent"}
                     open={isMobile ? drawerOpen : true}
                     toggleDrawer={toggleDrawer}
-                    drawerWidth={240}
+                    drawerWidth={224}
                   />
                   <Box
                     component="main"
                     sx={{
                       flexGrow: 1,
                       p: 3,
-                      width: { sm: `calc(100% - 240px)` },
+                      width: { sm: `calc(100% - 224px)` },
                     }}
                   >
                     <HomePage />

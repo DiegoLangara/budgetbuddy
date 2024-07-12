@@ -5,7 +5,6 @@ import { Field } from "../OnboardingParts/Field";
 import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
 import { Card, Container, Button as BootstrapButton } from "react-bootstrap";
-import logo from "../../Assets/Logonn.png";
 import "../../css/Goals.css";
 import { useAuth } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
@@ -36,6 +35,7 @@ async function fetchGoals(user_id, token) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
+    console.log("Fetched data:", data); // Debugging log
     return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error("Failed to fetch goals:", error);
@@ -67,13 +67,14 @@ export const GoalsBM = () => {
   const [goals, setGoals] = useState(
     state.goals || [{ id: 1, goal_type_id: 0 }]
   );
-  const [expandedGoalId, setExpandedGoalId] = useState(goals[0]?.id || 1);
+  console.log(goals);
+  const [editableGoalId, setEditableGoalId] = useState(null);
 
   // Fetch goals on component mount
   useEffect(() => {
     async function loadGoals() {
       const fetchedGoals = await fetchGoals(user_id, token);
-      console.log("Fetched goal data:", fetchGoals); // Debug output
+      // console.log("Fetched goal data:", fetchGoals); // Debug output
       const formattedGoals = fetchedGoals.map((goal, index) => ({
         id: goal.goal_id || index + 1,
         goal_name: goal.goal_name || "",
@@ -91,7 +92,6 @@ export const GoalsBM = () => {
           ? formattedGoals
           : [{ id: 1, goal_type_id: 0 }]
       );
-      setExpandedGoalId(formattedGoals.length > 0 ? formattedGoals[0]?.id : 1);
       setState({ ...state, goals: formattedGoals });
     }
     loadGoals();
@@ -112,7 +112,34 @@ export const GoalsBM = () => {
     const updatedGoals = [...goals, newGoal];
     updatedGoals.sort((a, b) => a.id - b.id);
     setGoals(updatedGoals);
-    setExpandedGoalId(newGoal.id);
+  };
+
+  const setEditableGoal = (id) => {
+    setEditableGoalId(id);
+  };
+
+  const deleteGoalFromDatabase = async (user_id, token, id) => {
+    try {
+      const response = await fetch(
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/goal/`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            goal_id: id,
+            token: token,
+            user_id: user_id,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to delete goal from the database");
+      }
+      console.log(`Goal with ID ${id} deleted successfully from the database`);
+    } catch (error) {
+      console.error("Failed to delete goal:", error);
+      throw error;
+    }
   };
 
   const deleteGoal = (id) => {
@@ -124,12 +151,23 @@ export const GoalsBM = () => {
       confirmButtonColor: "#3A3B3C",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const updatedGoals = goals.filter((goal) => goal.id !== id);
-        setGoals(updatedGoals);
-        setState({ ...state, goals: updatedGoals });
-        setExpandedGoalId(updatedGoals.length > 0 ? updatedGoals[0].id : null);
+        try {
+          await deleteGoalFromDatabase(user_id, token, id); // Delete from database first
+          const updatedGoals = goals.filter((goal) => goal.id !== id);
+          setGoals(updatedGoals);
+          setState({ ...state, goals: updatedGoals });
+          if (editableGoalId === id) {
+            setEditableGoalId(null);
+          }
+        } catch (error) {
+          Swal.fire(
+            "Error",
+            "Failed to delete goal from the database",
+            "error"
+          );
+        }
       }
     });
   };
@@ -166,228 +204,239 @@ export const GoalsBM = () => {
       goals: goals,
     };
     setState(combinedData);
-    await saveToDatabase(combinedData);
-    navigate("/home/budget");
-  };
-
-  const toggleGoal = (id) => {
-    setExpandedGoalId(expandedGoalId === id ? null : id);
+    try {
+      await saveToDatabase(combinedData);
+      Swal.fire("Saved!", "Your data has been saved successfully.", "success");
+    } catch (error) {
+      Swal.fire("Error", "Failed to save data.", "error");
+    }
   };
 
   return (
-    <div className="goals-background">
-      <Container className="d-flex align-items-center justify-content-center goals-background-container">
-        <Card className="card">
-          <Card.Body className="mb-0">
-            <div className="d-flex align-items-center mb-3">
-              <img
-                src={logo}
-                alt="Budget Buddy Logo"
-                className="img-black w-2vw"
-              />
-              <h3 className="text-left mb-0 ml-1">Budget Buddy</h3>
-            </div>
-            {/* <Progress /> */}
-            <Form onSubmit={saveData} className="my-3 pb-0">
-              <div className="container">
-                <div className="row">
-                  <div className="col px-0">
-                    <div className="d-flex justify-content-between align-items-center mt-2 mb-0">
-                      <h3 style={{ fontSize: "2.2rem" }}>Set Your Goals</h3>
+    <div
+      style={{
+        margin: "0 auto",
+        padding: "0 0 0 .4rem",
+        width: "100%",
+      }}
+    >
+      <Form onSubmit={saveData} className="my-2 pb-0">
+        <div className="d-flex justify-content-between mb-3">
+          <div>
+            <h3 style={{ fontSize: "2.1rem" }}>Set Your Goals</h3>
+            <p className="mb-1" style={{ fontSize: ".95rem" }}>
+              What would you like to achieve?
+            </p>
+          </div>
+          <div className="d-flex align-items-end ml-3 pb-2">
+            <Link
+              to="#"
+              className="btn btn-outline-secondary rounded-pill"
+              onClick={addGoal}
+              style={{ fontSize: ".9rem" }}
+            >
+              {goals.length === 0 ? "+ Create a goal" : "+ Add another goal"}
+            </Link>
+          </div>
+        </div>
+        <Container className="mx-0 px-0">
+          <div className="d-flex px-0 row">
+            {goals.map((goal, index) => (
+              <Card
+                key={index}
+                className={`p-3 m-2 col card-bm ${
+                  editableGoalId === goal.id ? "editable" : null
+                }`}
+                style={{ minHeight: "auto", maxWidth: "50%" }}
+              >
+                <div
+                  key={goal.id}
+                  className={`mb-0 ${
+                    editableGoalId === goal.id ? "editable" : "non-editable"
+                  }`}
+                >
+                  <div className="mt-1">
+                    <div
+                      className="mb-3"
+                      style={{
+                        padding: ".3rem 0",
+                      }}
+                    >
+                      <div className="d-flex justify-content-between align-items-center">
+                        <h5 style={{ margin: ".2rem 0" }}>
+                          <strong>Goal {index + 1}</strong>{" "}
+                          <span style={{ fontSize: "1rem" }}>
+                            {goal.goal_name ? " - " + goal.goal_name : ""}
+                          </span>
+                        </h5>
+                        <div></div>
+                      </div>
                     </div>
-                    <p className="mb-3" style={{ fontSize: "1rem" }}>
-                      What would you like to achieve?
-                    </p>
-
-                    {goals.map((goal, index) => (
-                      <div key={goal.id} className="accordion mb-0">
-                        <div className="mt-1">
-                          <div
-                            className="accordion-header mb-1"
-                            onClick={() => toggleGoal(goal.id)}
-                            style={{
-                              cursor: "pointer",
-                              // background: "#e7e7e7",
-                              padding: ".3rem 0",
-                              borderBottom: "1px solid black",
-                            }}
-                          >
-                            <div className="d-flex justify-content-between align-items-center">
-                              <h5 style={{ margin: ".2rem 0" }}>
-                                Goal {index + 1}{" "}
-                                {expandedGoalId !== goal.id && goal.goal_name
-                                  ? " - " + goal.goal_name
-                                  : ""}
-                              </h5>
-                              {goal.deletable === 1 || index > 0 ? (
-                                <button
-                                  className="btn btn-outline-danger btn-sm"
-                                  type="button"
-                                  onClick={() => deleteGoal(goal.id)}
-                                >
-                                  Delete
-                                </button>
-                              ) : (
-                                ""
-                              )}
+                    <div>
+                      <div className="form-row">
+                        <div className="col-md-6 form-group mb-0">
+                          <Field label="Your goal" className="mb-0">
+                            <Input
+                              type="text"
+                              value={goal.goal_name || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  goal.id,
+                                  "goal_name",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="ex. Buy a Tesla"
+                              disabled={editableGoalId !== goal.id}
+                              style={{ fontSize: ".8rem" }}
+                            />
+                          </Field>
+                        </div>
+                        <div className="col-md-6 form-group mb-0">
+                          <Field label="Goal category">
+                            <div className="mt-0">
+                              <select
+                                className="form-select w-100 p-2 border border-secondary-subtle rounded"
+                                value={goal.goal_type_id || 0}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    goal.id,
+                                    "goal_type_id",
+                                    Number(e.target.value)
+                                  )
+                                }
+                                disabled={editableGoalId !== goal.id}
+                                style={{ fontSize: ".8rem" }}
+                              >
+                                {goalTypeOptions.map((option) => (
+                                  <option
+                                    key={option.id}
+                                    value={option.id}
+                                    disabled={option.disabled}
+                                  >
+                                    {option.name}
+                                  </option>
+                                ))}
+                              </select>
                             </div>
-                          </div>
-                          {expandedGoalId === goal.id && (
-                            <div className="accordion-collapse collapse show">
-                              <div className="accordion-body pt-2 px-0 container">
-                                <div className="form-row">
-                                  <div className="col-md-6 form-group mb-0">
-                                    <Field label="Your goal" className="mb-0">
-                                      <Input
-                                        type="text"
-                                        value={goal.goal_name || ""}
-                                        onChange={(e) =>
-                                          handleInputChange(
-                                            goal.id,
-                                            "goal_name",
-                                            e.target.value
-                                          )
-                                        }
-                                        placeholder="ex. Buy a Tesla"
-                                      />
-                                    </Field>
-                                  </div>
-                                  <div className="col-md-6 form-group mb-0">
-                                    <Field label="Goal category">
-                                      <div className="mt-0">
-                                        <select
-                                          className="form-select w-100 p-2 border border-secondary-subtle round round-2"
-                                          value={goal.goal_type_id || 0}
-                                          onChange={(e) =>
-                                            handleInputChange(
-                                              goal.id,
-                                              "goal_type_id",
-                                              Number(e.target.value)
-                                            )
-                                          }
-                                        >
-                                          {goalTypeOptions.map((option) => (
-                                            <option
-                                              key={option.id}
-                                              value={option.id}
-                                              disabled={option.disabled}
-                                            >
-                                              {option.name}
-                                            </option>
-                                          ))}
-                                        </select>
-                                      </div>
-                                    </Field>
-                                  </div>
-                                </div>
-                                <div className="form-row">
-                                  <div className="col-md-6 form-group mb-0">
-                                    <Field label="Goal date" className="col">
-                                      <Input
-                                        type="date"
-                                        value={goal.target_date || ""}
-                                        onChange={(e) =>
-                                          handleInputChange(
-                                            goal.id,
-                                            "target_date",
-                                            e.target.value
-                                          )
-                                        }
-                                      />
-                                    </Field>
-                                  </div>
-                                  <div className="col-md-6 form-group mb-0">
-                                    <Field label="How much have you saved?">
-                                      <div className="input-group">
-                                        <span className="input-group-text bg-white">
-                                          $
-                                        </span>
-                                        <Input
-                                          type="number"
-                                          value={goal.current_amount || ""}
-                                          onChange={(e) =>
-                                            handleInputChange(
-                                              goal.id,
-                                              "current_amount",
-                                              e.target.value
-                                            )
-                                          }
-                                          placeholder="ex. 5000"
-                                          className="form-control"
-                                          step="100"
-                                          min="100"
-                                        />
-                                      </div>
-                                    </Field>
-                                  </div>
-                                </div>
-                                <div className="form-row">
-                                  <div className="col-md-6 form-group mb-0">
-                                    <Field label="How much more do you need?">
-                                      <div className="input-group">
-                                        <span className="input-group-text bg-white">
-                                          $
-                                        </span>
-                                        <Input
-                                          type="number"
-                                          value={goal.target_amount || ""}
-                                          onChange={(e) =>
-                                            handleInputChange(
-                                              goal.id,
-                                              "target_amount",
-                                              e.target.value
-                                            )
-                                          }
-                                          placeholder="ex. 3000"
-                                          className="form-control"
-                                          step="100"
-                                          min="100"
-                                        />
-                                      </div>
-                                    </Field>
-                                    <div></div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
+                          </Field>
                         </div>
                       </div>
-                    ))}
-
-                    <div className="d-flex justify-content-center">
-                      <Link to="#" className="mt-2" onClick={addGoal}>
-                        {goals.length === 0
-                          ? "Create a goal"
-                          : "Add another goal"}
-                      </Link>
+                      <div className="form-row">
+                        <div className="col-md-6 form-group mb-0">
+                          <Field label="Target date" className="col">
+                            <Input
+                              type="date"
+                              value={goal.target_date || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  goal.id,
+                                  "target_date",
+                                  e.target.value
+                                )
+                              }
+                              disabled={editableGoalId !== goal.id}
+                              style={{ fontSize: ".8rem" }}
+                            />
+                          </Field>
+                        </div>
+                        <div className="col-md-6 form-group mb-0">
+                          <Field label="Saved amount">
+                            <div className="input-group">
+                              <span
+                                className="input-group-text bg-white"
+                                style={{ fontSize: ".8rem" }}
+                              >
+                                $
+                              </span>
+                              <Input
+                                type="number"
+                                value={goal.current_amount || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    goal.id,
+                                    "current_amount",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="ex. 5000"
+                                className="form-control"
+                                step="100"
+                                min="100"
+                                disabled={editableGoalId !== goal.id}
+                                style={{ fontSize: ".8rem" }}
+                              />
+                            </div>
+                          </Field>
+                        </div>
+                      </div>
+                      <div className="form-row">
+                        <div className="col-md-6 form-group mb-0">
+                          <Field label="Target amount">
+                            <div className="input-group">
+                              <span
+                                className="input-group-text bg-white"
+                                style={{ fontSize: ".8rem" }}
+                              >
+                                $
+                              </span>
+                              <Input
+                                type="number"
+                                value={goal.target_amount || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    goal.id,
+                                    "target_amount",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="ex. 3000"
+                                className="form-control"
+                                step="100"
+                                min="100"
+                                disabled={editableGoalId !== goal.id}
+                                style={{ fontSize: ".8rem" }}
+                              />
+                            </div>
+                          </Field>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-
-                <div className="row btn-row">
-                  <div className="col px-0 mt-5">
-                    <div className="d-flex justify-content-between mt-3">
-                      <Link
-                        to="/home/budget"
-                        className="btn btn-outline-secondary w-50"
-                      >
-                        Go back
-                      </Link>
-                      <BootstrapButton
-                        type="submit"
-                        className="btn btn-primary w-50 ml-3 w-50"
-                      >
-                        Save
-                      </BootstrapButton>
-                    </div>
-                  </div>
+                <div className="d-flex justify-content-end">
+                  <button
+                    className="btn btn-secondary btn-sm px-3 mr-2"
+                    type="button"
+                    onClick={() => setEditableGoal(goal.id)}
+                  >
+                    Edit
+                  </button>
+                  {goal.deletable === 1 || index > 0 ? (
+                    <button
+                      className="btn btn-danger btn-sm"
+                      type="button"
+                      onClick={() => deleteGoal(goal.id)}
+                    >
+                      Delete
+                    </button>
+                  ) : (
+                    ""
+                  )}
                 </div>
-              </div>
-            </Form>
-          </Card.Body>
-        </Card>
-      </Container>
+              </Card>
+            ))}
+          </div>
+        </Container>
+        <div className="d-flex justify-content-end">
+          <BootstrapButton
+            type="submit"
+            className="btn btn-primary w-25 rounded-pill mt-3"
+          >
+            Save
+          </BootstrapButton>
+        </div>
+      </Form>
     </div>
   );
 };

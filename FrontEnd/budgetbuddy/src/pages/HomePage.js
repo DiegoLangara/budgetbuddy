@@ -1,12 +1,9 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import { DashboardPage } from "./DashboardPage";
 import { BudgetPage } from "./BudgetPage";
 import { ExpensesPage } from "./ExpensesPage";
-import { GoalsBM } from "../components/BudgetManagement/GoalsBM";
-import { IncomesBM } from "../components/BudgetManagement/IncomesBM";
-import { BudgetsBM } from "../components/BudgetManagement/BudgetsBM";
-import { DebtsBM } from "../components/BudgetManagement/DebtsBM";
+import { AddTransaction } from "./AddTransaction";
 import { OnboardingProvider } from "../Hooks/useOnboardingState";
 
 export const HomePage = () => {
@@ -15,12 +12,10 @@ export const HomePage = () => {
       <OnboardingProvider>
         <Routes>
           <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="budget" element={<BudgetPage />} />
-          <Route path="goals-bm" element={<GoalsBM />} />
-          <Route path="incomes-bm" element={<IncomesBM />} />
-          <Route path="budgets-bm" element={<BudgetsBM />} />
-          <Route path="debts-bm" element={<DebtsBM />} />
+          <Route path="budget/*" element={<BudgetPage />} />
           <Route path="expenses" element={<ExpensesPage />} />
+          <Route path="transactions" element={<AddTransaction />} />
+          <Route path="*" element={<Navigate to="/home/dashboard" replace />} />
         </Routes>
       </OnboardingProvider>
     </>

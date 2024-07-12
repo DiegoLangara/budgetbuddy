@@ -1,5 +1,20 @@
 /* Debts.css */
 .debts-background {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Ensure pseudo-element doesn't affect layout */
+}
+
+.debts-background::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: var(--Schemes-On-Primary-Container, #29638a);
   background-image: url(../Assets/debts_onboarding.jpeg);
   mix-blend-mode: multiply;
@@ -8,6 +23,7 @@
   background-position: center;
   background-repeat: no-repeat;
   opacity: 0.85;
+  z-index: -1; /* Ensure it stays behind the content */
 }
 
 .debts-background-container {
@@ -17,6 +33,9 @@
   min-height: 100vh;
   padding-left: 45%;
   padding-right: 2rem;
+
+  position: relative;
+  z-index: 1; /* Ensure content stays above the pseudo-element */
 }
 
 .card {
@@ -25,8 +44,46 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 0rem;
   min-height: 80vh;
-  min-width: 500px;
+  min-width: 380px;
   max-width: 600px;
+}
+
+.card-bm {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin: 1rem;
+  transition: flex-basis 0.3s ease;
+  width: 100%;
+  max-width: 50%;
+}
+
+.card.editable {
+  box-shadow: 0 6px 10px rgba(41, 99, 138, 1);
+}
+
+.card.editable .btn {
+  opacity: 1; /* Ensure buttons have full opacity */
+}
+
+.editable {
+  opacity: 1;
+}
+
+.non-editable {
+  opacity: 0.4;
+}
+
+input:disabled,
+select:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+input:not(:disabled),
+select:not(:disabled) {
+  background-color: #ffffff;
 }
 
 .img-black {
@@ -45,8 +102,9 @@
   margin-bottom: 0;
 }
 
-.btn-row {
-  display: flex;
-  justify-content: center;
-  margin-top: 2rem;
+/* Media queries */
+@media (max-width: 768px) {
+  .card {
+    min-width: 100%;
+  }
 }

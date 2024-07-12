@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Avatar, Button } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Typography, Avatar, Button, Menu, MenuItem, Divider } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import PrintIcon from '@mui/icons-material/Print';
+import PersonIcon from '@mui/icons-material/Person';
+import SettingsIcon from '@mui/icons-material/Settings';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useMediaQuery } from '@mui/material';
 import styled from 'styled-components';
 import { useAuth } from "../../contexts/AuthContext";
+import { Profile } from '../Profile/Profile';
 
 export const Header = ({ toggleDrawer }) => {
   const { currentUser } = useAuth();
@@ -12,6 +19,22 @@ export const Header = ({ toggleDrawer }) => {
   const user_id = currentUser.id;
   const [user, setUser] = useState({});
   const isMobile = useMediaQuery('(max-width:600px)');
+
+  const [showProfile, setShowProfile] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleToggleProfile = () => {
+    setShowProfile(!showProfile);
+    handleMenuClose();
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -66,15 +89,38 @@ export const Header = ({ toggleDrawer }) => {
           >
             Print
           </Button>
-          <Avatar src="/path-to-avatar-image.jpg" alt="User Avatar" />
+          <IconButton edge="end" color="inherit" onClick={handleMenuOpen}>
+            <Avatar src="/path-to-avatar-image.jpg" alt="User Avatar" />
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <p style={{ margin: '1rem', color: 'black' }}>My Account</p>
+            <Divider sx={{ my: 1 }} />
+            <MenuItem onClick={handleToggleProfile}>
+              <StyledPersonIcon />{user.firstname} {user.lastname}
+            </MenuItem>
+            <MenuItem><StyledSettingsIcon />Settings</MenuItem>
+            <MenuItem><StyledVerifiedUserIcon />Account Security</MenuItem>
+            <Divider sx={{ my: 1 }} />
+            <MenuItem><StyledMenuBookIcon />Terms and Conditions</MenuItem>
+            <MenuItem><StyledMenuBookIcon />Privacy Policy</MenuItem>
+            <MenuItem><StyledNotificationsIcon />Notifications</MenuItem>
+            <Divider sx={{ my: 1 }} />
+            <MenuItem><StyledLogoutIcon />Logout</MenuItem>
+          </Menu>
         </StyledToolbar>
       </StyledAppBar>
+      <Profile open={showProfile} onClose={handleToggleProfile} />
     </HeaderContainer>
   );
 }
 
 const HeaderContainer = styled.div`
-  padding: 3vh 16.5vw 0 16.5vw; /* Ajusta el espacio según sea necesario */
+  width: 100%;
+  padding: 3vh 10vw 0 calc(10vw + 60px);
   margin: 0 auto;
 `;
 
@@ -98,6 +144,30 @@ const WelcomeMessage = styled.div`
 
 const Spacer = styled.div`
   flex-grow: 1;
+`;
+
+const StyledPersonIcon = styled(PersonIcon)`
+  margin-right: 0.5rem;
+`;
+
+const StyledSettingsIcon = styled(SettingsIcon)`
+  margin-right: 0.5rem;
+`;
+
+const StyledVerifiedUserIcon = styled(VerifiedUserIcon)`
+  margin-right: 0.5rem;
+`;
+
+const StyledMenuBookIcon = styled(MenuBookIcon)`
+  margin-right: 0.5rem;
+`;
+
+const StyledNotificationsIcon = styled(NotificationsIcon)`
+  margin-right: 0.5rem;
+`;
+
+const StyledLogoutIcon = styled(LogoutIcon)`
+  margin-right: 0.5rem;
 `;
 
 export default Header;
