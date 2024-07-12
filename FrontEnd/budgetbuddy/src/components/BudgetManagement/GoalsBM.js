@@ -67,6 +67,7 @@ export const GoalsBM = () => {
   const [goals, setGoals] = useState(
     state.goals || [{ id: 1, goal_type_id: 0 }]
   );
+  console.log(goals);
   const [editableGoalId, setEditableGoalId] = useState(null);
 
   // Fetch goals on component mount
