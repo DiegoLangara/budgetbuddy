@@ -183,50 +183,46 @@ export const PersonalDetails = () => {
                     </Field>
                   </div>
                 </div>
-                <div className="form-row">
-                  <div className="col-md-6 form-group">
-                    <Field label="Date of Birth">
-                      <Input
-                        name="dob"
-                        type="date"
-                        id="dob"
-                        value={formData.dob}
-                        onChange={handleChange}
-                        error={formErrors.dob}
-                        required
-                      />
-                    </Field>
-                  </div>
-                  <div className="col-md-6 form-group">
-                    <Field label="Country (Where you live)">
-                      <Input
-                        name="country"
-                        type="text"
-                        id="country"
-                        placeholder="e.g. Canada"
-                        value={formData.country}
-                        onChange={handleChange}
-                        error={formErrors.country}
-                        required
-                      />
-                    </Field>
-                  </div>
+                <div className="form-group">
+                  <Field label="Date of Birth">
+                    <Input
+                      name="dob"
+                      type="date"
+                      id="dob"
+                      value={formData.dob}
+                      onChange={handleChange}
+                      error={formErrors.dob}
+                      required
+                    />
+                  </Field>
                 </div>
-                <div className="form-row">
-                  <div className="col-md-6 form-group">
-                    <Field label="Occupation">
-                      <Input
-                        name="occupation"
-                        type="text"
-                        id="occupation"
-                        placeholder="e.g. Sales Manager"
-                        value={formData.occupation}
-                        onChange={handleChange}
-                        error={formErrors.occupation}
-                        required
-                      />
-                    </Field>
-                  </div>
+                <div className="form-group">
+                  <Field label="Country (Where you live)">
+                    <Input
+                      name="country"
+                      type="text"
+                      id="country"
+                      placeholder="e.g. Canada"
+                      value={formData.country}
+                      onChange={handleChange}
+                      error={formErrors.country}
+                      required
+                    />
+                  </Field>
+                </div>
+                <div className="form-group">
+                  <Field label="Occupation">
+                    <Input
+                      name="occupation"
+                      type="text"
+                      id="occupation"
+                      placeholder="e.g. Sales Manager"
+                      value={formData.occupation}
+                      onChange={handleChange}
+                      error={formErrors.occupation}
+                      required
+                    />
+                  </Field>
                 </div>
               </div>
               <div className="container mt-5 pt-5">

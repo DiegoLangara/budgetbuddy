@@ -12,6 +12,19 @@ const Navbar = () => {
     setIsOpen(!isOpen);
   };
 
+  const scrollToSection = (sectionId) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsOpen(false); // Close the mobile menu after clicking a link
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setIsOpen(false); // Close the mobile menu after clicking a link
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container d-flex align-items-center">
@@ -22,20 +35,23 @@ const Navbar = () => {
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ml-auto">
-            <li className="nav-item">
-              <Link className="nav-link" to="#features">Features</Link>
+            <li className="nav-item d-lg-none">
+              <a className="nav-link" href="#home" onClick={scrollToTop}><FaHome className="nav-icon" /> Home</a>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="#team">Team</Link>
+              <a className="nav-link" href="#features" onClick={() => scrollToSection('features')}>Features</a>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="#contact">Contact Us</Link>
+              <a className="nav-link" href="#team" onClick={() => scrollToSection('team')}>Team</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="#contact" onClick={() => scrollToSection('contact')}>Contact Us</a>
             </li>
             <li className="nav-item d-none d-lg-block">
-              <Link className="nav-link btn btn-primary text-white" to="/login">Login</Link>
+              <Link className="nav-link btn btn-primary text-white" to="/login">Log In</Link>
             </li>
             <li className="nav-item d-none d-lg-block">
-              <Link className="nav-link btn btn-success text-white" to="/signup">Sign Up</Link>
+              <Link className="nav-link btn btn-success text-black" to="/signup">Sign Up</Link>
             </li>
           </ul>
         </div>
@@ -44,24 +60,24 @@ const Navbar = () => {
         <button className="close-button" onClick={toggleMenu}>&times;</button>
         <ul className="mobile-nav">
           <li className="nav-item">
-            <Link className="nav-link" to="/" onClick={toggleMenu}>
+            <a className="nav-link" href="#home" onClick={scrollToTop}>
               <FaHome className="nav-icon" /> Home
-            </Link>
+            </a>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="#features" onClick={toggleMenu}>
+            <a className="nav-link" href="#features" onClick={() => scrollToSection('features')}>
               <FaFolder className="nav-icon" /> Features
-            </Link>
+            </a>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="#team" onClick={toggleMenu}>
+            <a className="nav-link" href="#team" onClick={() => scrollToSection('team')}>
               <FaUser className="nav-icon" /> Team
-            </Link>
+            </a>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="#contact" onClick={toggleMenu}>
+            <a className="nav-link" href="#contact" onClick={() => scrollToSection('contact')}>
               <FaShoppingBag className="nav-icon" /> Contact Us
-            </Link>
+            </a>
           </li>
         </ul>
       </div>

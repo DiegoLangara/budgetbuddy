@@ -15,30 +15,110 @@
   align-items: center;
   min-height: 100vh;
   padding-left: 45%;
-  padding-right: 2rem;
 }
+
+#root > div > div > div > div > div > form > div.container.px-0.pb-4{
+  margin: 0 0 0 0 !important;
+  max-width: 100% !important;
+;
+}
+
 
 .card {
   background: white;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 0rem;
-  min-height: 80vh;
-  min-width: 500px;
-  max-width: 600px;
+  padding: 0;
+  width: 65%;
+  max-width: 800px;
+  /* min-width: 300px; */
 }
 
 .img-black {
-  width: 2vw;
+  width: 3vw;
   filter: invert(100%);
-}
-
-.w-2vw {
-  width: 2vw;
 }
 
 .form-group label {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.col-md-6 {
+  flex: 0 0 48%;
+}
+
+@media only screen and (max-width: 768px) {
+  .personal-details-background-container {
+    flex-direction: column;
+    justify-content: flex-end !important; 
+    align-items: center;
+    padding: 0;
+  }
+
+  .card {
+    width: 100%; /* Ajusta el ancho al 90% */
+    margin: 0; /* Elimina márgenes */
+    padding: 0; /* Elimina rellenos */
+  }
+
+  .card-body {
+    padding: 1rem; /* Ajusta el relleno según sea necesario */
+  }
+
+  .mb-4,
+  .mb-3,
+  .mt-2,
+  .mt-5,
+  .mb-5,
+  .pt-2,
+  .pt-5 {
+    margin-top: 1.5% !important;
+    margin-bottom: 1.5% !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .container,
+  .row,
+  .col-md-6,
+  .col-md-12 {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .img-black {
+    width: 10vw; /* Ajustar tamaño del logo */
+  }
+
+  .card h3 {
+    font-size: 4vw; /* Ajustar tamaño del título */
+  }
+
+  .form-group label {
+    font-size: 3vw; /* Ajustar tamaño de los labels */
+  }
+
+  .form-group input {
+    font-size: 3vw; /* Ajustar tamaño de los inputs */
+  }
+
+  .submit-btn-personal-details {
+    font-size: 3vw; /* Ajustar tamaño del botón */
+  }
+  .img-black {
+    filter: invert(100%);
+    width: 6vw !important;
+    margin-right: 0.5rem;
+}
+#root > div > div > div > div > div > form > div.container.px-0.pb-4 > div:nth-child(4) > div{
+  margin-bottom: 5vh !important;
+}
+
 }

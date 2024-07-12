@@ -27,12 +27,16 @@
   font-size: 20px;
   color: #000;
   text-align: left;
+  overflow-wrap: break-word; /* Allow long words to break and wrap to the next line */
 }
 
 .team-section p {
   font-size: 14px;
   color: #000;
   text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .team-section img {
@@ -61,6 +65,12 @@
 
 .team-member {
   margin-bottom: 2rem;
+  padding: 1rem; /* Add padding to ensure there's space around the content */
+  box-sizing: border-box; /* Ensure padding is included in the element's total width and height */
+}
+
+.team-member img {
+  margin-bottom: 1rem; /* Add space below the image */
 }
 
 @media (max-width: 768px) {
@@ -102,6 +112,8 @@
     flex-direction: column;
     align-items: center;
     margin-bottom: 2rem;
+    padding: 1rem; /* Add padding to ensure there's space around the content */
+    box-sizing: border-box; /* Ensure padding is included in the element's total width and height */
   }
 
   .team-member img {

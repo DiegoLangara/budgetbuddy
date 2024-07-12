@@ -44,3 +44,11 @@
   overflow: hidden;
   margin-bottom: 0;
 }
+@media only screen and (max-width: 768px) {
+  .goals-background-container, .incomes-background-container,.budgets-background-container, .debts-background-container, .complete-process-background-container {
+    flex-direction: column;
+    justify-content: flex-end !important; 
+    align-items: center;
+    padding: 0;
+  }
+}
