@@ -3,6 +3,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Modal, Button, Form as BootstrapForm } from "react-bootstrap";
 import "../../css/ExpenseTable.css";
 import { useOnboardingState } from "../../Hooks/useOnboardingState";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 // Utility function to format the date
 const formatDate = (isoDate) => {
@@ -44,13 +46,44 @@ async function fetchAllTransactions(token, user_id, start_date, end_date) {
   }
 }
 
+// Delete transaction by ID
+async function deleteTransactionById(user_id, token, transaction_id) {
+  try {
+    console.log(
+      `Fetching transactions with user_id=${user_id}, token=${token}, transaction_id=${transaction_id}`
+    );
+    const response = await fetch(
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/transaction/`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          token: token,
+          user_id: user_id,
+        },
+        body: JSON.stringify({ transaction_id: transaction_id }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Failed to delete transaction:", error);
+    return null;
+  }
+}
+
 export const ExpenseTable = ({ startDate, endDate, category }) => {
   const { currentUser } = useAuth();
   const token = currentUser?.token;
   const user_id = currentUser?.id;
 
   const [state, setState] = useOnboardingState();
-  const [transactions, setTransactions] = useState([]);
+  const navigate = useNavigate();
+  const [transactions, setTransactions] = useState(
+    state.transactions || [{ id: 1 }]
+  );
   const [showModal, setShowModal] = useState(false);
   const [viewableTransaction, setViewableTransaction] = useState(null);
 
@@ -101,6 +134,39 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
     setViewableTransaction(null);
   };
 
+  const handleEditClick = () => {
+    navigate(`/home/transactions/`);
+  };
+
+  const handleDeleteClick = (transaction_id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3A3B3C",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteTransactionById(user_id, token, transaction_id);
+          const updatedTransactions = transactions.filter(
+            (transaction) => transaction.id !== transaction_id
+          );
+          setTransactions(updatedTransactions);
+          setState({ ...state, transactions: updatedTransactions });
+        } catch (error) {
+          Swal.fire(
+            "Error",
+            "Failed to delete goal from the database",
+            "error"
+          );
+        }
+      }
+    });
+  };
+
   return (
     <>
       <table className="responsive-table">
@@ -144,7 +210,7 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
                       />
                     </svg>
                   </a>
-                  <a href="#/">
+                  <a href="#/" onClick={() => handleEditClick(data.id)}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -160,7 +226,7 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
                       />
                     </svg>
                   </a>
-                  <a href="#/">
+                  <a href="#/" onClick={() => handleDeleteClick(data.id)}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"

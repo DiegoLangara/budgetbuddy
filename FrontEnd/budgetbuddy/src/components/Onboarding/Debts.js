@@ -65,6 +65,7 @@ export const Debts = () => {
     state.debts || [{ id: 1, debt_types_id: 0 }]
   );
   const [expandedDebtId, setExpandedDebtId] = useState(debts[0]?.id || 1);
+  const [debtErrors, setDebtErrors] = useState([]);
 
   useEffect(() => {
     async function loadDebts() {
@@ -99,6 +100,37 @@ export const Debts = () => {
     );
   };
 
+  const handleNumberInputChange = (id, field, value) => {
+    let errorField = field + "_error";
+    let errorMessage = "";
+
+    if (!/^\d*\.?\d*$/.test(value)) {
+      errorMessage = "Please enter a valid number.";
+    } else if (parseFloat(value) < 0) {
+      errorMessage = "Please enter a positive number.";
+    }
+    setDebts((prevDebts) =>
+      prevDebts.map((debt) =>
+        debt.id === id
+          ? { ...debt, [field]: value, [errorField]: errorMessage }
+          : debt
+      )
+    );
+  };
+
+  const validateDebts = () => {
+    const errors = debts.map((debt) => {
+      const error = {};
+      if (!debt.debt_name) error.debt_name = "Input required";
+      if (!debt.debt_types_id) error.debt_types_id = "Input required";
+      if (!debt.amount) error.amount = "Input required";
+      if (!debt.due_date) error.due_date = "Input required";
+      return error;
+    });
+    setDebtErrors(errors);
+    return errors.every((error) => Object.keys(error).length === 0);
+  };
+
   const addDebt = () => {
     const newId =
       debts.length > 0 ? Math.max(...debts.map((g) => g.id)) + 1 : 1;
@@ -107,29 +139,6 @@ export const Debts = () => {
     updatedDebts.sort((a, b) => a.id - b.id); // Ensure order is maintained
     setDebts(updatedDebts);
     setExpandedDebtId(newDebt.id);
-  };
-
-  const deleteDebtFromDatabase = async (id) => {
-    try {
-      const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debts/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            token: token,
-            user_id: user_id,
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to delete debt from the database");
-      }
-      console.log(`Debt with ID ${id} deleted successfully from the database`);
-    } catch (error) {
-      console.error("Failed to delete debt:", error);
-      throw error;
-    }
   };
 
   const deleteDebt = (id) => {
@@ -141,23 +150,12 @@ export const Debts = () => {
       confirmButtonColor: "#3A3B3C",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
+    }).then((result) => {
       if (result.isConfirmed) {
-        try {
-          await deleteDebtFromDatabase(id); // Delete from database first
-          const updatedDebts = debts.filter((debt) => debt.id !== id);
-          setDebts(updatedDebts);
-          setState({ ...state, debts: updatedDebts });
-          setExpandedDebtId(
-            updatedDebts.length > 0 ? updatedDebts[0].id : null
-          );
-        } catch (error) {
-          Swal.fire(
-            "Error",
-            "Failed to delete debt from the database",
-            "error"
-          );
-        }
+        const updatedDebts = debts.filter((debt) => debt.id !== id);
+        setDebts(updatedDebts);
+        setState({ ...state, debts: updatedDebts });
+        setExpandedDebtId(updatedDebts.length > 0 ? updatedDebts[0].id : null);
       }
     });
   };
@@ -189,6 +187,7 @@ export const Debts = () => {
 
   const saveData = async (event) => {
     event.preventDefault();
+    if (!validateDebts()) return;
     // Transform data to the required schema
     const transformedDebts = debts.map((debt) => ({
       debt_id: debt.id,
@@ -280,85 +279,122 @@ export const Debts = () => {
                                 <div className="form-row">
                                   <div className="col-md-6 form-group mb-0">
                                     <Field label="Debt name" className="mb-0">
-                                      <Input
-                                        type="text"
-                                        value={debt.debt_name || ""}
-                                        onChange={(e) =>
-                                          handleInputChange(
-                                            debt.id,
-                                            "debt_name",
-                                            e.target.value
-                                          )
-                                        }
-                                        placeholder="e.g. RBC credit card"
-                                      />
+                                      <>
+                                        <Input
+                                          type="text"
+                                          value={debt.debt_name || ""}
+                                          onChange={(e) =>
+                                            handleInputChange(
+                                              debt.id,
+                                              "debt_name",
+                                              e.target.value
+                                            )
+                                          }
+                                          placeholder="e.g. RBC credit card"
+                                          required
+                                        />
+                                        {debtErrors[index]?.debt_name && (
+                                          <div className="text-danger">
+                                            {debtErrors[index].debt_name}
+                                          </div>
+                                        )}
+                                      </>
                                     </Field>
                                   </div>
                                   <div className="col-md-6 form-group mb-0">
                                     <Field label="Debt category">
-                                      <select
-                                        className="form-select w-100 p-2 border border-secondary-subtle rounded"
-                                        value={debt.debt_types_id || 0}
-                                        onChange={(e) =>
-                                          handleInputChange(
-                                            debt.id,
-                                            "debt_types_id",
-                                            Number(e.target.value)
-                                          )
-                                        }
-                                      >
-                                        {debtCategoryOptions.map((option) => (
-                                          <option
-                                            key={option.id}
-                                            value={option.id}
-                                            disabled={option.disabled}
-                                          >
-                                            {option.name}
-                                          </option>
-                                        ))}
-                                      </select>
+                                      <>
+                                        <select
+                                          className="form-select w-100 p-2 border border-secondary-subtle rounded"
+                                          value={debt.debt_types_id || 0}
+                                          onChange={(e) =>
+                                            handleInputChange(
+                                              debt.id,
+                                              "debt_types_id",
+                                              Number(e.target.value)
+                                            )
+                                          }
+                                          required
+                                        >
+                                          {debtCategoryOptions.map((option) => (
+                                            <option
+                                              key={option.id}
+                                              value={option.id}
+                                              disabled={option.disabled}
+                                            >
+                                              {option.name}
+                                            </option>
+                                          ))}
+                                        </select>
+                                        {debtErrors[index]?.debt_types_id && (
+                                          <div className="text-danger">
+                                            {debtErrors[index].debt_types_id}
+                                          </div>
+                                        )}
+                                      </>
                                     </Field>
                                   </div>
                                 </div>
                                 <div className="form-row">
                                   <div className="col-md-6 form-group mb-0">
                                     <Field label="Debt amount">
-                                      <div className="input-group">
-                                        <span className="input-group-text bg-white">
-                                          $
-                                        </span>
-                                        <Input
-                                          type="number"
-                                          value={debt.amount || ""}
-                                          onChange={(e) =>
-                                            handleInputChange(
-                                              debt.id,
-                                              "amount",
-                                              e.target.value
-                                            )
-                                          }
-                                          placeholder="e.g. 1500"
-                                          className="form-control"
-                                          step="100"
-                                          min="0"
-                                        />
-                                      </div>
+                                      <>
+                                        <div className="input-group">
+                                          <span className="input-group-text bg-white">
+                                            $
+                                          </span>
+                                          <Input
+                                            type="number"
+                                            value={debt.amount || ""}
+                                            onChange={(e) =>
+                                              handleNumberInputChange(
+                                                debt.id,
+                                                "amount",
+                                                e.target.value
+                                              )
+                                            }
+                                            placeholder="e.g. 1500"
+                                            className="form-control"
+                                            step="100"
+                                            min="0"
+                                            required
+                                          />
+                                        </div>
+                                        {debt.amount_error && (
+                                          <div className="text-danger">
+                                            {debt.amount_error}
+                                          </div>
+                                        )}
+                                        {debtErrors[index]?.amount && (
+                                          <div className="text-danger">
+                                            {debtErrors[index]?.amount}
+                                          </div>
+                                        )}
+                                      </>
                                     </Field>
                                   </div>
                                   <div className="col-md-6 form-group mb-0">
                                     <Field label="Due date">
-                                      <Input
-                                        type="date"
-                                        value={debt.due_date || ""}
-                                        onChange={(e) =>
-                                          handleInputChange(
-                                            debt.id,
-                                            "due_date",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="form-control"
-                                      />
+                                      <>
+                                        <Input
+                                          type="date"
+                                          value={debt.due_date || ""}
+                                          onChange={(e) =>
+                                            handleInputChange(
+                                              debt.id,
+                                              "due_date",
+                                              e.target.value
+                                            )
+                                          }
+                                          className="form-control"
+                                          required
+                                        />
+                                        {debtErrors[index]?.due_date && (
+                                          <div className="text-danger">
+                                            {debtErrors[index].due_date}
+                                          </div>
+                                        )}
+                                      </>
                                     </Field>
                                   </div>
                                 </div>

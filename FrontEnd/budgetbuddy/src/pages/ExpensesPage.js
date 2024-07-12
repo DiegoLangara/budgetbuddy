@@ -7,7 +7,7 @@ import { ExpenseTable } from "../components/Expenses/ExpenseTable";
 import { useNavigate } from "react-router-dom";
 
 const transactionCategories = [
-  "All types",
+  "All categories",
   "goals",
   "income",
   "budgets",

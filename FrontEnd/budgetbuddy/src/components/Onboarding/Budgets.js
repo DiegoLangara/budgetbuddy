@@ -57,6 +57,7 @@ export const Budgets = () => {
     state.budgets || [{ id: 1, budget_name: "", amount: "", end_date: "" }]
   );
   const [expandedBudgetId, setExpandedBudgetId] = useState(budgets[0]?.id || 1);
+  const [budgetErrors, setBudgetErrors] = useState([]);
 
   useEffect(() => {
     async function loadBudgetItems() {
@@ -92,6 +93,36 @@ export const Budgets = () => {
     );
   };
 
+  const handleNumberInputChange = (id, field, value) => {
+    let errorField = field + "_error";
+    let errorMessage = "";
+
+    if (!/^\d*\.?\d*$/.test(value)) {
+      errorMessage = "Please enter a valid number.";
+    } else if (parseFloat(value) < 0) {
+      errorMessage = "Please enter a positive number.";
+    }
+    setBudgets((prevBudgets) =>
+      prevBudgets.map((budget) =>
+        budget.id === id
+          ? { ...budget, [field]: value, [errorField]: errorMessage }
+          : budget
+      )
+    );
+  };
+
+  const validateBudgets = () => {
+    const errors = budgets.map((budget) => {
+      const error = {};
+      if (!budget.budget_name) error.budget_name = "Input required";
+      if (!budget.amount) error.amount = "Input required";
+      if (!budget.end_date) error.end_date = "Input required";
+      return error;
+    });
+    setBudgetErrors(errors);
+    return errors.every((error) => Object.keys(error).length === 0);
+  };
+
   const addBudget = () => {
     const newId =
       budgets.length > 0 ? Math.max(...budgets.map((g) => g.id)) + 1 : 1;
@@ -107,31 +138,6 @@ export const Budgets = () => {
     setExpandedBudgetId(newBudget.id);
   };
 
-  const deleteBudgetFromDatabase = async (id) => {
-    try {
-      const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            token: token,
-            user_id: user_id,
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to delete budget from the database");
-      }
-      console.log(
-        `Budget with ID ${id} deleted successfully from the database`
-      );
-    } catch (error) {
-      console.error("Failed to delete budget:", error);
-      throw error;
-    }
-  };
-
   const deleteBudget = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -141,23 +147,14 @@ export const Budgets = () => {
       confirmButtonColor: "#3A3B3C",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
+    }).then((result) => {
       if (result.isConfirmed) {
-        try {
-          await deleteBudgetFromDatabase(id); // Delete from database first
-          const updatedBudgets = budgets.filter((budget) => budget.id !== id);
-          setBudgets(updatedBudgets);
-          setState({ ...state, budgets: updatedBudgets });
-          setExpandedBudgetId(
-            updatedBudgets.length > 0 ? updatedBudgets[0].id : null
-          );
-        } catch (error) {
-          Swal.fire(
-            "Error",
-            "Failed to delete budget from the database",
-            "error"
-          );
-        }
+        const updatedBudgets = budgets.filter((budget) => budget.id !== id);
+        setBudgets(updatedBudgets);
+        setState({ ...state, budgets: updatedBudgets });
+        setExpandedBudgetId(
+          updatedBudgets.length > 0 ? updatedBudgets[0].id : null
+        );
       }
     });
   };
@@ -189,6 +186,7 @@ export const Budgets = () => {
 
   const saveData = async (event) => {
     event.preventDefault();
+    if (!validateBudgets()) return;
     // Transform data to the required schema
     const transformedBudgets = budgets.map((budget) => ({
       budget_id: budget.id,
@@ -280,59 +278,88 @@ export const Budgets = () => {
                                 <div className="form-row">
                                   <div className="col-md-6 form-group mb-0">
                                     <Field label="Budget name" className="mb-0">
-                                      <Input
-                                        type="text"
-                                        value={budget.budget_name || ""}
-                                        onChange={(e) =>
-                                          handleInputChange(
-                                            budget.id,
-                                            "budget_name",
-                                            e.target.value
-                                          )
-                                        }
-                                        placeholder="ex. Groceries"
-                                      />
+                                      <>
+                                        <Input
+                                          type="text"
+                                          value={budget.budget_name || ""}
+                                          onChange={(e) =>
+                                            handleInputChange(
+                                              budget.id,
+                                              "budget_name",
+                                              e.target.value
+                                            )
+                                          }
+                                          placeholder="ex. Groceries"
+                                          required
+                                        />
+                                        {budgetErrors[index]?.budget_name && (
+                                          <div className="text-danger">
+                                            {budgetErrors[index]?.budget_name}
+                                          </div>
+                                        )}
+                                      </>
                                     </Field>
                                   </div>
                                   <div className="col-md-6 form-group mb-0">
                                     <Field label="Budget amount">
-                                      <div className="input-group">
-                                        <span className="input-group-text bg-white">
-                                          $
-                                        </span>
-                                        <Input
-                                          type="number"
-                                          value={budget.amount || ""}
-                                          onChange={(e) =>
-                                            handleInputChange(
-                                              budget.id,
-                                              "amount",
-                                              e.target.value
-                                            )
-                                          }
-                                          placeholder="e.g. 1200"
-                                          className="form-control"
-                                          step="100"
-                                          min="0"
-                                        />
-                                      </div>
+                                      <>
+                                        <div className="input-group">
+                                          <span className="input-group-text bg-white">
+                                            $
+                                          </span>
+                                          <Input
+                                            type="number"
+                                            value={budget.amount || ""}
+                                            onChange={(e) =>
+                                              handleNumberInputChange(
+                                                budget.id,
+                                                "amount",
+                                                e.target.value
+                                              )
+                                            }
+                                            placeholder="e.g. 1200"
+                                            className="form-control"
+                                            step="100"
+                                            min="0"
+                                            required
+                                          />
+                                        </div>
+                                        {budget.amount_error && (
+                                          <div className="text-danger">
+                                            {budget.amount_error}
+                                          </div>
+                                        )}
+                                        {budgetErrors[index]?.amount && (
+                                          <div className="text-danger">
+                                            {budgetErrors[index]?.amount}
+                                          </div>
+                                        )}
+                                      </>
                                     </Field>
                                   </div>
                                 </div>
                                 <div className="form-row">
                                   <div className="col-md-6 form-group mb-0">
                                     <Field label="End date" className="col">
-                                      <Input
-                                        type="date"
-                                        value={budget.end_date || ""}
-                                        onChange={(e) =>
-                                          handleInputChange(
-                                            budget.id,
-                                            "end_date",
-                                            e.target.value
-                                          )
-                                        }
-                                      />
+                                      <>
+                                        <Input
+                                          type="date"
+                                          value={budget.end_date || ""}
+                                          onChange={(e) =>
+                                            handleInputChange(
+                                              budget.id,
+                                              "end_date",
+                                              e.target.value
+                                            )
+                                          }
+                                          required
+                                        />
+                                        {budgetErrors[index]?.end_date && (
+                                          <div className="text-danger">
+                                            {budgetErrors[index]?.end_date}
+                                          </div>
+                                        )}
+                                      </>
                                     </Field>
                                   </div>
                                 </div>
