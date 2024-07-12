@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAuth } from "../contexts/AuthContext";
 import { faMoneyBill, faBagShopping, faCreditCard, faBullseye, faUpload, faCamera } from '@fortawesome/free-solid-svg-icons';
@@ -8,6 +9,7 @@ import '../css/AddTransaction.css'; // Ensure you have corresponding CSS for sty
 
 export const AddTransaction = () => {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const token = currentUser.token;
   const user_id = currentUser.id;
 
@@ -19,16 +21,20 @@ export const AddTransaction = () => {
   const [amount, setAmount] = useState('');
   const [createNew, setCreateNew] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+  const [imageBase64, setImageBase64] = useState('');
   const [pocketOptions, setPocketOptions] = useState([]);
+  const [incomeAccID, setIncomeAccID] = useState('');
   const [showCamera, setShowCamera] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
   const [devices, setDevices] = useState([]);
   const [selectedDevice, setSelectedDevice] = useState('');
+  const [balance, setBalance] = useState(0);
 
   const webcamRef = useRef(null);
 
   useEffect(() => {
     fetchBudgets();
+    fetchBalance();
     navigator.mediaDevices.enumerateDevices().then(deviceInfos => {
       const videoDevices = deviceInfos.filter(device => device.kind === 'videoinput');
       setDevices(videoDevices);
@@ -38,30 +44,109 @@ export const AddTransaction = () => {
     });
   }, []);
 
+  const fetchBalance = async () => {
+    const response = await fetch('https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/balance/', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'token': token,
+        'user_id': user_id,
+        'type': 'income'
+      },
+    });
+    const data = await response.json();
+    setBalance(data.balance);
+  };
+
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => {
     setShowModal(false);
     setShowCamera(false);
     setShowUpload(false);
   };
-  const handleSaveImage = (url) => {
+
+  const handleSaveImage = (url, base64) => {
     setImageUrl(url);
+    setImageBase64(base64);
     handleCloseModal();
   };
 
-  const handleSaveTransaction = () => {
-    // Logic to save transaction to the database
-    // Example: saveTransaction({ transactionType, pocket, payee, note, amount, imageUrl, createNew });
+  const handleSaveTransaction = async () => {
+    if (parseFloat(amount) > parseFloat(balance)) {
+      if(transactionType !== 'income'){
+        alert('Amount exceeds available balance, please add some income to increase available funds, or revise the amount you would like to pay in your '+ transactionType );
+        return;
+      }
+    }
+  
+    const transactionData = {
+      transaction_payee: transactionType === 'debts' || transactionType === 'goals' ? '' : payee,
+      transaction_note: note,
+      transaction_amount: parseFloat(amount),
+      transaction_image_url: imageBase64,
+      transaction_category: transactionType,
+      id_type_account: transactionType === 'income' ? parseInt(incomeAccID) : parseInt(pocket),
+    };
+  
+    console.log(transactionData);
+  
+    try {
+      const response = await fetch('https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/transaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token,
+          'user_id': user_id,
+        },
+        body: JSON.stringify(transactionData),
+      });
+  
+      const responseData = await response.json();
+  
+      if (response.ok) {
+        // Transaction saved successfully
+        console.log('Transaction saved successfully');
+        alert(`${responseData.message}: ${responseData.success}`);
+  
+        if (createNew) {
+          // Reset all fields and update balance
+          //setTransactionType('budgets');
+          handleTransactionTypeChange('budgets');
+          setPocket('');
+          setPayee('');
+          setNote('');
+          setAmount('');
+          setImageUrl('');
+          setImageBase64('');
+          fetchBalance();
+        } else {
+          // Navigate away to home/expenses
+          navigate('/home/expenses');
+        }
+      } else {
+        // Handle error
+        console.log('Error saving transaction');
+        alert(`${responseData.message}: ${responseData.success}`);
+      }
+    } catch (error) {
+      console.log('Error:', error);
+      alert('An unexpected error occurred. Please try again.');
+    }
   };
-
+  
   const handleCancel = () => {
-    setTransactionType('budgets');
+    //setTransactionType('budgets');
+    handleTransactionTypeChange('budgets');
     setPocket('');
     setPayee('');
     setNote('');
     setAmount('');
     setImageUrl('');
+    setImageBase64('');
     setCreateNew(false);
+  
+    // Navigate away to home/expenses
+    navigate('/home/expenses');
   };
 
   const fetchGoals = async () => {
@@ -118,6 +203,7 @@ export const AddTransaction = () => {
     const data = await response.json();
     const options = data.map(income => ({ value: income.income_id, label: income.income_name }));
     setPocketOptions(options);
+    setIncomeAccID(data[0].account_id);
   };
 
   const handleTransactionTypeChange = (type) => {
@@ -152,16 +238,30 @@ export const AddTransaction = () => {
 
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
-    // Logic to save the image to the server and get the URL
-    handleSaveImage(imageSrc);
+    handleSaveImage(imageSrc, imageSrc);
   }, [webcamRef]);
+
+  const handleDeviceChange = (e) => {
+    setSelectedDevice(e.target.value);
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
+      handleSaveImage(reader.result, base64String);
+    };
+    reader.readAsDataURL(file);
+  };
 
   return (
     <div className='addTransactions'>
-      <h1>Transactions Page</h1>
+      <h1>Create a transaction</h1>
+      <h2>Available Funds: ${balance.toFixed(2)}</h2>
       <Form>
         <Form.Group controlId="transactionType">
-          <Form.Label>Type of Transaction</Form.Label>
+          <Form.Label>What kind of transaction do you want to make?</Form.Label>
           <div className="transaction-options">
             <Form.Check
               type="radio"
@@ -207,7 +307,7 @@ export const AddTransaction = () => {
         </Form.Group>
 
         <Form.Group controlId="pocket">
-          <Form.Label>Pocket</Form.Label>
+          <Form.Label>Please select a category:</Form.Label>
           <Form.Control 
             as="select" 
             value={pocket} 
@@ -221,15 +321,17 @@ export const AddTransaction = () => {
           </Form.Control>
         </Form.Group>
 
-        <Form.Group controlId="payee">
-          <Form.Label>Payee</Form.Label>
-          <Form.Control 
-            type="text"
-            value={payee}
-            onChange={(e) => setPayee(e.target.value)}
-            required
-          />
-        </Form.Group>
+        {transactionType !== 'debts' && transactionType !== 'goals' && (
+          <Form.Group controlId="payee">
+             <Form.Label>{transactionType === 'income' ? 'Payer' : 'Payee'}</Form.Label>
+            <Form.Control 
+              type="text"
+              value={payee}
+              onChange={(e) => setPayee(e.target.value)}
+              required
+            />
+          </Form.Group>
+        )}
 
         <Form.Group controlId="note">
           <Form.Label>Note</Form.Label>
@@ -288,11 +390,7 @@ export const AddTransaction = () => {
               label="Choose file"
               custom
               accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files[0];
-                // Logic to upload the file to the server and get the URL
-                handleSaveImage('uploaded_image_url');
-              }}
+              onChange={handleFileUpload}
             />
           )}
           {showCamera && (
@@ -310,7 +408,7 @@ export const AddTransaction = () => {
                   <Form.Control
                     as="select"
                     value={selectedDevice}
-                    onChange={(e) => setSelectedDevice(e.target.value)}
+                    onChange={handleDeviceChange}
                   >
                     {devices.map((device, idx) => (
                       <option key={device.deviceId} value={device.deviceId}>

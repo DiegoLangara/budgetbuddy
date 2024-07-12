@@ -41,7 +41,7 @@ export const CompleteProcess = () => {
                   may edit your onboarding details in your profile settings.
                 </p>
               </div>
-              <div className="d-flex justify-content-center mt-5 pt-5">
+              <div className="d-flex justify-content-center">
                 <BootstrapButton
                   onClick={handleNavigate}
                   variant="primary"

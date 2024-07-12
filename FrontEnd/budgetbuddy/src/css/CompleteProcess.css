@@ -26,6 +26,10 @@
   z-index: -1; /* Ensure it stays behind the content */
 }
 
+#root > div > div > div > div > div > div > div.d-flex.justify-content-center > button{
+  background-color: #0D2000;
+}
+
 .complete-process-background-container {
   display: flex;
   justify-content: center;

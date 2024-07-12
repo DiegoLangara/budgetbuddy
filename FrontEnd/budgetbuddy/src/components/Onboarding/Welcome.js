@@ -25,9 +25,9 @@ export const Welcome = () => {
                 />
                 <h3 className="text-left mb-0 ml-1">Budget Buddy</h3>
               </div>
-              <div className="content mt-5 mb-5">
+              <div className="content">
                 <h1
-                  className="text-left mt-5 mb-4"
+                  className="text-left mb-4"
                   style={{ fontSize: "3.7rem" }}
                 >
                   Easily manage your finances with us.
@@ -43,7 +43,7 @@ export const Welcome = () => {
                   variant="primary"
                   className="w-100 submit-btn-welcome"
                 >
-                  Get Started
+                  Start
                 </BootstrapButton>
               </div>
             </Card.Body>

@@ -1,4 +1,3 @@
-
 import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../css/Features.css';
@@ -6,12 +5,10 @@ import incomeReport from '../../Assets/iphoneLayer.png';
 import ExpensesReport from '../../Assets/BudgetManagement.png';
 import Goal from '../../Assets/Goal.png';
 
-
 const Features = () => {
   return (
     <section id="features" className="features-section text-center">
       <div className="container">
-
         <div className="section-heading">
           <h2>Features</h2>
         </div>
