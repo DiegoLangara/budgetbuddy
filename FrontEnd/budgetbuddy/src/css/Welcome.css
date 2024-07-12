@@ -7,15 +7,19 @@
   background-position: center;
   background-repeat: no-repeat;
   opacity: 0.85;
+  height: 100vh;
 }
 
 .welcome-background-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 100%;
   padding-left: 45%;
   padding-right: 2rem;
+}
+#root > div > div > div > div > div > div > div.content.mt-5.mb-5{
+ padding: 0 0 0 0 !important;
 }
 
 .card {
@@ -24,8 +28,8 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 0rem;
   min-height: 80vh;
-  min-width: 500px;
-  max-width: 600px;
+  min-width: 5vw;
+  max-width: 6vw;
 }
 #root > div > div > div > div > div > div > div.content.mt-5.mb-5 > h1{
   margin-top: 2rem;

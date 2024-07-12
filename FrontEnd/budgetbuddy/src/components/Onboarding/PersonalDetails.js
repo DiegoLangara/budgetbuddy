@@ -225,7 +225,7 @@ export const PersonalDetails = () => {
                   </Field>
                 </div>
               </div>
-              <div className="container mt-5 pt-5">
+              <div className="container">
                 <div className="row">
                   <div className="col-md-12 px-0 pt-2">
                     <BootstrapButton
