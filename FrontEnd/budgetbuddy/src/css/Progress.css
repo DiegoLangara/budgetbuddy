@@ -1,0 +1,21 @@
+/* Progress.css */
+.progress-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+  
+  .progress-step {
+    width: 24%;
+    height: 1rem;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .progress-step.active {
+    background-color: #001E30; /* Color de la barra activa */
+  }
+  

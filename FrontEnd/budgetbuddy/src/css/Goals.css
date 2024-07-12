@@ -9,6 +9,9 @@
   background-repeat: no-repeat;
   opacity: 0.85;
 }
+#root > div > div > div > div > div > form > div > div.row.btn-row > div > div > button{
+  background-color: #0D2000;
+}
 
 .goals-background-container {
   display: flex;

@@ -9,6 +9,9 @@
   opacity: 0.85;
   height: 100vh;
 }
+#root > div > div > div > div > div > div > div.d-flex.justify-content-center.mt-5.pt-2 > button{
+  background-color: #0D2000;
+}
 
 .welcome-background-container {
   display: flex;
