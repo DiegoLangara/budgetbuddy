@@ -36,12 +36,12 @@ export const Sidebar = ({ variant, open, toggleDrawer, drawerWidth }) => {
           </ListItemIcon>
           <StyledListItemText primary="Expenses" />
         </StyledListItem>
-        <StyledListItem component={Link} to="transactions" onClick={toggleDrawer}>
+        {/* <StyledListItem component={Link} to="transactions" onClick={toggleDrawer}>
           <ListItemIcon>
             <FontAwesomeIcon icon={faDollarSign} color="white" />
           </ListItemIcon>
           <StyledListItemText primary="Add Transaction" />
-        </StyledListItem>
+        </StyledListItem> */}
       </List>
       <Footer>
         &copy; 2024<br />

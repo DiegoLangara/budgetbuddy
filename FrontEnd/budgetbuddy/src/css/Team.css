@@ -48,7 +48,7 @@
 
 .team-title {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   justify-content: center; /* Center the content horizontally */
   margin-bottom: 2rem;
 }
@@ -103,7 +103,7 @@
   }
 
   .team-title h2 {
-    font-size: 6vw;
+    font-size: 5vw;
     font-weight: bold; /* Ensure boldness on mobile */
   }
 
