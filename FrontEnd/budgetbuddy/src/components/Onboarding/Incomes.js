@@ -427,7 +427,7 @@ export const Incomes = () => {
                                     </Field>
                                   </div>
                                   <div className="col-md-6 form-group mb-0">
-                                    <Field label="How often do you earn it?">
+                                    <Field label="Income period">
                                       <>
                                         <div className="mt-0">
                                           <select

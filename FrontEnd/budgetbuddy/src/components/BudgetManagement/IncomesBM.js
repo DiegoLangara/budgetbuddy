@@ -95,6 +95,7 @@ export const IncomesBM = () => {
     state.incomes || [{ id: 1, income_type_id: 0 }]
   );
   const [editableIncomeId, setEditableIncomeId] = useState(null);
+  const [incomeErrors, setIncomeErrors] = useState([]);
 
   useEffect(() => {
     async function loadIncomes() {
@@ -126,6 +127,37 @@ export const IncomesBM = () => {
         income.id === id ? { ...income, [field]: value } : income
       )
     );
+  };
+
+  const handleNumberInputChange = (id, field, value) => {
+    let errorField = field + "_error";
+    let errorMessage = "";
+
+    if (!/^\d*\.?\d*$/.test(value)) {
+      errorMessage = "Please enter a valid number.";
+    } else if (parseFloat(value) < 0) {
+      errorMessage = "Please enter a positive number.";
+    }
+    setIncomes((prevIncomes) =>
+      prevIncomes.map((income) =>
+        income.id === id
+          ? { ...income, [field]: value, [errorField]: errorMessage }
+          : income
+      )
+    );
+  };
+
+  const validateIncomes = () => {
+    const errors = incomes.map((income) => {
+      const error = {};
+      if (!income.income_name) error.income_name = "Input required";
+      if (income.income_type_id === 0) error.income_type_id = "Input required";
+      if (!income.amount) error.amount = "Input required";
+      if (!income.period) error.period = "Input required";
+      return error;
+    });
+    setIncomeErrors(errors);
+    return errors.every((error) => Object.keys(error).length === 0);
   };
 
   const addIncome = () => {
@@ -224,6 +256,7 @@ export const IncomesBM = () => {
 
   const saveData = async (event) => {
     event.preventDefault();
+    if (!validateIncomes()) return;
     // Transform data to the required schema
     const transformedIncomes = incomes.map((income) => ({
       income_id: income.id,
@@ -236,6 +269,7 @@ export const IncomesBM = () => {
           (category) => category.id === income.income_type_id
         )?.name || "",
     }));
+    console.log(transformedIncomes);
     const combinedData = {
       ...state,
       incomes: transformedIncomes,
@@ -317,113 +351,152 @@ export const IncomesBM = () => {
                       <div className="form-row">
                         <div className="col-md-6 form-group mb-0">
                           <Field label="Income name" className="mb-0">
-                            <Input
-                              type="text"
-                              id={income.id}
-                              value={income.income_name || ""}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  income.id,
-                                  "income_name",
-                                  e.target.value
-                                )
-                              }
-                              placeholder="ex. House rental"
-                              disabled={editableIncomeId !== income.id}
-                              style={{ fontSize: ".8rem" }}
-                            />
+                            <>
+                              <Input
+                                type="text"
+                                id={income.id}
+                                value={income.income_name || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    income.id,
+                                    "income_name",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="ex. House rental"
+                                disabled={editableIncomeId !== income.id}
+                                style={{ fontSize: ".8rem" }}
+                                required
+                              />
+                              {incomeErrors[index]?.income_name && (
+                                <div className="text-danger">
+                                  {incomeErrors[index]?.income_name}
+                                </div>
+                              )}
+                            </>
                           </Field>
                         </div>
                         <div className="col-md-6 form-group mb-0">
                           <Field label="Income category">
-                            <div className="mt-0">
-                              <select
-                                className="form-select w-100 p-2 border border-secondary-subtle rounded"
-                                id={income.id}
-                                value={income.income_type_id || 0}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    income.id,
-                                    "income_type_id",
-                                    Number(e.target.value)
-                                  )
-                                }
-                                disabled={editableIncomeId !== income.id}
-                                style={{ fontSize: ".8rem" }}
-                              >
-                                {incomeCategoryOptions.map((option) => (
-                                  <option
-                                    key={option.id}
-                                    value={option.id}
-                                    disabled={option.disabled}
-                                  >
-                                    {option.name}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
+                            <>
+                              <div className="mt-0">
+                                <select
+                                  className="form-select w-100 p-2 border border-secondary-subtle rounded"
+                                  id={income.id}
+                                  value={income.income_type_id || 0}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      income.id,
+                                      "income_type_id",
+                                      Number(e.target.value)
+                                    )
+                                  }
+                                  disabled={editableIncomeId !== income.id}
+                                  style={{ fontSize: ".8rem" }}
+                                  required
+                                >
+                                  {incomeCategoryOptions.map((option) => (
+                                    <option
+                                      key={option.id}
+                                      value={option.id}
+                                      disabled={option.disabled}
+                                    >
+                                      {option.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                              {incomeErrors[index]?.income_type_id && (
+                                <div className="text-danger">
+                                  {incomeErrors[index]?.income_type_id}
+                                </div>
+                              )}
+                            </>
                           </Field>
                         </div>
                       </div>
                       <div className="form-row">
                         <div className="col-md-6 form-group mb-0">
                           <Field label="Income amount">
-                            <div className="input-group">
-                              <span
-                                className="input-group-text bg-white"
-                                style={{ fontSize: ".8rem" }}
-                              >
-                                $
-                              </span>
-                              <Input
-                                type="number"
-                                id={income.id}
-                                value={income.amount || ""}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    income.id,
-                                    "amount",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="ex. 2500"
-                                className="form-control"
-                                step="100"
-                                min="0"
-                                disabled={editableIncomeId !== income.id}
-                                style={{ fontSize: ".8rem" }}
-                              />
-                            </div>
+                            <>
+                              <>
+                                <div className="input-group">
+                                  <span
+                                    className="input-group-text bg-white"
+                                    style={{ fontSize: ".8rem" }}
+                                  >
+                                    $
+                                  </span>
+                                  <Input
+                                    type="number"
+                                    id={income.id}
+                                    value={income.amount || ""}
+                                    onChange={(e) =>
+                                      handleNumberInputChange(
+                                        income.id,
+                                        "amount",
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder="ex. 2500"
+                                    className="form-control"
+                                    step="100"
+                                    min="0"
+                                    disabled={editableIncomeId !== income.id}
+                                    style={{ fontSize: ".8rem" }}
+                                    required
+                                  />
+                                </div>
+                                {income.amount_error && (
+                                  <div className="text-danger">
+                                    {income.amount_error}
+                                  </div>
+                                )}
+                              </>
+                              {incomeErrors[index]?.amount && (
+                                <div className="text-danger">
+                                  {incomeErrors[index]?.amount}
+                                </div>
+                              )}
+                            </>
                           </Field>
                         </div>
                         <div className="col-md-6 form-group mb-0">
                           <Field label="Income period">
-                            <div className="mt-0">
-                              <select
-                                className="form-select w-100 p-2 border border-secondary-subtle rounded"
-                                id={income.id}
-                                value={income.period || 0}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    income.id,
-                                    "period",
-                                    Number(e.target.value)
-                                  )
-                                }
-                                disabled={editableIncomeId !== income.id}
-                                style={{ fontSize: ".8rem" }}
-                              >
-                                {incomePeriodOptions.map((option) => (
-                                  <option
-                                    key={option.id}
-                                    value={option.id}
-                                    disabled={option.disabled}
-                                  >
-                                    {option.name}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
+                            <>
+                              <div className="mt-0">
+                                <select
+                                  className="form-select w-100 p-2 border border-secondary-subtle rounded"
+                                  id={income.id}
+                                  value={income.period || 0}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      income.id,
+                                      "period",
+                                      Number(e.target.value)
+                                    )
+                                  }
+                                  disabled={editableIncomeId !== income.id}
+                                  style={{ fontSize: ".8rem" }}
+                                  required
+                                >
+                                  {incomePeriodOptions.map((option) => (
+                                    <option
+                                      key={option.id}
+                                      value={option.id}
+                                      disabled={option.disabled}
+                                    >
+                                      {option.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                              {incomeErrors[index]?.period && (
+                                <div className="text-danger">
+                                  {incomeErrors[index]?.period}
+                                </div>
+                              )}
+                            </>
                           </Field>
                         </div>
                       </div>

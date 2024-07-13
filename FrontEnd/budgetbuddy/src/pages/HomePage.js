@@ -15,6 +15,7 @@ export const HomePage = () => {
           <Route path="budget/*" element={<BudgetPage />} />
           <Route path="expenses" element={<ExpensesPage />} />
           <Route path="transactions" element={<AddTransaction />} />
+          <Route path="transactions/:id" element={<AddTransaction />} />
           <Route path="*" element={<Navigate to="/home/dashboard" replace />} />
         </Routes>
       </OnboardingProvider>

@@ -15,6 +15,11 @@ const formatDate = (isoDate) => {
   return `${year}-${month}-${day}`;
 };
 
+// Utility function to decode byte array to string
+const decodeByteArray = (byteArray) => {
+  return String.fromCharCode(...byteArray);
+};
+
 // Fetch all transactions from API
 async function fetchAllTransactions(token, user_id, start_date, end_date) {
   try {
@@ -47,10 +52,10 @@ async function fetchAllTransactions(token, user_id, start_date, end_date) {
 }
 
 // Delete transaction by ID
-async function deleteTransactionById(user_id, token, transaction_id) {
+async function deleteTransactionById(user_id, token, id) {
   try {
     console.log(
-      `Fetching transactions with user_id=${user_id}, token=${token}, transaction_id=${transaction_id}`
+      `Fetching transactions with user_id=${user_id}, token=${token}, transaction_id=${id}`
     );
     const response = await fetch(
       `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/transaction/`,
@@ -60,8 +65,8 @@ async function deleteTransactionById(user_id, token, transaction_id) {
           "Content-Type": "application/json",
           token: token,
           user_id: user_id,
+          transaction_id: id,
         },
-        body: JSON.stringify({ transaction_id: transaction_id }),
       }
     );
     if (!response.ok) {
@@ -98,7 +103,7 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
         );
         const formattedTransactions = fetchedTransactions.map(
           (transaction) => ({
-            id: transaction.id,
+            id: transaction.transaction_id,
             transaction_date: transaction.transaction_date
               ? formatDate(transaction.transaction_date)
               : "",
@@ -107,7 +112,9 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
             transaction_note: transaction.transaction_note || "",
             transaction_amount: transaction.transaction_amount || 0,
             transaction_type: transaction.transaction_type || "",
-            transaction_image_url: transaction.transaction_image_url || "",
+            transaction_image_url: transaction.transaction_image_url
+              ? decodeByteArray(transaction.transaction_image_url.data)
+              : "",
           })
         );
         setTransactions(formattedTransactions);
@@ -134,8 +141,8 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
     setViewableTransaction(null);
   };
 
-  const handleEditClick = () => {
-    navigate(`/home/transactions/`);
+  const handleEditClick = (id) => {
+    navigate(`/home/transactions/${id}`);
   };
 
   const handleDeleteClick = (transaction_id) => {
@@ -302,13 +309,15 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
               </BootstrapForm.Group>
               <BootstrapForm.Group controlId="transactionImageURL">
                 <BootstrapForm.Label>Image</BootstrapForm.Label>
-                <div>
-                  <img
-                    src={viewableTransaction.transaction_image_url}
-                    alt="Transaction"
-                    style={{ width: "100%", height: "auto" }}
-                  />
-                </div>
+                {viewableTransaction.transaction_image_url && (
+                  <div className="transaction-image">
+                    <img
+                      src={viewableTransaction.transaction_image_url}
+                      alt="Transaction"
+                      style={{ width: "100%", height: "auto" }}
+                    />
+                  </div>
+                )}
               </BootstrapForm.Group>
             </BootstrapForm>
           </Modal.Body>
