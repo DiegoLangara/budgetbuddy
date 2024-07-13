@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import ApexChart from 'react-apexcharts';
 import styled from 'styled-components';
 import { useAuth } from '../../contexts/AuthContext';
+import { Box } from '@mui/system';
+import { Field } from '../OnboardingParts/Field';
+import { Input } from '../OnboardingParts/Input';
+import { Button } from 'react-bootstrap';
 
 // Fetch expenses from the backend
 const fetchBudgetExpenses = async (user_id, token, start_date, end_date) => {
@@ -30,7 +34,31 @@ const fetchBudgetExpenses = async (user_id, token, start_date, end_date) => {
   }
 }
 
-export const BalanceOfBudgetAndExpenses = ({ startDate, endDate }) => {
+export const BalanceOfBudgetAndExpenses = () => {
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [appliedStartDate, setAppliedStartDate] = useState('');
+  const [appliedEndDate, setAppliedEndDate] = useState('');
+
+  useEffect(() => {
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    const formattedFirstDay = firstDay.toISOString().split('T')[0];
+    const formattedLastDay = lastDay.toISOString().split('T')[0];
+
+    setStartDate(formattedFirstDay);
+    setEndDate(formattedLastDay);
+    setAppliedStartDate(formattedFirstDay);
+    setAppliedEndDate(formattedLastDay);
+  }, []);
+
+  const handleApply = () => {
+    setAppliedStartDate(startDate);
+    setAppliedEndDate(endDate);
+  };
+
   const { currentUser } = useAuth();
   const token = currentUser?.token;
   const user_id = currentUser?.id;
@@ -38,7 +66,7 @@ export const BalanceOfBudgetAndExpenses = ({ startDate, endDate }) => {
   const [expenses, setExpenses] = useState([]);
 
   useEffect(() => {
-    if (token && user_id && startDate && endDate) {
+    if (token && user_id && appliedStartDate && appliedEndDate) {
       async function loadExpenses() {
         const fetchedExpenses = await fetchBudgetExpenses(user_id, token, startDate, endDate);
         const formattedExpenses = fetchedExpenses.map((expense) => ({
@@ -50,7 +78,7 @@ export const BalanceOfBudgetAndExpenses = ({ startDate, endDate }) => {
       }
       loadExpenses();
     }
-  }, [token, user_id, startDate, endDate]);
+  }, [token, user_id, appliedStartDate, appliedEndDate]);
 
   const budget_name = expenses.map((data) => data.budget_name);
   const expense = expenses.map((data) => data.expense);
@@ -64,7 +92,6 @@ export const BalanceOfBudgetAndExpenses = ({ startDate, endDate }) => {
   const options = {
     chart: {
       type: 'bar',
-      height: 350,
       redrawOnParentResize: true,
     },
     plotOptions: {
@@ -86,7 +113,18 @@ export const BalanceOfBudgetAndExpenses = ({ startDate, endDate }) => {
 
   return (
     <StyledBar>
-      <h3>Balance Of Budget And Expenses</h3>
+      <h3>Budget And Expenses</h3>
+      <Box display="flex" alignItems="stretch" gap={1}>
+        <Field label="Start date">
+          <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+        </Field>
+        <Field label="End date">
+          <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+        </Field>
+        <Field>
+          <Button onClick={handleApply} style={{ marginTop: "2rem" }}>Apply</Button>
+        </Field>
+      </Box>
       <ApexChart options={options} series={series} type={options.chart.type} height={350} />
     </StyledBar>
   );

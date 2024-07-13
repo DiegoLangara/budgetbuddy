@@ -13,6 +13,10 @@ export const FinancialSuggestionsSection = ({ suggestion, financialData }) => {
       type: "donut",
     },
     labels: labels,
+    legend: {
+      position: 'bottom',
+      horizontalAlign: 'center'
+    }
   };
 
   return (
@@ -26,7 +30,7 @@ export const FinancialSuggestionsSection = ({ suggestion, financialData }) => {
 };
 
 const StyledFinancialSuggestionsSection = styled.div`
-  border: 1px solid #333;
+  border: 1px solid #CBD5E1;
   border-radius: 5px;
-  padding: 1rem;
+  padding: 0.5rem;
 `;
