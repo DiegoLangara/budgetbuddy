@@ -55,6 +55,7 @@ export const BudgetsBM = () => {
     state.budgets || [{ id: 1, budget_name: "", amount: "", end_date: "" }]
   );
   const [editableBudgetId, setEditableBudgetId] = useState(null);
+  const [budgetErrors, setBudgetErrors] = useState([]);
 
   useEffect(() => {
     async function loadBudgetItems() {
@@ -85,6 +86,36 @@ export const BudgetsBM = () => {
         budget.id === id ? { ...budget, [field]: value } : budget
       )
     );
+  };
+
+  const handleNumberInputChange = (id, field, value) => {
+    let errorField = field + "_error";
+    let errorMessage = "";
+
+    if (!/^\d*\.?\d*$/.test(value)) {
+      errorMessage = "Please enter a valid number.";
+    } else if (parseFloat(value) < 0) {
+      errorMessage = "Please enter a positive number.";
+    }
+    setBudgets((prevBudgets) =>
+      prevBudgets.map((budget) =>
+        budget.id === id
+          ? { ...budget, [field]: value, [errorField]: errorMessage }
+          : budget
+      )
+    );
+  };
+
+  const validateBudgets = () => {
+    const errors = budgets.map((budget) => {
+      const error = {};
+      if (!budget.budget_name) error.budget_name = "Input required";
+      if (!budget.amount) error.amount = "Input required";
+      if (!budget.end_date) error.end_date = "Input required";
+      return error;
+    });
+    setBudgetErrors(errors);
+    return errors.every((error) => Object.keys(error).length === 0);
   };
 
   const addBudget = () => {
@@ -188,6 +219,7 @@ export const BudgetsBM = () => {
 
   const saveData = async (event) => {
     event.preventDefault();
+    if (!validateBudgets()) return;
     // Transform data to the required schema
     const transformedBudgets = budgets.map((budget) => ({
       budget_id: budget.id,
@@ -276,68 +308,97 @@ export const BudgetsBM = () => {
                       <div className="form-row">
                         <div className="col-md-6 form-group mb-0">
                           <Field label="Budget Name" className="mb-0">
-                            <Input
-                              type="text"
-                              value={budget.budget_name || ""}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  budget.id,
-                                  "budget_name",
-                                  e.target.value
-                                )
-                              }
-                              placeholder="ex. Groceries"
-                              disabled={editableBudgetId !== budget.id}
-                              style={{ fontSize: ".8rem" }}
-                            />
+                            <>
+                              <Input
+                                type="text"
+                                value={budget.budget_name || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    budget.id,
+                                    "budget_name",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="ex. Groceries"
+                                disabled={editableBudgetId !== budget.id}
+                                style={{ fontSize: ".8rem" }}
+                                required
+                              />
+                              {budgetErrors[index]?.budget_name && (
+                                <div className="text-danger">
+                                  {budgetErrors[index]?.budget_name}
+                                </div>
+                              )}
+                            </>
                           </Field>
                         </div>
                         <div className="col-md-6 form-group mb-0">
                           <Field label="Budget amount" className="mb-0">
-                            <div className="input-group">
-                              <span
-                                className="input-group-text bg-white"
-                                style={{ fontSize: ".8rem" }}
-                              >
-                                $
-                              </span>
-                              <Input
-                                type="number"
-                                value={budget.amount || ""}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    budget.id,
-                                    "amount",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="e.g. 1200"
-                                className="form-control"
-                                step="100"
-                                min="0"
-                                disabled={editableBudgetId !== budget.id}
-                                style={{ fontSize: ".8rem" }}
-                              />
-                            </div>
+                            <>
+                              <div className="input-group">
+                                <span
+                                  className="input-group-text bg-white"
+                                  style={{ fontSize: ".8rem" }}
+                                >
+                                  $
+                                </span>
+                                <Input
+                                  type="number"
+                                  value={budget.amount || ""}
+                                  onChange={(e) =>
+                                    handleNumberInputChange(
+                                      budget.id,
+                                      "amount",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="e.g. 1200"
+                                  className="form-control"
+                                  step="100"
+                                  min="0"
+                                  disabled={editableBudgetId !== budget.id}
+                                  style={{ fontSize: ".8rem" }}
+                                  required
+                                />
+                              </div>
+                              {budget.amount_error && (
+                                <div className="text-danger">
+                                  {budget.amount_error}
+                                </div>
+                              )}
+                              {budgetErrors[index]?.amount && (
+                                <div className="text-danger">
+                                  {budgetErrors[index]?.amount}
+                                </div>
+                              )}
+                            </>
                           </Field>
                         </div>
                       </div>
                       <div className="form-row">
                         <div className="col-md-6 form-group mb-0">
                           <Field label="End date" className="col">
-                            <Input
-                              type="date"
-                              value={budget.end_date || ""}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  budget.id,
-                                  "end_date",
-                                  e.target.value
-                                )
-                              }
-                              disabled={editableBudgetId !== budget.id}
-                              style={{ fontSize: ".8rem" }}
-                            />
+                            <>
+                              <Input
+                                type="date"
+                                value={budget.end_date || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    budget.id,
+                                    "end_date",
+                                    e.target.value
+                                  )
+                                }
+                                disabled={editableBudgetId !== budget.id}
+                                style={{ fontSize: ".8rem" }}
+                                required
+                              />
+                              {budgetErrors[index]?.end_date && (
+                                <div className="text-danger">
+                                  {budgetErrors[index]?.end_date}
+                                </div>
+                              )}
+                            </>
                           </Field>
                         </div>
                       </div>

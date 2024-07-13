@@ -69,6 +69,7 @@ export const GoalsBM = () => {
   );
   console.log(goals);
   const [editableGoalId, setEditableGoalId] = useState(null);
+  const [goalErrors, setGoalErrors] = useState([]);
 
   // Fetch goals on component mount
   useEffect(() => {
@@ -103,6 +104,38 @@ export const GoalsBM = () => {
         goal.id === id ? { ...goal, [field]: value } : goal
       )
     );
+  };
+
+  const handleNumberInputChange = (id, field, value) => {
+    let errorField = field + "_error";
+    let errorMessage = "";
+
+    if (!/^\d*\.?\d*$/.test(value)) {
+      errorMessage = "Please enter a valid number.";
+    } else if (parseFloat(value) < 0) {
+      errorMessage = "Please enter a positive number.";
+    }
+    setGoals((prevGoals) =>
+      prevGoals.map((goal) =>
+        goal.id === id
+          ? { ...goal, [field]: value, [errorField]: errorMessage }
+          : goal
+      )
+    );
+  };
+
+  const validateGoals = () => {
+    const errors = goals.map((goal) => {
+      const error = {};
+      if (!goal.goal_name) error.goal_name = "Input required";
+      if (goal.goal_type_id === 0) error.goal_type_id = "Input required";
+      if (!goal.target_date) error.target_date = "Input required";
+      if (!goal.current_amount) error.current_amount = "Input required";
+      if (!goal.target_amount) error.target_amount = "Input required";
+      return error;
+    });
+    setGoalErrors(errors);
+    return errors.every((error) => Object.keys(error).length === 0);
   };
 
   const addGoal = () => {
@@ -199,6 +232,7 @@ export const GoalsBM = () => {
 
   const saveData = async (event) => {
     event.preventDefault();
+    if (!validateGoals()) return;
     const combinedData = {
       ...state,
       goals: goals,
@@ -276,128 +310,182 @@ export const GoalsBM = () => {
                       <div className="form-row">
                         <div className="col-md-6 form-group mb-0">
                           <Field label="Your goal" className="mb-0">
-                            <Input
-                              type="text"
-                              value={goal.goal_name || ""}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  goal.id,
-                                  "goal_name",
-                                  e.target.value
-                                )
-                              }
-                              placeholder="ex. Buy a Tesla"
-                              disabled={editableGoalId !== goal.id}
-                              style={{ fontSize: ".8rem" }}
-                            />
+                            <>
+                              <Input
+                                type="text"
+                                value={goal.goal_name || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    goal.id,
+                                    "goal_name",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="ex. Buy a Tesla"
+                                disabled={editableGoalId !== goal.id}
+                                style={{ fontSize: ".8rem" }}
+                                required
+                              />
+                              {goalErrors[index]?.goal_name && (
+                                <div className="text-danger">
+                                  {goalErrors[index]?.goal_name}
+                                </div>
+                              )}
+                            </>
                           </Field>
                         </div>
                         <div className="col-md-6 form-group mb-0">
                           <Field label="Goal category">
-                            <div className="mt-0">
-                              <select
-                                className="form-select w-100 p-2 border border-secondary-subtle rounded"
-                                value={goal.goal_type_id || 0}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    goal.id,
-                                    "goal_type_id",
-                                    Number(e.target.value)
-                                  )
-                                }
-                                disabled={editableGoalId !== goal.id}
-                                style={{ fontSize: ".8rem" }}
-                              >
-                                {goalTypeOptions.map((option) => (
-                                  <option
-                                    key={option.id}
-                                    value={option.id}
-                                    disabled={option.disabled}
-                                  >
-                                    {option.name}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
+                            <>
+                              <div className="mt-0">
+                                <select
+                                  className="form-select w-100 p-2 border border-secondary-subtle rounded"
+                                  value={goal.goal_type_id || 0}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      goal.id,
+                                      "goal_type_id",
+                                      Number(e.target.value)
+                                    )
+                                  }
+                                  disabled={editableGoalId !== goal.id}
+                                  style={{ fontSize: ".8rem" }}
+                                  required
+                                >
+                                  {goalTypeOptions.map((option) => (
+                                    <option
+                                      key={option.id}
+                                      value={option.id}
+                                      disabled={option.disabled}
+                                    >
+                                      {option.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                              {goalErrors[index]?.goal_type_id && (
+                                <div className="text-danger">
+                                  {goalErrors[index]?.goal_type_id}
+                                </div>
+                              )}
+                            </>
                           </Field>
                         </div>
                       </div>
                       <div className="form-row">
                         <div className="col-md-6 form-group mb-0">
                           <Field label="Target date" className="col">
-                            <Input
-                              type="date"
-                              value={goal.target_date || ""}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  goal.id,
-                                  "target_date",
-                                  e.target.value
-                                )
-                              }
-                              disabled={editableGoalId !== goal.id}
-                              style={{ fontSize: ".8rem" }}
-                            />
+                            <>
+                              <Input
+                                type="date"
+                                value={goal.target_date || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    goal.id,
+                                    "target_date",
+                                    e.target.value
+                                  )
+                                }
+                                disabled={editableGoalId !== goal.id}
+                                style={{ fontSize: ".8rem" }}
+                                required
+                              />
+                              {goalErrors[index]?.target_date && (
+                                <div className="text-danger">
+                                  {goalErrors[index]?.target_date}
+                                </div>
+                              )}
+                            </>
                           </Field>
                         </div>
                         <div className="col-md-6 form-group mb-0">
                           <Field label="Saved amount">
-                            <div className="input-group">
-                              <span
-                                className="input-group-text bg-white"
-                                style={{ fontSize: ".8rem" }}
-                              >
-                                $
-                              </span>
-                              <Input
-                                type="number"
-                                value={goal.current_amount || ""}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    goal.id,
-                                    "current_amount",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="ex. 5000"
-                                className="form-control"
-                                step="100"
-                                min="100"
-                                disabled={editableGoalId !== goal.id}
-                                style={{ fontSize: ".8rem" }}
-                              />
-                            </div>
+                            <>
+                              <>
+                                <div className="input-group">
+                                  <span
+                                    className="input-group-text bg-white"
+                                    style={{ fontSize: ".8rem" }}
+                                  >
+                                    $
+                                  </span>
+                                  <Input
+                                    type="number"
+                                    value={goal.current_amount || ""}
+                                    onChange={(e) =>
+                                      handleNumberInputChange(
+                                        goal.id,
+                                        "current_amount",
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder="ex. 5000"
+                                    className="form-control"
+                                    step="100"
+                                    min="100"
+                                    disabled={editableGoalId !== goal.id}
+                                    style={{ fontSize: ".8rem" }}
+                                    required
+                                  />
+                                </div>
+                                {goal.current_amount_error && (
+                                  <div className="text-danger">
+                                    {goal.current_amount_error}
+                                  </div>
+                                )}
+                              </>
+                              {goalErrors[index]?.current_amount && (
+                                <div className="text-danger">
+                                  {goalErrors[index]?.current_amount}
+                                </div>
+                              )}
+                            </>
                           </Field>
                         </div>
                       </div>
                       <div className="form-row">
                         <div className="col-md-6 form-group mb-0">
                           <Field label="Target amount">
-                            <div className="input-group">
-                              <span
-                                className="input-group-text bg-white"
-                                style={{ fontSize: ".8rem" }}
-                              >
-                                $
-                              </span>
-                              <Input
-                                type="number"
-                                value={goal.target_amount || ""}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    goal.id,
-                                    "target_amount",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="ex. 3000"
-                                className="form-control"
-                                step="100"
-                                min="100"
-                                disabled={editableGoalId !== goal.id}
-                                style={{ fontSize: ".8rem" }}
-                              />
-                            </div>
+                            <>
+                              <>
+                                <div className="input-group">
+                                  <span
+                                    className="input-group-text bg-white"
+                                    style={{ fontSize: ".8rem" }}
+                                  >
+                                    $
+                                  </span>
+                                  <Input
+                                    type="number"
+                                    value={goal.target_amount || ""}
+                                    onChange={(e) =>
+                                      handleNumberInputChange(
+                                        goal.id,
+                                        "target_amount",
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder="ex. 3000"
+                                    className="form-control"
+                                    step="100"
+                                    min="100"
+                                    disabled={editableGoalId !== goal.id}
+                                    style={{ fontSize: ".8rem" }}
+                                    required
+                                  />
+                                </div>
+                                {goal.target_amount_error && (
+                                  <div className="text-danger">
+                                    {goal.target_amount_error}
+                                  </div>
+                                )}
+                              </>
+                              {goalErrors[index]?.target_amount && (
+                                <div className="text-danger">
+                                  {goalErrors[index]?.target_amount}
+                                </div>
+                              )}
+                            </>
                           </Field>
                         </div>
                       </div>
