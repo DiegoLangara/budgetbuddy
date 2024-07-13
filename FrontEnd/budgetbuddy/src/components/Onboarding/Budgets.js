@@ -202,6 +202,15 @@ export const Budgets = () => {
     setState(combinedData);
     await saveToDatabase(combinedData);
     navigate("/onboarding/debts");
+    Swal.fire({
+      position: "bottom-start",
+      icon: "success",
+      title: "Budgets have been saved",
+      showConfirmButton: false,
+      timer: 1200,
+      width: "300px",
+      height: "200px",
+    });
   };
 
   const toggleBudget = (id) => {
@@ -317,6 +326,11 @@ export const Budgets = () => {
                                                 e.target.value
                                               )
                                             }
+                                            onKeyDown={(e) => {
+                                              if (e.key === "e") {
+                                                e.preventDefault();
+                                              }
+                                            }}
                                             placeholder="e.g. 1200"
                                             className="form-control"
                                             step="100"
@@ -351,6 +365,11 @@ export const Budgets = () => {
                                               "end_date",
                                               e.target.value
                                             )
+                                          }
+                                          min={
+                                            new Date()
+                                              .toISOString()
+                                              .split("T")[0]
                                           }
                                           required
                                         />

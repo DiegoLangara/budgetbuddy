@@ -6,8 +6,9 @@ import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
 import { useAuth } from "../../contexts/AuthContext";
 import { Card, Container, Button as BootstrapButton } from "react-bootstrap";
-import logo from "../../Assets/Logonn.png"; // Import the logo
-import "../../css/PersonalDetails.css"; // Import the CSS file
+import logo from "../../Assets/Logonn.png";
+import "../../css/PersonalDetails.css";
+import Swal from "sweetalert2";
 
 // Utility function to format the date
 const formatDate = (isoDate) => {
@@ -130,6 +131,15 @@ export const PersonalDetails = () => {
     setState(updatedData);
     await saveToDatabase(updatedData);
     navigate("/onboarding/goals");
+    Swal.fire({
+      position: "bottom-start",
+      icon: "success",
+      title: "Personal Details have been saved",
+      showConfirmButton: false,
+      timer: 1200,
+      width: "300px",
+      height: "200px",
+    });
   };
 
   return (
@@ -191,6 +201,13 @@ export const PersonalDetails = () => {
                       id="dob"
                       value={formData.dob}
                       onChange={handleChange}
+                      max={
+                        new Date(
+                          new Date().setFullYear(new Date().getFullYear() - 12)
+                        )
+                          .toISOString()
+                          .split("T")[0]
+                      }
                       error={formErrors.dob}
                       required
                     />

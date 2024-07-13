@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useOnboardingState } from "../../Hooks/useOnboardingState";
 import { Field } from "../OnboardingParts/Field";
 import { Form } from "../OnboardingParts/Form";
@@ -46,7 +46,6 @@ async function fetchBudgetItems(user_id, token) {
 
 export const BudgetsBM = () => {
   const [state, setState] = useOnboardingState();
-  const navigate = useNavigate();
   const { currentUser } = useAuth();
   const token = currentUser.token;
   const user_id = currentUser.id;
@@ -352,6 +351,11 @@ export const BudgetsBM = () => {
                                       e.target.value
                                     )
                                   }
+                                  onKeyDown={(e) => {
+                                    if (e.key === "e") {
+                                      e.preventDefault();
+                                    }
+                                  }}
                                   placeholder="e.g. 1200"
                                   className="form-control"
                                   step="100"
@@ -389,6 +393,7 @@ export const BudgetsBM = () => {
                                     e.target.value
                                   )
                                 }
+                                min={new Date().toISOString().split("T")[0]}
                                 disabled={editableBudgetId !== budget.id}
                                 style={{ fontSize: ".8rem" }}
                                 required

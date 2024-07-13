@@ -204,6 +204,15 @@ export const Debts = () => {
     setState(combinedData);
     await saveToDatabase(combinedData);
     navigate("/onboarding/complete-process");
+    Swal.fire({
+      position: "bottom-start",
+      icon: "success",
+      title: "Debts have been saved",
+      showConfirmButton: false,
+      timer: 1200,
+      width: "300px",
+      height: "200px",
+    });
   };
 
   const toggleDebt = (id) => {
@@ -353,6 +362,11 @@ export const Debts = () => {
                                                 e.target.value
                                               )
                                             }
+                                            onKeyDown={(e) => {
+                                              if (e.key === "e") {
+                                                e.preventDefault();
+                                              }
+                                            }}
                                             placeholder="e.g. 1500"
                                             className="form-control"
                                             step="100"
@@ -385,6 +399,11 @@ export const Debts = () => {
                                               "due_date",
                                               e.target.value
                                             )
+                                          }
+                                          min={
+                                            new Date()
+                                              .toISOString()
+                                              .split("T")[0]
                                           }
                                           className="form-control"
                                           required

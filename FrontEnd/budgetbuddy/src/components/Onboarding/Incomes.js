@@ -244,6 +244,15 @@ export const Incomes = () => {
     setState(combinedData);
     await saveToDatabase(combinedData);
     navigate("/onboarding/budgets");
+    Swal.fire({
+      position: "bottom-start",
+      icon: "success",
+      title: "Incomes have been saved",
+      showConfirmButton: false,
+      timer: 1200,
+      width: "300px",
+      height: "200px",
+    });
   };
 
   const toggleIncome = (id) => {
@@ -405,6 +414,11 @@ export const Incomes = () => {
                                                   e.target.value
                                                 )
                                               }
+                                              onKeyDown={(e) => {
+                                                if (e.key === "e") {
+                                                  e.preventDefault();
+                                                }
+                                              }}
                                               placeholder="ex. 2500"
                                               className="form-control"
                                               step="100"

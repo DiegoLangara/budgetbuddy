@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useOnboardingState } from "../../Hooks/useOnboardingState";
 import { Field } from "../OnboardingParts/Field";
 import { Form } from "../OnboardingParts/Form";
@@ -55,7 +55,6 @@ const debtCategoryOptions = [
 
 export const DebtsBM = () => {
   const [state, setState] = useOnboardingState();
-  const navigate = useNavigate();
   const { currentUser } = useAuth();
   const token = currentUser.token;
   const user_id = currentUser.id;
@@ -395,6 +394,11 @@ export const DebtsBM = () => {
                                       e.target.value
                                     )
                                   }
+                                  onKeyDown={(e) => {
+                                    if (e.key === "e") {
+                                      e.preventDefault();
+                                    }
+                                  }}
                                   placeholder="e.g. 1500"
                                   className="form-control"
                                   step="100"
@@ -430,6 +434,7 @@ export const DebtsBM = () => {
                                     e.target.value
                                   )
                                 }
+                                min={new Date().toISOString().split("T")[0]}
                                 disabled={editableDebtId !== debt.id}
                                 style={{ fontSize: ".8rem" }}
                                 required
