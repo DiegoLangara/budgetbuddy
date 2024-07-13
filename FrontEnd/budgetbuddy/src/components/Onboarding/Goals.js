@@ -203,6 +203,15 @@ export const Goals = () => {
     setState(combinedData);
     await saveToDatabase(combinedData);
     navigate("/onboarding/incomes");
+    Swal.fire({
+      position: "bottom-start",
+      icon: "success",
+      title: "Goals have been saved",
+      showConfirmButton: false,
+      timer: 1200,
+      width: "300px",
+      height: "200px",
+    });
   };
 
   const toggleGoal = (id) => {
@@ -350,6 +359,11 @@ export const Goals = () => {
                                               e.target.value
                                             )
                                           }
+                                          min={
+                                            new Date()
+                                              .toISOString()
+                                              .split("T")[0]
+                                          }
                                           required
                                         />
                                         {goalErrors[index]?.target_date && (
@@ -378,6 +392,11 @@ export const Goals = () => {
                                                   e.target.value
                                                 )
                                               }
+                                              onKeyDown={(e) => {
+                                                if (e.key === "e") {
+                                                  e.preventDefault();
+                                                }
+                                              }}
                                               placeholder="ex. 5000"
                                               className="form-control"
                                               step="100"
@@ -419,6 +438,11 @@ export const Goals = () => {
                                                   e.target.value
                                                 )
                                               }
+                                              onKeyDown={(e) => {
+                                                if (e.key === "e") {
+                                                  e.preventDefault();
+                                                }
+                                              }}
                                               placeholder="ex. 3000"
                                               className="form-control"
                                               step="100"

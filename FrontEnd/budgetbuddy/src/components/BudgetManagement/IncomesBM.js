@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useOnboardingState } from "../../Hooks/useOnboardingState";
 import { Field } from "../OnboardingParts/Field";
 import { Form } from "../OnboardingParts/Form";
@@ -86,7 +86,6 @@ const periodNameToId = {
 
 export const IncomesBM = () => {
   const [state, setState] = useOnboardingState();
-  const navigate = useNavigate();
   const { currentUser } = useAuth();
   const token = currentUser.token;
   const user_id = currentUser.id;
@@ -438,6 +437,11 @@ export const IncomesBM = () => {
                                         e.target.value
                                       )
                                     }
+                                    onKeyDown={(e) => {
+                                      if (e.key === "e") {
+                                        e.preventDefault();
+                                      }
+                                    }}
                                     placeholder="ex. 2500"
                                     className="form-control"
                                     step="100"
