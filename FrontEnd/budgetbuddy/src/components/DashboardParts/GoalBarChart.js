@@ -1,5 +1,6 @@
 import React from "react";
 import ApexChart from "react-apexcharts";
+import styled from "styled-components";
 
 export const GoalBarChart = ({ description, savings, goal }) => {
   const percentage = Math.round((savings / goal) * 100);
@@ -41,19 +42,30 @@ export const GoalBarChart = ({ description, savings, goal }) => {
   ];
 
   return (
-    <>
-      <div>
-        {description} ({percentage}%)
-      </div>
-      <div>
-        $ {savings} / $ {goal}
-      </div>
-      <ApexChart
-        options={options}
-        series={series}
-        type="bar"
-        height={20}
-      />
-    </>
+    <StyledWrapper>
+      <StyledTextWrapper>
+        <StyledText>
+          {description} ({percentage}%)
+        </StyledText>
+        <StyledText>
+          $ {savings} / $ {goal}
+        </StyledText>
+      </StyledTextWrapper>
+      <ApexChart options={options} series={series} type="bar" height={20} />
+    </StyledWrapper>
   );
 };
+
+const StyledWrapper = styled.div`
+  margin-bottom: 2rem;
+`;
+
+const StyledTextWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const StyledText = styled.p`
+  margin: 0;
+  padding: 0;
+`;
