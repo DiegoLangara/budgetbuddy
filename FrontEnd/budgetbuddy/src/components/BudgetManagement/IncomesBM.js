@@ -248,8 +248,36 @@ export const IncomesBM = () => {
       }
       const responseData = await response.json();
       console.log("Data saved successfully:", responseData);
+
+      if (responseData.success) {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: responseData.message,
+          showConfirmButton: false,
+          timer: 1200,
+          width: "300px",
+        });
+      } else {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: responseData.message,
+          showConfirmButton: false,
+          timer: 1200,
+          width: "300px",
+        });
+      }
     } catch (error) {
       console.error("Failed to save data:", error);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "Failed to save data",
+        showConfirmButton: false,
+        timer: 1200,
+        width: "300px",
+      });
     }
   };
 
@@ -274,12 +302,7 @@ export const IncomesBM = () => {
       incomes: transformedIncomes,
     };
     setState(combinedData);
-    try {
-      await saveToDatabase(combinedData);
-      Swal.fire("Saved!", "Your data has been saved successfully.", "success");
-    } catch (error) {
-      Swal.fire("Error", "Failed to save data.", "error");
-    }
+    await saveToDatabase(combinedData);
   };
 
   return (
@@ -509,7 +532,7 @@ export const IncomesBM = () => {
                 </div>
                 <div className="d-flex justify-content-end">
                   <button
-                    className="btn btn-secondary btn-sm px-3 mr-2"
+                    className="btn btn-secondary btn-sm px-3 mr-2 mt-1"
                     type="button"
                     onClick={() => setEditableIncome(income.id)}
                   >
@@ -517,7 +540,7 @@ export const IncomesBM = () => {
                   </button>
                   {income.deletable === 1 || index > 0 ? (
                     <button
-                      className="btn btn-danger btn-sm"
+                      className="btn btn-danger btn-sm mt-1"
                       type="button"
                       onClick={() => deleteIncome(income.id)}
                     >

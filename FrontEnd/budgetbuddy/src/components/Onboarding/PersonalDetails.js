@@ -138,7 +138,6 @@ export const PersonalDetails = () => {
       showConfirmButton: false,
       timer: 1200,
       width: "300px",
-      height: "200px",
     });
   };
 
