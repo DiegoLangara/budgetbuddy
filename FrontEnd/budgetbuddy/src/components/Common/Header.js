@@ -12,6 +12,7 @@ import { useMediaQuery } from '@mui/material';
 import styled from 'styled-components';
 import { useAuth } from "../../contexts/AuthContext";
 import { Profile } from '../Profile/Profile';
+// import './Header.css';
 
 export const Header = ({ toggleDrawer }) => {
   const { currentUser } = useAuth();
@@ -70,34 +71,34 @@ export const Header = ({ toggleDrawer }) => {
         <StyledToolbar>
           {isMobile && (
             <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer}>
-              <MenuIcon />
+              <MenuIcon style={{ fontSize: '2.5vh' }} />
             </IconButton>
           )}
           <WelcomeMessage>
             <Typography variant="body1" component="div">
               Welcome back buddy!
             </Typography>
-            <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>
+            <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', fontSize: '3vh' }}>
               {user.firstname}
             </Typography>
           </WelcomeMessage>
           <Spacer />
           <Button
             variant="contained"
-            sx={{ backgroundColor: 'black', color: 'white', marginRight: '16px' }}
-            startIcon={<PrintIcon />}
+            sx={{ backgroundColor: 'black', color: 'white', marginRight: '2vw' }}
+            startIcon={<PrintIcon style={{ fontSize: '2.5vh' }} />}
           >
             Print
           </Button>
           <IconButton edge="end" color="inherit" onClick={handleMenuOpen}>
-            <Avatar src="/path-to-avatar-image.jpg" alt="User Avatar" />
+            <Avatar src="/path-to-avatar-image.jpg" alt="User Avatar" style={{ width: '5vh', height: '5vh' }} />
           </IconButton>
           <Menu
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
-            <p style={{ margin: '1rem', color: 'black' }}>My Account</p>
+            <p style={{ margin: '2vh', color: 'black' }}>My Account</p>
             <Divider sx={{ my: 1 }} />
             <MenuItem onClick={handleToggleProfile}>
               <StyledPersonIcon />{user.firstname} {user.lastname}
@@ -120,20 +121,20 @@ export const Header = ({ toggleDrawer }) => {
 
 const HeaderContainer = styled.div`
   width: 100%;
-  padding: 3vh 10vw 0 calc(10vw + 60px);
+  padding: 3vh 10vw 0 calc(10vw + 5vw);
   margin: 0 auto;
 `;
 
 const StyledAppBar = styled(AppBar)`
   background-color: #3A608F !important;
-  border-radius: 10px;
-  padding: 1rem 3rem; 
+  border-radius: 1vh;
+  padding: 1vh 3vw;
 `;
 
 const StyledToolbar = styled(Toolbar)`
   display: flex;
   justify-content: space-between;
-  min-height: 64px;
+  min-height: 10vh;
 `;
 
 const WelcomeMessage = styled.div`
@@ -147,27 +148,33 @@ const Spacer = styled.div`
 `;
 
 const StyledPersonIcon = styled(PersonIcon)`
-  margin-right: 0.5rem;
+  margin-right: 0.5vw;
+  font-size: 2.5vh;
 `;
 
 const StyledSettingsIcon = styled(SettingsIcon)`
-  margin-right: 0.5rem;
+  margin-right: 0.5vw;
+  font-size: 2.5vh;
 `;
 
 const StyledVerifiedUserIcon = styled(VerifiedUserIcon)`
-  margin-right: 0.5rem;
+  margin-right: 0.5vw;
+  font-size: 2.5vh;
 `;
 
 const StyledMenuBookIcon = styled(MenuBookIcon)`
-  margin-right: 0.5rem;
+  margin-right: 0.5vw;
+  font-size: 2.5vh;
 `;
 
 const StyledNotificationsIcon = styled(NotificationsIcon)`
-  margin-right: 0.5rem;
+  margin-right: 0.5vw;
+  font-size: 2.5vh;
 `;
 
 const StyledLogoutIcon = styled(LogoutIcon)`
-  margin-right: 0.5rem;
+  margin-right: 0.5vw;
+  font-size: 2.5vh;
 `;
 
 export default Header;

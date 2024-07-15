@@ -15,7 +15,7 @@ import TeamMember from './TeamMember'; // Asegúrate de ajustar la ruta según c
 
 const Team = () => {
   const designers = [
-    { photo: luis, stream: 'Designer Stream', name: 'Luis Baptista', linkedin: 'https://www.linkedin.com/in/luiscbaptistajr/', position: 'Project Manager & UI/UX Designer' },
+    { photo: luis, stream: 'Designer Stream', name: 'Luis Baptista', linkedin: 'https://www.linkedin.com/in/luiscbaptistajr/', position: 'PM & UI/UX Designer' },
     { photo: Kyril, stream: 'Designer Stream', name: 'Kyril Evangelista', linkedin: 'https://www.linkedin.com/in/kyril-louis-evangelista-303826193/', position: 'Lead Designer - UI/UX' },
     { photo: Bill, stream: 'Designer Stream', name: 'Saharat Akaradechawut', linkedin: 'https://www.linkedin.com/in/saharatb/', position: 'UI/UX Designer' },
     { photo: darsh, stream: 'Designer Stream', name: 'Darshjot Sohi', linkedin: 'https://www.linkedin.com/in/darshjot-kaur-sohi-18ba3b2b9/', position: 'UI/UX Designer' },

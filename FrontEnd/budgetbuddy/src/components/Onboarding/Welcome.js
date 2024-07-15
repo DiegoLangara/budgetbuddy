@@ -25,11 +25,8 @@ export const Welcome = () => {
                 />
                 <h3 className="text-left mb-0 ml-1">Budget Buddy</h3>
               </div>
-              <div className="content">
-                <h1
-                  className="text-left mb-4"
-                  style={{ fontSize: "3.7rem" }}
-                >
+              <div className="content mt-5 mb-5">
+                <h1 className="text-left mb-4" style={{ fontSize: "3.7rem" }}>
                   Easily manage your finances with us.
                 </h1>
                 <p className="text-left mb-5">

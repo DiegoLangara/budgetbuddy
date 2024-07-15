@@ -1,114 +1,48 @@
+
 import React from 'react';
 import { Drawer, List, ListItem, ListItemText, ListItemIcon } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faFolder, faDollarSign } from '@fortawesome/free-solid-svg-icons';
-import styled from 'styled-components';
 import logo from '../../Assets/Logonn.png';
+import '../../css/Sidebar.css';
 
 export const Sidebar = ({ variant, open, toggleDrawer, drawerWidth }) => {
   return (
-    <StyledDrawer
+    <Drawer
       variant={variant}
       open={open}
       onClose={toggleDrawer}
-      drawerWidth={drawerWidth}
+      className="styled-drawer"
+      style={{ '--drawer-width': '12vw' }}
     >
-      <StyledTitle>
+      <div className="styled-title">
         <img src={logo} alt="Budget Buddy Logo" />
-      </StyledTitle>
+      </div>
       <List>
-        <StyledListItem component={Link} to="dashboard" onClick={toggleDrawer}>
+        <ListItem component={Link} to="dashboard" onClick={toggleDrawer} className="styled-list-item">
           <ListItemIcon>
             <FontAwesomeIcon icon={faHome} color="white" />
           </ListItemIcon>
-          <StyledListItemText primary="Dashboard" />
-        </StyledListItem>
-        <StyledListItem component={Link} to="budget" onClick={toggleDrawer}>
+          <ListItemText primary="Dashboard" className="styled-list-item-text" />
+        </ListItem>
+        <ListItem component={Link} to="budget" onClick={toggleDrawer} className="styled-list-item">
           <ListItemIcon>
             <FontAwesomeIcon icon={faFolder} color="white" />
           </ListItemIcon>
-          <StyledListItemText primary="Budget" />
-        </StyledListItem>
-        <StyledListItem component={Link} to="expenses" onClick={toggleDrawer}>
+          <ListItemText primary="Budget" className="styled-list-item-text" />
+        </ListItem>
+        <ListItem component={Link} to="expenses" onClick={toggleDrawer} className="styled-list-item">
           <ListItemIcon>
             <FontAwesomeIcon icon={faDollarSign} color="white" />
           </ListItemIcon>
-          <StyledListItemText primary="Expenses" />
-        </StyledListItem>
-        {/* <StyledListItem component={Link} to="transactions" onClick={toggleDrawer}>
-          <ListItemIcon>
-            <FontAwesomeIcon icon={faDollarSign} color="white" />
-          </ListItemIcon>
-          <StyledListItemText primary="Add Transaction" />
-        </StyledListItem> */}
+          <ListItemText primary="Expenses" className="styled-list-item-text" />
+        </ListItem>
       </List>
-      <Footer>
+      <div className="footerSidebar">
         &copy; 2024<br />
          BBuddy
-      </Footer>
-    </StyledDrawer>
+      </div>
+    </Drawer>
   );
 }
-
-const StyledDrawer = styled(Drawer)`
-  position: absolute;
-  height: 100%;
-  width: 60px;
-  flex-shrink: 0;
-  white-space: nowrap;
-  overflow-x: hidden;
-  transition: width 0.3s;
-  z-index: 1300; 
-  & .MuiDrawer-paper {
-    width: 60px;
-    transition: width 0.3s;
-    box-sizing: border-box;
-    background-color: #3A608F;
-    color: #fff;
-    overflow-x: hidden;  /* Prevents horizontal scroll */
-  }
-  &:hover {
-    width: ${props => props.drawerWidth}px;
-    & .MuiDrawer-paper {
-      width: ${props => props.drawerWidth}px;
-    }
-  }
-`;
-
-const StyledTitle = styled.div`
-  display: flex;
-  justify-content: center;
-  padding: 10px;
-  img {
-    width: 100%;
-    max-width: 40px;
-  }
-`;
-
-const StyledListItem = styled(ListItem)`
-  color: white;
-  text-decoration: none !important;
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-`;
-
-const StyledListItemText = styled(ListItemText)`
-  opacity: 0;
-  transition: opacity 0.3s;
-  ${StyledDrawer}:hover & {
-    opacity: 1;
-  }
-  & .MuiTypography-root {
-    color: white;
-  }
-`;
-
-const Footer = styled.div`
-  margin-top: auto;
-  padding: 10px;
-  text-align: center;
-  color: #fff;
-  font-size: 12px;
-`;
