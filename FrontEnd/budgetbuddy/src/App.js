@@ -82,7 +82,7 @@ function App() {
                     variant={isMobile ? "temporary" : "persistent"}
                     open={isMobile ? drawerOpen : true}
                     toggleDrawer={toggleDrawer}
-                    drawerWidth={224}
+                    drawerwidth={224}
                   />
                   <Box
                     component="main"
