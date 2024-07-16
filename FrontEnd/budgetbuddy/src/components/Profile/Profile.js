@@ -1,22 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "@emotion/styled";
 import {
   Drawer,
   Box,
   Typography,
-  TextField,
   IconButton,
   Avatar,
   Grid,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { Button } from "../OnboardingParts/Button";
 import { useAuth } from "../../contexts/AuthContext";
+import { Form } from "../ProfileParts/Form";
+import { Field } from "../ProfileParts/Field";
+import { Input } from "../ProfileParts/Input";
+import { Button } from "../ProfileParts/Button";
+import { FieldForTextBox } from "../ProfileParts/FieldForTextbox";
+import { Textarea } from "../ProfileParts/Textarea";
+import Swal from "sweetalert2";
 
 async function fetchPersonalDetails(user_id, token) {
   try {
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/user/`,
+      `http://localhost:5001/api/user/profile`,
       {
         method: "GET",
         headers: {
@@ -40,43 +45,123 @@ export const Profile = ({ open, onClose }) => {
   const { currentUser } = useAuth();
   const token = currentUser.token;
   const user_id = currentUser.id;
+  const passwordRef = useRef();
+
+  const validatePassword = (password) => {
+    const re = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\W).{8,}$/;
+    return re.test(password);
+  };
 
   const [formData, setFormData] = useState({
     email: "",
     firstname: "",
     lastname: "",
-    password: "",
     aboutme: "",
+    password: "",
   });
 
   const [formErrors, setFormErrors] = useState({
     email: "",
     firstname: "",
     lastname: "",
-    password: "",
     aboutme: "",
+    password: "",
   });
 
-  const [editMode, setEditMode] = useState(false);
+  const [editName, setEditName] = useState(false);
+  const [editPassword, setEditPassword] = useState(false);
+  const [editAboutMe, setEditAboutMe] = useState(false);
 
-  const handleEditToggle = (event) => {
+  const [passwordFocused, setPasswordFocused] = useState(false);
+
+  const handleEditToggle = (section) => (event) => {
     event.preventDefault();
-    setEditMode(!editMode);
+    if (section === "name") setEditName(!editName);
+    if (section === "password") setEditPassword(!editPassword);
+    if (section === "aboutMe") setEditAboutMe(!editAboutMe);
   };
 
   useEffect(() => {
     async function fetchData() {
       const user = await fetchPersonalDetails(user_id, token);
-      console.log(user);
       if (user) {
-        const formattedUser = {
-          ...user,
-        };
-        setFormData(formattedUser);
+        setFormData(user);
       }
     }
     fetchData();
   }, [user_id, token]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    setFormErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
+  };
+
+  const saveToDatabase = async (data) => {
+    try {
+      const response = await fetch(
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/user/`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+            user_id: user_id,
+          },
+          body: JSON.stringify(data),
+        }
+      );
+      if (!response.ok) throw new Error("Network response was not ok");
+      await response.json();
+    } catch (error) {
+      console.error("Failed to update data:", error);
+    }
+  };
+
+  const validateForm = (fields) => {
+    const errors = {};
+    if (fields.includes("firstname") && !formData.firstname) errors.firstname = "Input required";
+    if (fields.includes("lastname") && !formData.lastname) errors.lastname = "Input required";
+    if (fields.includes("password")) {
+      if (!formData.password) errors.password = "Input required";
+      if (!validatePassword(formData.password)) errors.password = "Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, and a special character.";
+    }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const saveData = async (fields, e) => {
+    e.preventDefault();
+    if (!validateForm(fields)) return;
+    const updatedData = fields.reduce((data, field) => {
+      if (field === "password") {
+        data[field] = passwordRef.current.value;
+      } else {
+        data[field] = formData[field];
+      }
+      return data;
+    }, {});
+    await saveToDatabase(updatedData);
+    Swal.fire({
+      position: "bottom-start",
+      icon: "success",
+      title: "Profile has been saved",
+      showConfirmButton: false,
+      timer: 1200,
+      width: "300px",
+      height: "200px",
+    });
+    // Reset the edit states
+    setEditName(false);
+    setEditPassword(false);
+    setEditAboutMe(false);
+  };
 
   return (
     <Drawer anchor="right" open={open} onClose={onClose}>
@@ -107,105 +192,123 @@ export const Profile = ({ open, onClose }) => {
             />
             <Button>Change</Button>
           </Box>
-          <FormGroup>
-            <Typography variant="h6">Contact Information</Typography>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={4}>
-                <Typography textAlign={"right"}>Email</Typography>
-              </Grid>
-              <Grid item xs={8}>
-                <TextField
-                  fullWidth
-                  type="email"
-                  value={formData.email}
-                  InputProps={{ readOnly: !editMode }}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <Typography textAlign={"right"}>First Name</Typography>
-              </Grid>
-              <Grid item xs={8}>
-                <TextField
-                  fullWidth
-                  type="text"
-                  value={formData.firstname}
-                  InputProps={{ readOnly: !editMode }}
-                  onChange={(e) =>
-                    setFormData({ ...formData, firstname: e.target.value })
-                  }
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <Typography textAlign={"right"}>Last Name</Typography>
-              </Grid>
-              <Grid item xs={8}>
-                <TextField
-                  fullWidth
-                  type="text"
-                  value={formData.lastname}
-                  InputProps={{ readOnly: !editMode }}
-                  onChange={(e) =>
-                    setFormData({ ...formData, lastname: e.target.value })
-                  }
-                />
-              </Grid>
-            </Grid>
-          </FormGroup>
-          <FormGroup>
-            <Typography variant="h6">Change Password</Typography>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={4}>
-                <Typography textAlign={"right"}>Password</Typography>
-              </Grid>
-              <Grid item xs={8}>
-                <TextField
-                  fullWidth
-                  type="password"
-                  value={formData.password}
-                  InputProps={{ readOnly: !editMode }}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                />
-              </Grid>
-            </Grid>
-          </FormGroup>
-          <FormGroup>
-            <Typography variant="h6">About me</Typography>
+          <Form>
+            <Typography variant="h6" mt={4} mb={3}>Contact Information</Typography>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={2}
-                  value={formData.aboutme}
-                  InputProps={{ readOnly: !editMode }}
-                  onChange={(e) =>
-                    setFormData({ ...formData, aboutme: e.target.value })
-                  }
-                />
+                <Field label="Email">
+                  <Input
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    readOnly={true}
+                  />
+                </Field>
+              </Grid>
+              <Grid item xs={12}>
+                <Field label="First Name">
+                  <Input
+                    name="firstname"
+                    type="text"
+                    value={formData.firstname}
+                    readOnly={!editName}
+                    onChange={handleChange}
+                    error={formErrors.firstname}
+                  />
+                </Field>
+              </Grid>
+              <Grid item xs={12}>
+                <Field label="Last Name">
+                  <Input
+                    name="lastname"
+                    type="text"
+                    value={formData.lastname}
+                    readOnly={!editName}
+                    onChange={handleChange}
+                    error={formErrors.lastname}
+                  />
+                </Field>
               </Grid>
             </Grid>
-          </FormGroup>
-          <Box display="flex" justifyContent="flex-end" gap={2} mt={2}>
-            {editMode ? (
-              <>
-                <Button variant="contained" onClick={handleEditToggle}>
-                  save
+            <Box display="flex" justifyContent="flex-end" gap={2} mt={2}>
+              {editName ? (
+                <>
+                  <Button variant="contained" onClick={(e) => saveData(["firstname", "lastname"], e)}>
+                    save
+                  </Button>
+                  <Button variant="outlined" onClick={handleEditToggle("name")}>
+                    cancel
+                  </Button>
+                </>
+              ) : (
+                <Button variant="outlined" onClick={handleEditToggle("name")}>
+                  edit
                 </Button>
-                <Button variant="outlined" onClick={handleEditToggle}>
-                  cancel
+              )}
+            </Box>
+            <Typography variant="h6" mt={4} mb={3}>Change Password</Typography>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12}>
+                <Field label="Password">
+                  <Input
+                    name="password"
+                    type="password"
+                    value={formData.password}
+                    readOnly={!editPassword}
+                    error={formErrors.password}
+                    onFocus={() => setPasswordFocused(true)}
+                    onBlur={() => setPasswordFocused(false)}
+                  />
+                </Field>
+              </Grid>
+            </Grid>
+            <Box display="flex" justifyContent="flex-end" gap={2} mt={2}>
+              {editPassword ? (
+                <>
+                  <Button variant="contained" onClick={(e) => saveData(["password"], e)}>
+                    save
+                  </Button>
+                  <Button variant="outlined" onClick={handleEditToggle("password")}>
+                    cancel
+                  </Button>
+                </>
+              ) : (
+                <Button variant="outlined" onClick={handleEditToggle("password")}>
+                  edit
                 </Button>
-              </>
-            ) : (
-              <Button variant="outlined" onClick={handleEditToggle}>
-                edit
-              </Button>
-            )}
-          </Box>
+              )}
+            </Box>
+            <Typography variant="h6" mt={4} mb={3}>About me</Typography>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12}>
+                <FieldForTextBox>
+                  <Textarea
+                    name="aboutme"
+                    multiline
+                    value={formData.aboutme}
+                    readOnly={!editAboutMe}
+                    onChange={handleChange}
+                  />
+                </FieldForTextBox>
+              </Grid>
+            </Grid>
+            <Box display="flex" justifyContent="flex-end" gap={2} mt={2}>
+              {editAboutMe ? (
+                <>
+                  <Button variant="contained" onClick={(e) => saveData(["aboutme"], e)}>
+                    save
+                  </Button>
+                  <Button variant="outlined" onClick={handleEditToggle("aboutMe")}>
+                    cancel
+                  </Button>
+                </>
+              ) : (
+                <Button variant="outlined" onClick={handleEditToggle("aboutMe")}>
+                  edit
+                </Button>
+              )}
+            </Box>
+          </Form>
         </Box>
       </ProfileContainer>
     </Drawer>
@@ -226,16 +329,3 @@ const ProfileHeader = styled(Box)`
   justify-content: space-between;
   align-items: center;
 `;
-
-const FormGroup = styled(Box)`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-top: 2rem;
-`;
-
-const EditButton = styled(Button)`
-  align-self: flex-end;
-`;
-
-export default Profile;
