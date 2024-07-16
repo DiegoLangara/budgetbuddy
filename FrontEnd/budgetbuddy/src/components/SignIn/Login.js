@@ -69,9 +69,7 @@ export default function Login() {
                       onClick={() => setShowPassword(!showPassword)}
                       className="no-border-radius-left"
                     >
-                      <FontAwesomeIcon
-                        icon={showPassword ? faEye : faEyeSlash}
-                      />
+                      <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
                     </Button>
                   </InputGroup>
                   <div className="mt-3 d-flex justify-content-between mb-4">

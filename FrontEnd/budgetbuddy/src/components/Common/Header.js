@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Avatar, Button, Menu, MenuItem, Divider } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Typography, Avatar, Button, Menu, MenuItem, Divider, useMediaQuery } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import PrintIcon from '@mui/icons-material/Print';
 import PersonIcon from '@mui/icons-material/Person';
@@ -8,7 +8,6 @@ import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { useMediaQuery } from '@mui/material';
 import styled from 'styled-components';
 import { useAuth } from "../../contexts/AuthContext";
 import { Profile } from '../Profile/Profile';
@@ -20,6 +19,7 @@ export const Header = ({ toggleDrawer }) => {
   const user_id = currentUser.id;
   const [user, setUser] = useState({});
   const isMobile = useMediaQuery('(max-width:600px)');
+  const [headerTitle, setHeaderTitle] = useState('Welcome back buddy!');
 
   const [showProfile, setShowProfile] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -74,22 +74,30 @@ export const Header = ({ toggleDrawer }) => {
               <MenuIcon style={{ fontSize: '2.5vh' }} />
             </IconButton>
           )}
-          <WelcomeMessage>
-            <Typography variant="body1" component="div">
-              Welcome back buddy!
-            </Typography>
+          {headerTitle === 'Welcome back buddy!' ? (
+            <WelcomeMessage>
+              <Typography variant="body1" component="div">
+                Welcome back buddy!
+              </Typography>
+              <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', fontSize: '3vh' }}>
+                {user.firstname}
+              </Typography>
+            </WelcomeMessage>
+          ) : (
             <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', fontSize: '3vh' }}>
-              {user.firstname}
+              {headerTitle}
             </Typography>
-          </WelcomeMessage>
+          )}
           <Spacer />
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: 'black', color: 'white', marginRight: '2vw' }}
-            startIcon={<PrintIcon style={{ fontSize: '2.5vh' }} />}
-          >
-            Print
-          </Button>
+          {!isMobile && (
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: 'black', color: 'white', marginRight: '2vw' }}
+              startIcon={<PrintIcon style={{ fontSize: '2.5vh' }} />}
+            >
+              Print
+            </Button>
+          )}
           <IconButton edge="end" color="inherit" onClick={handleMenuOpen}>
             <Avatar src="/path-to-avatar-image.jpg" alt="User Avatar" style={{ width: '5vh', height: '5vh' }} />
           </IconButton>
