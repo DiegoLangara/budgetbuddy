@@ -21,7 +21,7 @@ import Swal from "sweetalert2";
 async function fetchPersonalDetails(user_id, token) {
   try {
     const response = await fetch(
-      `http://localhost:5001/api/user/profile`,
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/user/profile`,
       {
         method: "GET",
         headers: {
