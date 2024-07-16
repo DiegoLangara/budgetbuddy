@@ -26,28 +26,90 @@
     width: var(--drawer-width);
 }
 
+/* Media Queries */
 @media (max-width: 768px) {
     .styled-drawer,
     .styled-drawer .MuiDrawer-paper {
         width: 10vw !important; /* Ajustado para ser más flexible */
     }
-    .styled-drawer:hover,
-    .styled-drawer:hover .MuiDrawer-paper {
-        width: 35vw !important; /* Ancho ajustado para ser más ancho en dispositivos móviles */
-    }
-}
 
-@media (max-width: 480px) {
-    .styled-drawer,
-    .styled-drawer .MuiDrawer-paper {
-        width: 12vw !important; /* Ajustado para ser más flexible */
-    }
     .styled-drawer:hover,
     .styled-drawer:hover .MuiDrawer-paper {
         width: 40vw !important; /* Ancho ajustado para ser más ancho en dispositivos móviles */
     }
+
+    .styled-title {
+        padding: 1vh; /* Ajustado para ser más flexible */
+    }
+
+    .styled-title img {
+        max-width: 8vw !important; /* Ajustado para ser más flexible */
+    }
+
+    .footerSidebar {
+        padding: 1vh; /* Ajustado para ser más flexible */
+        font-size: 1.5vh !important; /* Ajustado para ser más flexible */
+    }
+
+    .styled-list-item-text {
+        font-size: 2.5vw !important; /* Ajustado para ser más flexible */
+    }
+
+    .styled-list-item-icon {
+        font-size: 4vw !important; /* Ajustado para ser más flexible */
+    }
+
+    .MuiListItemText-root {
+        padding: auto !important;
+        margin: auto !important;
+        font-size: small !important;
+    }
 }
 
+@media (max-width: 400px) {
+    .styled-drawer,
+    .styled-drawer .MuiDrawer-paper {
+        width: 12vw !important; /* Ajustado para ser más flexible */
+    }
+
+    .styled-drawer:hover,
+    .styled-drawer:hover .MuiDrawer-paper {
+        width: 45vw !important; /* Ancho ajustado para ser más ancho en dispositivos móviles */
+    }
+
+    .styled-title {
+        padding: 1vh; /* Ajustado para ser más flexible */
+    }
+
+    .styled-title img {
+        max-width: 10vw !important; /* Ajustado para ser más flexible */
+    }
+
+    .footerSidebar {
+        padding: 1vh; /* Ajustado para ser más flexible */
+        font-size: 2vh !important; /* Ajustado para ser más flexible */
+    }
+
+    .styled-list-item-text {
+        font-size: 2.5vw !important; /* Ajustado para ser más flexible */
+        margin-left: 0.5vw !important; /* Reducido para la versión móvil */
+    }
+
+    .styled-list-item-icon {
+        font-size: 2.5vw !important; /* Ajustado para ser más flexible */
+    }
+
+    .styled-list-item {
+        padding: 0.5vh !important; /* Reducido para la versión móvil */
+    }
+
+    .MuiListItem-root {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+}
+
+/* Styled Title */
 .styled-title {
     display: flex;
     justify-content: center;
@@ -59,24 +121,7 @@
     max-width: 3vw; /* No cambiado */
 }
 
-@media (max-width: 768px) {
-    .styled-title {
-        padding: 1vh; /* Ajustado para ser más flexible */
-    }
-    .styled-title img {
-        max-width: 8vw !important; /* Ajustado para ser más flexible */
-    }
-}
-
-@media (max-width: 480px) {
-    .styled-title {
-        padding: 1vh; /* Ajustado para ser más flexible */
-    }
-    .styled-title img {
-        max-width: 10vw !important; /* Ajustado para ser más flexible */
-    }
-}
-
+/* Styled List Items */
 .styled-list-item {
     color: white;
     text-decoration: none !important;
@@ -109,51 +154,11 @@
     font-size: 2vw !important; /* No cambiado */
 }
 
+/* Footer Sidebar */
 .footerSidebar {
     margin-top: auto;
     padding: 1vh; /* No cambiado */
     text-align: center;
     color: #fff;
     font-size: 1.2vh; /* No cambiado */
-}
-
-@media (max-width: 768px) {
-    .footerSidebar {
-        padding: 1vh; /* Ajustado para ser más flexible */
-        font-size: 1.5vh !important; /* Ajustado para ser más flexible */
-    }
-    .styled-list-item-text {
-        font-size: 2.5vw !important; /* No cambiado */
-    }
-    .styled-list-item-icon {
-        font-size: 4vw !important; /* No cambiado */
-    }
-    .MuiListItemText-root{
-      padding: auto !important;
-      margin: auto !important;
-      font-size: small !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .footerSidebar {
-        padding: 1vh; /* Ajustado para ser más flexible */
-        font-size: 2vh !important; /* Ajustado para ser más flexible */
-    }
-    .styled-list-item-text {
-        font-size: 2.5vw !important; /* Ajustado para ser más flexible */
-    }
-    .styled-list-item-icon {
-        font-size: 2.5vw !important; /* Ajustado para ser más flexible */
-    }
-    .styled-list-item {
-        padding: 0.5vh !important; /* Reducido para la versión móvil */
-    }
-    .styled-list-item-text {
-        margin-left: 0.5vw !important; /* Reducido para la versión móvil */
-    }
-    .MuiListItem-root{
-      padding: 0 !important;
-      margin: 0 !important;
-    }
 }

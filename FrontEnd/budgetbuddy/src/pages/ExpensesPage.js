@@ -5,6 +5,8 @@ import { Input } from "../components/OnboardingParts/Input";
 import { Button } from "react-bootstrap";
 import { ExpenseTable } from "../components/Expenses/ExpenseTable";
 import { useNavigate } from "react-router-dom";
+import { useTheme, useMediaQuery } from "@mui/material";
+import styled from "styled-components";
 
 const transactionCategories = [
   "All categories",
@@ -14,6 +16,12 @@ const transactionCategories = [
   "debts",
 ];
 
+const Container = styled.div`
+  width: 100%;
+  padding: ${(props) => (props.isMobile ? "1vh" : "1vh 10vw 3vh calc(10vw + 60px)")};
+  margin: 0 auto;
+`;
+
 export const ExpensesPage = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -21,6 +29,8 @@ export const ExpensesPage = () => {
   const [appliedEndDate, setAppliedEndDate] = useState("");
   const [category, setCategory] = useState("All types");
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const today = new Date();
@@ -50,75 +60,65 @@ export const ExpensesPage = () => {
   };
 
   return (
-    <div
-      style={{
-        width: "100%",
-        padding: "1vh 10vw 3vh calc(10vw + 60px)",
-        margin: "0 auto",
-      }}
-    >
-      <div className="d-flex justify-content-between mb-4">
+    <Container isMobile={isMobile}>
+      <Box display="flex" justifyContent="space-between" mb={4}>
         <h2 className="mb-0">List of transactions</h2>
         <button
           type="button"
           onClick={handleNavigate}
-          className="btn btn-secondary pl-3 pr-3"
+          className="btn btn-secondary"
+          style={{ padding: "0 1rem" }}
         >
           {"+ "}Create
         </button>
-      </div>
+      </Box>
 
-      <div className="d-flex filter-container">
-        <Box display="flex" alignItems="stretch" gap={1} className="mb-1">
-          <Field label="Start date" className="field">
+      <Box className="filter-container" display="flex" flexDirection={{ xs: "column", md: "row" }} gap={2} mb={1}>
+        <Box display="flex" flexDirection={{ xs: "column", md: "row" }} gap={1} mb={1}>
+          <Field label="Start date">
             <Input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
           </Field>
-          <Field label="End date" className="field">
+          <Field label="End date">
             <Input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
             />
           </Field>
-          <Field className="field">
-            <Button
-              onClick={handleApply}
-              style={{ marginTop: "2rem", marginRight: "2rem" }}
-            >
+          <Field>
+            <Button onClick={handleApply} style={{ marginTop: isMobile ? "1rem" : "2rem" }}>
               Apply
             </Button>
           </Field>
         </Box>
-        <Box className="type-wapper">
-          <Field label="Type" className="field">
-            <div>
-              <select
-                onChange={handleSelectChange}
-                className="form-select w-100 p-2 border border-secondary-subtle rounded rounded-2"
-                value={category}
-              >
-                {transactionCategories.map((option, index) => (
-                  <option key={index} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
+        <Box className="type-wrapper">
+          <Field label="Type">
+            <select
+              onChange={handleSelectChange}
+              className="form-select w-100 p-2 border border-secondary-subtle rounded"
+              value={category}
+            >
+              {transactionCategories.map((option, index) => (
+                <option key={index} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
           </Field>
         </Box>
-      </div>
+      </Box>
 
-      <div style={{ height: "40vh", width: "100%" }}>
+      <Box style={{ height: "40vh", width: "100%" }}>
         <ExpenseTable
           startDate={appliedStartDate}
           endDate={appliedEndDate}
           category={category}
         />
-      </div>
-    </div>
+      </Box>
+    </Container>
   );
 };

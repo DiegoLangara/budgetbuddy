@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Avatar, Button, Menu, MenuItem, Divider, useMediaQuery } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Typography, Avatar, Button, Menu, MenuItem, Divider, useMediaQuery, useTheme } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import PrintIcon from '@mui/icons-material/Print';
 import PersonIcon from '@mui/icons-material/Person';
@@ -11,16 +11,73 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import styled from 'styled-components';
 import { useAuth } from "../../contexts/AuthContext";
 import { Profile } from '../Profile/Profile';
-// import './Header.css';
+
+const HeaderContainer = styled.div`
+  width: 100%;
+  padding: ${(props) => (props.isMobile ? "1vh" : "2vh 10vw 3vh calc(10vw + 5vw)")};
+  margin: 0 auto;
+`;
+
+const StyledAppBar = styled(AppBar)`
+  background-color: #3A608F !important;
+  border-radius: 1vh;
+  padding: 1vh 3vw;
+`;
+
+const StyledToolbar = styled(Toolbar)`
+  display: flex;
+  justify-content: space-between;
+  min-height: 10vh;
+`;
+
+const WelcomeMessage = styled.div`
+  display: flex;
+  flex-direction: column;
+  color: white;
+`;
+
+const Spacer = styled.div`
+  flex-grow: 1;
+`;
+
+const StyledPersonIcon = styled(PersonIcon)`
+  margin-right: 0.5vw;
+  font-size: 2.5vh;
+`;
+
+const StyledSettingsIcon = styled(SettingsIcon)`
+  margin-right: 0.5vw;
+  font-size: 2.5vh;
+`;
+
+const StyledVerifiedUserIcon = styled(VerifiedUserIcon)`
+  margin-right: 0.5vw;
+  font-size: 2.5vh;
+`;
+
+const StyledMenuBookIcon = styled(MenuBookIcon)`
+  margin-right: 0.5vw;
+  font-size: 2.5vh;
+`;
+
+const StyledNotificationsIcon = styled(NotificationsIcon)`
+  margin-right: 0.5vw;
+  font-size: 2.5vh;
+`;
+
+const StyledLogoutIcon = styled(LogoutIcon)`
+  margin-right: 0.5vw;
+  font-size: 2.5vh;
+`;
 
 export const Header = ({ toggleDrawer }) => {
   const { currentUser } = useAuth();
   const token = currentUser.token;
   const user_id = currentUser.id;
   const [user, setUser] = useState({});
-  const isMobile = useMediaQuery('(max-width:600px)');
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [headerTitle, setHeaderTitle] = useState('Welcome back buddy!');
-
   const [showProfile, setShowProfile] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -66,7 +123,7 @@ export const Header = ({ toggleDrawer }) => {
   }, [token, user_id]);
 
   return (
-    <HeaderContainer>
+    <HeaderContainer isMobile={isMobile}>
       <StyledAppBar position="static">
         <StyledToolbar>
           {isMobile && (
@@ -126,63 +183,5 @@ export const Header = ({ toggleDrawer }) => {
     </HeaderContainer>
   );
 }
-
-const HeaderContainer = styled.div`
-  width: 100%;
-  padding: 3vh 10vw 0 calc(10vw + 5vw);
-  margin: 0 auto;
-`;
-
-const StyledAppBar = styled(AppBar)`
-  background-color: #3A608F !important;
-  border-radius: 1vh;
-  padding: 1vh 3vw;
-`;
-
-const StyledToolbar = styled(Toolbar)`
-  display: flex;
-  justify-content: space-between;
-  min-height: 10vh;
-`;
-
-const WelcomeMessage = styled.div`
-  display: flex;
-  flex-direction: column;
-  color: white;
-`;
-
-const Spacer = styled.div`
-  flex-grow: 1;
-`;
-
-const StyledPersonIcon = styled(PersonIcon)`
-  margin-right: 0.5vw;
-  font-size: 2.5vh;
-`;
-
-const StyledSettingsIcon = styled(SettingsIcon)`
-  margin-right: 0.5vw;
-  font-size: 2.5vh;
-`;
-
-const StyledVerifiedUserIcon = styled(VerifiedUserIcon)`
-  margin-right: 0.5vw;
-  font-size: 2.5vh;
-`;
-
-const StyledMenuBookIcon = styled(MenuBookIcon)`
-  margin-right: 0.5vw;
-  font-size: 2.5vh;
-`;
-
-const StyledNotificationsIcon = styled(NotificationsIcon)`
-  margin-right: 0.5vw;
-  font-size: 2.5vh;
-`;
-
-const StyledLogoutIcon = styled(LogoutIcon)`
-  margin-right: 0.5vw;
-  font-size: 2.5vh;
-`;
 
 export default Header;
