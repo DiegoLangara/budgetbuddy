@@ -188,8 +188,37 @@ export const Goals = () => {
       }
       const responseData = await response.json();
       console.log("Data saved successfully:", responseData);
+
+      if (responseData.success) {
+        navigate("/onboarding/incomes");
+        Swal.fire({
+          position: "bottom-start",
+          icon: "success",
+          title: responseData.message,
+          showConfirmButton: false,
+          timer: 1200,
+          width: "300px",
+        });
+      } else {
+        Swal.fire({
+          position: "bottom-start",
+          icon: "error",
+          title: responseData.message,
+          showConfirmButton: false,
+          timer: 1200,
+          width: "300px",
+        });
+      }
     } catch (error) {
       console.error("Failed to save data:", error);
+      Swal.fire({
+        position: "bottom-start",
+        icon: "error",
+        title: "Failed to save data",
+        showConfirmButton: false,
+        timer: 1200,
+        width: "300px",
+      });
     }
   };
 
@@ -202,16 +231,6 @@ export const Goals = () => {
     };
     setState(combinedData);
     await saveToDatabase(combinedData);
-    navigate("/onboarding/incomes");
-    Swal.fire({
-      position: "bottom-start",
-      icon: "success",
-      title: "Goals have been saved",
-      showConfirmButton: false,
-      timer: 1200,
-      width: "300px",
-      height: "200px",
-    });
   };
 
   const toggleGoal = (id) => {
