@@ -4,35 +4,48 @@ import { BalanceOfBudgetAndExpenses } from "../components/Dashboard/BalanceOfBud
 import { MonthlyTotalExpenses } from "../components/Dashboard/MonthlyTotalExpenses";
 import { ExpendituresByCategory } from "../components/Dashboard/ExpendituresByCategory";
 import { MonthlySavings } from "../components/Dashboard/MonthlySavings";
-import { Box } from "@mui/system";
+import { FinancialSuggestions } from "../components/Dashboard/FinancialSuggestions";
+import styled from "styled-components";
+import { IncomeAndDebts } from "../components/Dashboard/IncomeAndDebts";
 
 export const DashboardPage = () => {
-
   return (
-    <Box display="flex" flexDirection="column" gap={2} style={{ width: "100%", padding: "1vh 10vw 3vh calc(10vw + 60px)", margin: "0 auto" }}>
-
-      <Box sx={{ width: '100%' }}>
+    <DashboardContainer>
+      <Column>
         <Goals />
-      </Box>
-
-      <Box display="flex" alignItems="stretch" gap={2}>
-        <Box sx={{ width: '50%' }}>
-          <BalanceOfBudgetAndExpenses />
-        </Box>
-
-        <Box sx={{ width: '50%' }}>
-          <MonthlyTotalExpenses />
-        </Box>
-      </Box>
-
-      <Box display="flex" gap={2}>
-        <Box sx={{ width: '50%' }}>
-          <ExpendituresByCategory />
-        </Box>
-        <Box sx={{ width: '50%' }}>
-          <MonthlySavings />
-        </Box>
-      </Box>
-    </Box>
+        <BalanceOfBudgetAndExpenses />
+      </Column>
+      <Column>
+        <MonthlyTotalExpenses />
+        <ExpendituresByCategory />
+        <MonthlySavings />
+        <IncomeAndDebts />
+      </Column>
+      <Column>
+        <FinancialSuggestions />
+      </Column>
+    </DashboardContainer>
   );
 };
+
+const DashboardContainer = styled.div`
+  padding: 3vh 10vw 0 calc(10vw + 5vw);
+  display: grid;
+  grid-template-columns: 35% 35% 27%;
+  grid-gap: 1rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 3vh 5vw 0 5vw;
+  }
+`;
+
+const Column = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
