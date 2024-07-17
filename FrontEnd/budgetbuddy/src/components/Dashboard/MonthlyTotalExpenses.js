@@ -59,14 +59,9 @@ export const MonthlyTotalExpenses = () => {
   const options = {
     chart: {
       type: "bar",
-    },
-    plotOptions: {
-      bar: {
-        horizontal: false,
+      toolbar: {
+        show: false,
       },
-    },
-    dataLabels: {
-      enabled: false,
     },
     xaxis: {
       categories: categories,
@@ -76,10 +71,8 @@ export const MonthlyTotalExpenses = () => {
         show: true,
       },
     },
-    plotOptions: {
-      bar: {
-        distributed: true,
-      },
+    legend: {
+      show: false,
     },
     colors: ["#22AB94"],
     fill: {
@@ -99,11 +92,16 @@ export const MonthlyTotalExpenses = () => {
 
   return (
     <StyledMonthlyTotalExpenses>
-      <h3>Monthly Total Expenses</h3>
+      <StyledTitle>Monthly Total Expenses</StyledTitle>
       <ReactApexChart options={options} series={monthlyTotalExpenses} type="bar" />
     </StyledMonthlyTotalExpenses>
   );
 };
+
+const StyledTitle = styled.h3`
+  font-size: 1.3rem;
+  font-weight: bold;
+`;
 
 const StyledMonthlyTotalExpenses = styled.div`
   border: 1px solid #fff;

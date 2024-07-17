@@ -5,7 +5,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Box } from '@mui/system';
 import { Field } from '../OnboardingParts/Field';
 import { Input } from '../OnboardingParts/Input';
-import { Button } from 'react-bootstrap';
 
 // Fetch expenditures from the backend
 const fetchExpenditures = async (user_id, token, start_date, end_date) => {
@@ -37,8 +36,11 @@ const fetchExpenditures = async (user_id, token, start_date, end_date) => {
 export const ExpendituresByCategory = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [appliedStartDate, setAppliedStartDate] = useState('');
-  const [appliedEndDate, setAppliedEndDate] = useState('');
+  const { currentUser } = useAuth();
+  const token = currentUser?.token;
+  const user_id = currentUser?.id;
+
+  const [expenditures, setExpenditures] = useState([]);
 
   useEffect(() => {
     const today = new Date();
@@ -50,23 +52,10 @@ export const ExpendituresByCategory = () => {
 
     setStartDate(formattedFirstDay);
     setEndDate(formattedLastDay);
-    setAppliedStartDate(formattedFirstDay);
-    setAppliedEndDate(formattedLastDay);
   }, []);
 
-  const handleApply = () => {
-    setAppliedStartDate(startDate);
-    setAppliedEndDate(endDate);
-  };
-
-  const { currentUser } = useAuth();
-  const token = currentUser?.token;
-  const user_id = currentUser?.id;
-
-  const [expenditures, setExpenditures] = useState([]);
-
   useEffect(() => {
-    if (token && user_id && appliedStartDate && appliedEndDate) {
+    if (token && user_id && startDate && endDate) {
       async function loadExpenditures() {
         const fetchedExpenditures = await fetchExpenditures(user_id, token, startDate, endDate);
         const formattedExpenditures = fetchedExpenditures.map((expenditure) => ({
@@ -77,7 +66,7 @@ export const ExpendituresByCategory = () => {
       }
       loadExpenditures();
     }
-  }, [token, user_id, appliedStartDate, appliedEndDate]);
+  }, [token, user_id, startDate, endDate]);
 
   // divide the data into labels and series
   const labels = expenditures.map((data) => data.budget_name);
@@ -92,24 +81,34 @@ export const ExpendituresByCategory = () => {
       },
     },
     labels: labels,
+    dataLabels: {
+      enabled: false,
+    },
     legend: {
       position: 'bottom',
       horizontalAlign: 'center'
+    },
+    tooltip: {
+      enabled: true,
+      y: {
+        formatter: function (val, opts) {
+          const total = opts.globals.seriesTotals.reduce((a, b) => a + b, 0);
+          const percentage = ((val / total) * 100).toFixed(2);
+          return `${percentage}%`;
+        }
+      }
     }
   };
 
   return (
     <StyledExpendituresByCategory>
-      <h3>Expenditures By Category</h3>
+      <StyledTitle>Expenditures By Category</StyledTitle>
       <Box sx={{ width: '100%' }} display="flex" alignItems="stretch" gap={1}>
         <Field label="Start date">
-          <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+          <StyledInput type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
         </Field>
         <Field label="End date">
-          <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-        </Field>
-        <Field>
-          <Button onClick={handleApply} style={{ marginTop: "2rem" }}>Apply</Button>
+          <StyledInput type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </Field>
       </Box>
       <ReactApexChart options={options} series={series} type="donut" />
@@ -122,4 +121,17 @@ const StyledExpendituresByCategory = styled.div`
   border-radius: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   padding: 1rem;
+`;
+
+const StyledInput = styled(Input)`
+  width: 90%;
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+  padding: 0 0.5rem;
+`;
+
+
+const StyledTitle = styled.h3`
+  font-size: 1.3rem;
+  font-weight: bold;
 `;

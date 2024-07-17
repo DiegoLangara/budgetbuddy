@@ -13,6 +13,9 @@ export const FinancialSuggestionsSection = ({ suggestion, financialData }) => {
       type: "donut",
     },
     labels: labels,
+    dataLabels: {
+      enabled: false,
+    },
     legend: {
       position: 'bottom',
       horizontalAlign: 'center'
@@ -21,9 +24,9 @@ export const FinancialSuggestionsSection = ({ suggestion, financialData }) => {
 
   return (
     <StyledFinancialSuggestionsSection>
-      <p>{suggestion}</p>
+      <StyledText>{suggestion}</StyledText>
       {series.length > 0 && (
-        <ReactApexChart options={options} series={series} type="donut" />
+        <StyledReactApexChart options={options} series={series} type="donut" />
       )}
     </StyledFinancialSuggestionsSection>
   );
@@ -33,4 +36,14 @@ const StyledFinancialSuggestionsSection = styled.div`
   border: 1px solid #CBD5E1;
   border-radius: 5px;
   padding: 0.5rem;
+  margin-bottom: 1rem;
+`;
+
+const StyledText = styled.p`
+  margin: 0;
+  font-size: 0.8rem;
+`;
+
+const StyledReactApexChart = styled(ReactApexChart)`
+  margin-top: 1rem;
 `;

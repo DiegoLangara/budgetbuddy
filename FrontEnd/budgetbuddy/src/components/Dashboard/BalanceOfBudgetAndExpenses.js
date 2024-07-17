@@ -5,7 +5,6 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Box } from '@mui/system';
 import { Field } from '../OnboardingParts/Field';
 import { Input } from '../OnboardingParts/Input';
-import { Button } from 'react-bootstrap';
 
 // Fetch expenses from the backend
 const fetchBudgetExpenses = async (user_id, token, start_date, end_date) => {
@@ -37,8 +36,11 @@ const fetchBudgetExpenses = async (user_id, token, start_date, end_date) => {
 export const BalanceOfBudgetAndExpenses = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [appliedStartDate, setAppliedStartDate] = useState('');
-  const [appliedEndDate, setAppliedEndDate] = useState('');
+  const { currentUser } = useAuth();
+  const token = currentUser?.token;
+  const user_id = currentUser?.id;
+
+  const [expenses, setExpenses] = useState([]);
 
   useEffect(() => {
     const today = new Date();
@@ -50,23 +52,10 @@ export const BalanceOfBudgetAndExpenses = () => {
 
     setStartDate(formattedFirstDay);
     setEndDate(formattedLastDay);
-    setAppliedStartDate(formattedFirstDay);
-    setAppliedEndDate(formattedLastDay);
   }, []);
 
-  const handleApply = () => {
-    setAppliedStartDate(startDate);
-    setAppliedEndDate(endDate);
-  };
-
-  const { currentUser } = useAuth();
-  const token = currentUser?.token;
-  const user_id = currentUser?.id;
-
-  const [expenses, setExpenses] = useState([]);
-
   useEffect(() => {
-    if (token && user_id && appliedStartDate && appliedEndDate) {
+    if (token && user_id && startDate && endDate) {
       async function loadExpenses() {
         const fetchedExpenses = await fetchBudgetExpenses(user_id, token, startDate, endDate);
         const formattedExpenses = fetchedExpenses.map((expense) => ({
@@ -78,7 +67,7 @@ export const BalanceOfBudgetAndExpenses = () => {
       }
       loadExpenses();
     }
-  }, [token, user_id, appliedStartDate, appliedEndDate]);
+  }, [token, user_id, startDate, endDate]);
 
   const budget_name = expenses.map((data) => data.budget_name);
   const expense = expenses.map((data) => data.expense);
@@ -93,6 +82,9 @@ export const BalanceOfBudgetAndExpenses = () => {
     chart: {
       type: 'bar',
       redrawOnParentResize: true,
+      toolbar: {
+        show: false,
+      },
     },
     plotOptions: {
       bar: {
@@ -105,7 +97,7 @@ export const BalanceOfBudgetAndExpenses = () => {
     xaxis: {
       categories: budget_name,
     },
-    colors: ['#22AB94', '#F23645'], // Blue and Red colors
+    colors: ['#22AB94', '#F23645'],
     legend: {
       position: 'bottom',
     },
@@ -113,16 +105,13 @@ export const BalanceOfBudgetAndExpenses = () => {
 
   return (
     <StyledBar>
-      <h3>Budget And Expenses</h3>
+      <StyledTitle>Budget And Expenses</StyledTitle>
       <Box display="flex" alignItems="stretch" gap={1}>
         <Field label="Start date">
-          <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+          <StyledInput type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
         </Field>
         <Field label="End date">
-          <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-        </Field>
-        <Field>
-          <Button onClick={handleApply} style={{ marginTop: "2rem" }}>Apply</Button>
+          <StyledInput type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </Field>
       </Box>
       <ApexChart options={options} series={series} type={options.chart.type} height={350} />
@@ -130,9 +119,21 @@ export const BalanceOfBudgetAndExpenses = () => {
   );
 };
 
+const StyledTitle = styled.h3`
+  font-size: 1.3rem;
+  font-weight: bold;
+`;
+
 const StyledBar = styled.div`
   border: 1px solid #fff;
   border-radius: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   padding: 1rem;
+`;
+
+const StyledInput = styled(Input)`
+  width: 90%;
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+  padding: 0 0.5rem;
 `;

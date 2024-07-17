@@ -18,7 +18,6 @@ export const GoalBarChart = ({ description, savings, goal }) => {
       bar: {
         horizontal: true,
         barHeight: "100%",
-        borderRadius: 20 / 2,
         colors: {
           backgroundBarColors: ["#CBE6FF"],
           backgroundBarOpacity: 1,
