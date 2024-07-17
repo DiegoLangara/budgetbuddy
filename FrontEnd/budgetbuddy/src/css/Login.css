@@ -28,7 +28,6 @@
   border-radius: 5px;
   padding: 10px;
 }
-
 .login-background-container {
   display: flex;
   justify-content: flex-end;
@@ -64,9 +63,14 @@
   background-color: #0f172a !important;
 }
 
-@media (min-width: 1920px) {
-  .container, .container-lg, .container-md, .container-sm, .container-xl {
-    max-width: 65%;
+/* Estilos específicos para la versión web */
+@media only screen and (min-width: 769px) {
+  .d-flex.flex-column.justify-content-between.h-100 {
+    height: calc(100% - 4rem) !important; /* Ajusta según sea necesario */
+  }
+
+  .submit-btn-login {
+    margin-top: auto !important;
   }
 }
 
@@ -102,21 +106,22 @@
   }
 
   .img-black.me-2.w-2vw {
-   /* Ajusta para móviles */
+    /* Ajusta para móviles */
     position: relative;
     width: 7vw; /* Equivalente responsivo de 35.3px */
     overflow: hidden;
     flex-shrink: 0;
     margin-right: 10px; /* Espacio entre el logo y el texto */
   }
-  h1.text-left.mb-4, div.mb-4{
+
+  h1.text-left.mb-4,
+  div.mb-4 {
     padding-bottom: 1.5rem;
   }
 
   h3.text-left.mb-0,
   h1.text-left.mb-4 {
     text-align: left;
-
     position: relative;
     letter-spacing: -0.02em;
     font-family: Geologica;
@@ -142,18 +147,26 @@
     min-height: fit-content !important;
   }
 
-  .container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl {
+  .container,
+  .container-fluid,
+  .container-lg,
+  .container-md,
+  .container-sm,
+  .container-xl {
     width: 100%;
     padding: 0;
     margin: 0;
   }
-  #password > div.mt-3.d-flex.justify-content-between.mb-4{
+
+  #password > div.mt-3.d-flex.justify-content-between.mb-4 {
     margin-bottom: 5vh !important;
   }
-  #root > div > div > div > div > div.card-body > h1{
+
+  #root > div > div > div > div > div.card-body > h1 {
     margin-bottom: 5vh !important;
   }
-  #root > div > div > div > div > div.card-body > div{
+
+  #root > div > div > div > div > div.card-body > div {
     margin-bottom: 5vh !important;
   }
 }
