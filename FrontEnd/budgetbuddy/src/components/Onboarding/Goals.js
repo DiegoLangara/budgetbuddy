@@ -75,7 +75,7 @@ export const Goals = () => {
   useEffect(() => {
     async function loadGoals() {
       const fetchedGoals = await fetchGoals(user_id, token);
-      console.log("Fetched goal data:", fetchGoals); // Debug output
+      // console.log("Fetched goal data:", fetchGoals); // Debug output
       const formattedGoals = fetchedGoals.map((goal, index) => ({
         id: goal.goal_id || index + 1,
         goal_name: goal.goal_name || "",
@@ -188,8 +188,37 @@ export const Goals = () => {
       }
       const responseData = await response.json();
       console.log("Data saved successfully:", responseData);
+
+      if (responseData.success) {
+        navigate("/onboarding/incomes");
+        Swal.fire({
+          position: "bottom-start",
+          icon: "success",
+          title: responseData.message,
+          showConfirmButton: false,
+          timer: 1200,
+          width: "300px",
+        });
+      } else {
+        Swal.fire({
+          position: "bottom-start",
+          icon: "error",
+          title: responseData.message,
+          showConfirmButton: false,
+          timer: 1200,
+          width: "300px",
+        });
+      }
     } catch (error) {
       console.error("Failed to save data:", error);
+      Swal.fire({
+        position: "bottom-start",
+        icon: "error",
+        title: "Failed to save data",
+        showConfirmButton: false,
+        timer: 1200,
+        width: "300px",
+      });
     }
   };
 
@@ -202,7 +231,6 @@ export const Goals = () => {
     };
     setState(combinedData);
     await saveToDatabase(combinedData);
-    navigate("/onboarding/incomes");
   };
 
   const toggleGoal = (id) => {
@@ -350,6 +378,11 @@ export const Goals = () => {
                                               e.target.value
                                             )
                                           }
+                                          min={
+                                            new Date()
+                                              .toISOString()
+                                              .split("T")[0]
+                                          }
                                           required
                                         />
                                         {goalErrors[index]?.target_date && (
@@ -378,6 +411,11 @@ export const Goals = () => {
                                                   e.target.value
                                                 )
                                               }
+                                              onKeyDown={(e) => {
+                                                if (e.key === "e") {
+                                                  e.preventDefault();
+                                                }
+                                              }}
                                               placeholder="ex. 5000"
                                               className="form-control"
                                               step="100"
@@ -419,6 +457,11 @@ export const Goals = () => {
                                                   e.target.value
                                                 )
                                               }
+                                              onKeyDown={(e) => {
+                                                if (e.key === "e") {
+                                                  e.preventDefault();
+                                                }
+                                              }}
                                               placeholder="ex. 3000"
                                               className="form-control"
                                               step="100"

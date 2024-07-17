@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useOnboardingState } from "../../Hooks/useOnboardingState";
 import { Field } from "../OnboardingParts/Field";
 import { Form } from "../OnboardingParts/Form";
@@ -55,7 +55,6 @@ const debtCategoryOptions = [
 
 export const DebtsBM = () => {
   const [state, setState] = useOnboardingState();
-  const navigate = useNavigate();
   const { currentUser } = useAuth();
   const token = currentUser.token;
   const user_id = currentUser.id;
@@ -64,6 +63,7 @@ export const DebtsBM = () => {
     state.debts || [{ id: 1, debt_types_id: 0 }]
   );
   const [editableDebtId, setEditableDebtId] = useState(null);
+  const [debtErrors, setDebtErrors] = useState([]);
 
   useEffect(() => {
     async function loadDebts() {
@@ -95,6 +95,37 @@ export const DebtsBM = () => {
         debt.id === id ? { ...debt, [field]: value } : debt
       )
     );
+  };
+
+  const handleNumberInputChange = (id, field, value) => {
+    let errorField = field + "_error";
+    let errorMessage = "";
+
+    if (!/^\d*\.?\d*$/.test(value)) {
+      errorMessage = "Please enter a valid number.";
+    } else if (parseFloat(value) < 0) {
+      errorMessage = "Please enter a positive number.";
+    }
+    setDebts((prevDebts) =>
+      prevDebts.map((debt) =>
+        debt.id === id
+          ? { ...debt, [field]: value, [errorField]: errorMessage }
+          : debt
+      )
+    );
+  };
+
+  const validateDebts = () => {
+    const errors = debts.map((debt) => {
+      const error = {};
+      if (!debt.debt_name) error.debt_name = "Input required";
+      if (!debt.debt_types_id) error.debt_types_id = "Input required";
+      if (!debt.amount) error.amount = "Input required";
+      if (!debt.due_date) error.due_date = "Input required";
+      return error;
+    });
+    setDebtErrors(errors);
+    return errors.every((error) => Object.keys(error).length === 0);
   };
 
   const addDebt = () => {
@@ -185,13 +216,42 @@ export const DebtsBM = () => {
       }
       const responseData = await response.json();
       console.log("Data saved successfully:", responseData);
+
+      if (responseData.success) {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: responseData.message,
+          showConfirmButton: false,
+          timer: 1200,
+          width: "300px",
+        });
+      } else {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: responseData.message,
+          showConfirmButton: false,
+          timer: 1200,
+          width: "300px",
+        });
+      }
     } catch (error) {
       console.error("Failed to save data:", error);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "Failed to save data",
+        showConfirmButton: false,
+        timer: 1200,
+        width: "300px",
+      });
     }
   };
 
   const saveData = async (event) => {
     event.preventDefault();
+    if (!validateDebts()) return;
     // Transform data to the required schema
     const transformedDebts = debts.map((debt) => ({
       debt_id: debt.id,
@@ -209,12 +269,7 @@ export const DebtsBM = () => {
       debts: transformedDebts,
     };
     setState(combinedData);
-    try {
-      await saveToDatabase(combinedData);
-      Swal.fire("Saved!", "Your data has been saved successfully.", "success");
-    } catch (error) {
-      Swal.fire("Error", "Failed to save data.", "error");
-    }
+    await saveToDatabase(combinedData);
   };
 
   return (
@@ -281,95 +336,138 @@ export const DebtsBM = () => {
                       <div className="form-row">
                         <div className="col-md-6 form-group mb-0">
                           <Field label="Debt name" className="mb-0">
-                            <Input
-                              type="text"
-                              value={debt.debt_name || ""}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  debt.id,
-                                  "debt_name",
-                                  e.target.value
-                                )
-                              }
-                              placeholder="e.g. RBC credit card"
-                              disabled={editableDebtId !== debt.id}
-                              style={{ fontSize: ".8rem" }}
-                            />
+                            <>
+                              <Input
+                                type="text"
+                                value={debt.debt_name || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    debt.id,
+                                    "debt_name",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="e.g. RBC credit card"
+                                disabled={editableDebtId !== debt.id}
+                                style={{ fontSize: ".8rem" }}
+                                required
+                              />
+                              {debtErrors[index]?.debt_name && (
+                                <div className="text-danger">
+                                  {debtErrors[index].debt_name}
+                                </div>
+                              )}
+                            </>
                           </Field>
                         </div>
                         <div className="col-md-6 form-group mb-0">
                           <Field label="Debt category">
-                            <select
-                              className="form-select w-100 p-2 border border-secondary-subtle rounded rounded-2"
-                              value={debt.debt_types_id || 0}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  debt.id,
-                                  "debt_types_id",
-                                  Number(e.target.value)
-                                )
-                              }
-                              disabled={editableDebtId !== debt.id}
-                              style={{ fontSize: ".8rem" }}
-                            >
-                              {debtCategoryOptions.map((option) => (
-                                <option
-                                  key={option.id}
-                                  value={option.id}
-                                  disabled={option.disabled}
-                                >
-                                  {option.name}
-                                </option>
-                              ))}
-                            </select>
+                            <>
+                              <select
+                                className="form-select w-100 p-2 border border-secondary-subtle rounded rounded-2"
+                                value={debt.debt_types_id || 0}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    debt.id,
+                                    "debt_types_id",
+                                    Number(e.target.value)
+                                  )
+                                }
+                                disabled={editableDebtId !== debt.id}
+                                style={{ fontSize: ".8rem" }}
+                                required
+                              >
+                                {debtCategoryOptions.map((option) => (
+                                  <option
+                                    key={option.id}
+                                    value={option.id}
+                                    disabled={option.disabled}
+                                  >
+                                    {option.name}
+                                  </option>
+                                ))}
+                              </select>
+                              {debtErrors[index]?.debt_types_id && (
+                                <div className="text-danger">
+                                  {debtErrors[index].debt_types_id}
+                                </div>
+                              )}
+                            </>
                           </Field>
                         </div>
                       </div>
                       <div className="form-row">
                         <div className="col-md-6 form-group mb-0">
                           <Field label="Debt amount">
-                            <div className="input-group">
-                              <span
-                                className="input-group-text bg-white"
-                                style={{ fontSize: ".8rem" }}
-                              >
-                                $
-                              </span>
-                              <Input
-                                type="number"
-                                value={debt.amount || ""}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    debt.id,
-                                    "amount",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="e.g. 1500"
-                                className="form-control"
-                                step="100"
-                                min="0"
-                                disabled={editableDebtId !== debt.id}
-                                style={{ fontSize: ".8rem" }}
-                              />
-                            </div>
+                            <>
+                              <div className="input-group">
+                                <span
+                                  className="input-group-text bg-white"
+                                  style={{ fontSize: ".8rem" }}
+                                >
+                                  $
+                                </span>
+                                <Input
+                                  type="number"
+                                  value={debt.amount || ""}
+                                  onChange={(e) =>
+                                    handleNumberInputChange(
+                                      debt.id,
+                                      "amount",
+                                      e.target.value
+                                    )
+                                  }
+                                  onKeyDown={(e) => {
+                                    if (e.key === "e") {
+                                      e.preventDefault();
+                                    }
+                                  }}
+                                  placeholder="e.g. 1500"
+                                  className="form-control"
+                                  step="100"
+                                  min="0"
+                                  disabled={editableDebtId !== debt.id}
+                                  style={{ fontSize: ".8rem" }}
+                                  required
+                                />
+                              </div>
+                              {debt.amount_error && (
+                                <div className="text-danger">
+                                  {debt.amount_error}
+                                </div>
+                              )}
+                              {debtErrors[index]?.amount && (
+                                <div className="text-danger">
+                                  {debtErrors[index]?.amount}
+                                </div>
+                              )}
+                            </>
                           </Field>
                         </div>
                         <div className="col-md-6 form-group mb-0">
                           <Field label="Due date">
-                            <Input
-                              type="date"
-                              value={debt.due_date || ""}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  debt.id,
-                                  "due_date",
-                                  e.target.value
-                                )
-                              }
-                              disabled={editableDebtId !== debt.id}
-                              style={{ fontSize: ".8rem" }}
-                            />
+                            <>
+                              <Input
+                                type="date"
+                                value={debt.due_date || ""}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    debt.id,
+                                    "due_date",
+                                    e.target.value
+                                  )
+                                }
+                                min={new Date().toISOString().split("T")[0]}
+                                disabled={editableDebtId !== debt.id}
+                                style={{ fontSize: ".8rem" }}
+                                required
+                              />
+                              {debtErrors[index]?.due_date && (
+                                <div className="text-danger">
+                                  {debtErrors[index].due_date}
+                                </div>
+                              )}
+                            </>
                           </Field>
                         </div>
                       </div>
@@ -378,7 +476,7 @@ export const DebtsBM = () => {
                 </div>
                 <div className="d-flex justify-content-end">
                   <button
-                    className="btn btn-secondary btn-sm px-3 mr-2"
+                    className="btn btn-secondary btn-sm px-3 mr-2 mt-1"
                     type="button"
                     onClick={() => setEditableDebt(debt.id)}
                   >
@@ -386,7 +484,7 @@ export const DebtsBM = () => {
                   </button>
                   {debt.deletable === 1 || index > 0 ? (
                     <button
-                      className="btn btn-danger btn-sm"
+                      className="btn btn-danger btn-sm mt-1"
                       type="button"
                       onClick={() => deleteDebt(debt.id)}
                     >
