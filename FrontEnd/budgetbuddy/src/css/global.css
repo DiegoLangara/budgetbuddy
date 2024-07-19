@@ -1,3 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Geologica:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap');
+*{
+    font-family: "Geologica", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: normal;
+}

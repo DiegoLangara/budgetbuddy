@@ -10,12 +10,17 @@ import {
   faBullseye,
   faUpload,
   faCamera,
+  faCalendar,
+  faDollarSign
 } from "@fortawesome/free-solid-svg-icons";
 import Webcam from "react-webcam";
 import "../css/AddTransaction.css"; // Ensure you have corresponding CSS for styling
 import { useParams } from "react-router-dom";
 
 export const AddTransaction = () => {
+  const money_format = (value) => {
+  return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  }
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const token = currentUser.token;
@@ -37,6 +42,7 @@ export const AddTransaction = () => {
   const [devices, setDevices] = useState([]);
   const [selectedDevice, setSelectedDevice] = useState("");
   const [balance, setBalance] = useState(0);
+  const [date, setDate] = useState(new Date().toISOString().substr(0, 10)); // Current date set by default
 
   // transaction id passed from ExpenseTable.js to edit data
   const { id } = useParams();
@@ -100,6 +106,7 @@ export const AddTransaction = () => {
     }
 
     const transactionData = {
+      transaction_date: date, // Add date to transaction data
       transaction_payee:
         transactionType === "debts" || transactionType === "goals" ? "" : payee,
       transaction_note: note,
@@ -308,8 +315,11 @@ export const AddTransaction = () => {
 
   return (
     <div className="addTransactions">
-      <h1>Create a transaction</h1>
-      <h2>Available Funds: ${balance.toFixed(2)}</h2>
+      <div class="transaction_header">
+        <h1>Create a transaction</h1>
+        <h2>Available Funds: <br/> ${money_format(balance)}</h2>
+        
+      </div>
       <Form>
         <Form.Group controlId="transactionType">
           <Form.Label>What kind of transaction do you want to make?</Form.Label>
@@ -321,7 +331,7 @@ export const AddTransaction = () => {
               label={
                 <>
                   <FontAwesomeIcon icon={faBagShopping} />
-                  <br />
+                 
                   Track Expense
                 </>
               }
@@ -337,7 +347,7 @@ export const AddTransaction = () => {
               label={
                 <>
                   <FontAwesomeIcon icon={faCreditCard} />
-                  <br />
+                 
                   Pay a Debt
                 </>
               }
@@ -353,7 +363,7 @@ export const AddTransaction = () => {
               label={
                 <>
                   <FontAwesomeIcon icon={faBullseye} />
-                  <br />
+                  
                   Contribute to a Goal
                 </>
               }
@@ -369,7 +379,7 @@ export const AddTransaction = () => {
               label={
                 <>
                   <FontAwesomeIcon icon={faMoneyBill} />
-                  <br />
+                
                   Add Income
                 </>
               }
@@ -426,18 +436,34 @@ export const AddTransaction = () => {
 
         <Form.Group controlId="amount">
           <Form.Label>Amount</Form.Label>
-          <Form.Control
-            type="number"
-            value={amount}
-            onChange={(e) => validateAmount(e.target.value)}
-            required
-          />
+          <div className="amount-field">
+            <Form.Control
+              type="number"
+              value={amount}
+              onChange={(e) => validateAmount(e.target.value)}
+              required
+            />
+            <FontAwesomeIcon icon={faDollarSign} className="icon-dollar" />
+          </div>
+        </Form.Group>
+
+        <Form.Group controlId="date">
+          <Form.Label>Select the date</Form.Label>
+          <div className="date-field">
+            <Form.Control
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
+            <FontAwesomeIcon icon={faCalendar} className="icon-calendar" />
+          </div>
         </Form.Group>
 
         <Form.Group controlId="image">
-          <Form.Label>Image</Form.Label>
-          <Button variant="secondary" onClick={handleShowModal}>
-            Add Image
+          <Form.Label>Upload your receipt or take a picture</Form.Label>
+          <Button variant="secondary" onClick={handleShowModal} className="upload-btn">
+            <FontAwesomeIcon icon={faUpload} /> click to upload your receipt
           </Button>
         </Form.Group>
 
@@ -449,13 +475,17 @@ export const AddTransaction = () => {
             onChange={(e) => setCreateNew(e.target.checked)}
           />
         </Form.Group>
+<div class="buttons_footer">
+  
+          
+          <Button variant="secondary" onClick={handleCancel}>
+            Cancel
+          </Button>
 
-        <Button variant="primary" onClick={handleSaveTransaction}>
-          Save
-        </Button>
-        <Button variant="secondary" onClick={handleCancel}>
-          Cancel
-        </Button>
+          <Button variant="primary" onClick={handleSaveTransaction}>
+            Add
+          </Button>
+</div>
       </Form>
 
       <Modal show={showModal} onHide={handleCloseModal}>
