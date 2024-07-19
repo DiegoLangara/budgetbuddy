@@ -21,7 +21,6 @@ async function fetchSavings(user_id, token) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    console.log(data)
     return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error("Failed to fetch savings:", error);
@@ -81,6 +80,9 @@ export const MonthlySavings = () => {
       },
     },
     colors: ["#F23645"],
+    stroke: {
+      curve: 'straight'
+    },
   };
 
   return (
