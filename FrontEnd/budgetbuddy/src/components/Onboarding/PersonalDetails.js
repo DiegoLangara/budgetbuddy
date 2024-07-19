@@ -6,8 +6,9 @@ import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
 import { useAuth } from "../../contexts/AuthContext";
 import { Card, Container, Button as BootstrapButton } from "react-bootstrap";
-import logo from "../../Assets/Logonn.png"; // Import the logo
-import "../../css/PersonalDetails.css"; // Import the CSS file
+import logo from "../../Assets/Logonn.png";
+import "../../css/PersonalDetails.css";
+import Swal from "sweetalert2";
 
 // Utility function to format the date
 const formatDate = (isoDate) => {
@@ -117,9 +118,39 @@ export const PersonalDetails = () => {
         }
       );
       if (!response.ok) throw new Error("Network response was not ok");
-      await response.json();
+      const responseData = await response.json();
+      console.log("Data saved successfully:", responseData);
+
+      if (responseData.success) {
+        navigate("/onboarding/goals");
+        Swal.fire({
+          position: "bottom-start",
+          icon: "success",
+          title: responseData.message,
+          showConfirmButton: false,
+          timer: 1200,
+          width: "300px",
+        });
+      } else {
+        Swal.fire({
+          position: "bottom-start",
+          icon: "error",
+          title: responseData.message,
+          showConfirmButton: false,
+          timer: 1200,
+          width: "300px",
+        });
+      }
     } catch (error) {
-      console.error("Failed to update data:", error);
+      console.error("Failed to save data:", error);
+      Swal.fire({
+        position: "bottom-start",
+        icon: "error",
+        title: "Failed to save data",
+        showConfirmButton: false,
+        timer: 1200,
+        width: "300px",
+      });
     }
   };
 
@@ -129,7 +160,6 @@ export const PersonalDetails = () => {
     const updatedData = { ...state, ...formData };
     setState(updatedData);
     await saveToDatabase(updatedData);
-    navigate("/onboarding/goals");
   };
 
   return (
@@ -191,6 +221,13 @@ export const PersonalDetails = () => {
                       id="dob"
                       value={formData.dob}
                       onChange={handleChange}
+                      max={
+                        new Date(
+                          new Date().setFullYear(new Date().getFullYear() - 12)
+                        )
+                          .toISOString()
+                          .split("T")[0]
+                      }
                       error={formErrors.dob}
                       required
                     />

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 import styled from "styled-components";
 import { useAuth } from "../../contexts/AuthContext";
+import { Box } from '@mui/system';
+import { Field } from '../OnboardingParts/Field';
+import { Input } from '../OnboardingParts/Input';
 
 // Fetch expenditures from the backend
 const fetchExpenditures = async (user_id, token, start_date, end_date) => {
@@ -30,12 +33,26 @@ const fetchExpenditures = async (user_id, token, start_date, end_date) => {
   }
 }
 
-export const ExpendituresByCategory = ({ startDate, endDate }) => {
+export const ExpendituresByCategory = () => {
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const { currentUser } = useAuth();
   const token = currentUser?.token;
   const user_id = currentUser?.id;
 
   const [expenditures, setExpenditures] = useState([]);
+
+  useEffect(() => {
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    const formattedFirstDay = firstDay.toISOString().split('T')[0];
+    const formattedLastDay = lastDay.toISOString().split('T')[0];
+
+    setStartDate(formattedFirstDay);
+    setEndDate(formattedLastDay);
+  }, []);
 
   useEffect(() => {
     if (token && user_id && startDate && endDate) {
@@ -64,11 +81,36 @@ export const ExpendituresByCategory = ({ startDate, endDate }) => {
       },
     },
     labels: labels,
+    dataLabels: {
+      enabled: false,
+    },
+    legend: {
+      position: 'bottom',
+      horizontalAlign: 'center'
+    },
+    tooltip: {
+      enabled: true,
+      y: {
+        formatter: function (val, opts) {
+          const total = opts.globals.seriesTotals.reduce((a, b) => a + b, 0);
+          const percentage = ((val / total) * 100).toFixed(2);
+          return `${percentage}%`;
+        }
+      }
+    }
   };
 
   return (
     <StyledExpendituresByCategory>
-      <h3>Expenditures By Category</h3>
+      <StyledTitle>Expenditures By Category</StyledTitle>
+      <Box sx={{ width: '100%' }} display="flex" alignItems="stretch" gap={1}>
+        <Field label="Start date">
+          <StyledInput type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+        </Field>
+        <Field label="End date">
+          <StyledInput type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+        </Field>
+      </Box>
       <ReactApexChart options={options} series={series} type="donut" />
     </StyledExpendituresByCategory>
   );
@@ -79,4 +121,17 @@ const StyledExpendituresByCategory = styled.div`
   border-radius: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   padding: 1rem;
+`;
+
+const StyledInput = styled(Input)`
+  width: 90%;
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+  padding: 0 0.5rem;
+`;
+
+
+const StyledTitle = styled.h3`
+  font-size: 1.3rem;
+  font-weight: bold;
 `;

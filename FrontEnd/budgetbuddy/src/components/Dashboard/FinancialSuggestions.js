@@ -76,7 +76,7 @@ export const FinancialSuggestions = () => {
 
   return (
     <StyledFinancialSuggestions>
-      <h3>Insight</h3>
+      <StyledTitle>Insight</StyledTitle>
       {jsonData.map((data, index) => (
         <FinancialSuggestionsSection
           key={index}
@@ -89,12 +89,13 @@ export const FinancialSuggestions = () => {
 };
 
 const StyledFinancialSuggestions = styled.div`
-  border: 1px solid #333;
+  border: 1px solid #fff;
   border-radius: 5px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   padding: 1rem;
-  grid-column: 7 / 9;
-  grid-row: 1 / 3;
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr;  `;
+
+const StyledTitle = styled.h3`
+  font-size: 1.3rem;
+  font-weight: bold;
 `;

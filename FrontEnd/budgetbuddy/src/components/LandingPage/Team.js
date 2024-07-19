@@ -1,13 +1,13 @@
 import React from "react";
 import "../../css/Team.css";
-import luis from "../../Assets/Luis.png";
-import Kyril from "../../Assets/Kyril.png";
-import Bill from "../../Assets/Bill.png";
-import darsh from "../../Assets/darsh.png";
-import diego from "../../Assets/diego.png";
-import yohei from "../../Assets/yohei.png";
-import shun from "../../Assets/shun.png";
-import mateo from "../../Assets/mateo.png";
+import luis from "../../Assets/luis.jpg";
+import Kyril from "../../Assets/kyril.jpg";
+import Bill from "../../Assets/bill.jpg";
+import darsh from "../../Assets/darsh.jpg";
+import diego from "../../Assets/diego.jpg";
+import yohei from "../../Assets/yohei.jpg";
+import shun from "../../Assets/shun.jpg";
+import mateo from "../../Assets/mateo.jpg";
 import dteam from "../../Assets/dteam.png";
 import devteam from "../../Assets/devteam.png";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -15,7 +15,7 @@ import TeamMember from './TeamMember'; // Asegúrate de ajustar la ruta según c
 
 const Team = () => {
   const designers = [
-    { photo: luis, stream: 'Designer Stream', name: 'Luis Baptista', linkedin: 'https://www.linkedin.com/in/luiscbaptistajr/', position: 'Project Manager & UI/UX Designer' },
+    { photo: luis, stream: 'Designer Stream', name: 'Luis Baptista', linkedin: 'https://www.linkedin.com/in/luiscbaptistajr/', position: 'PM & UI/UX Designer' },
     { photo: Kyril, stream: 'Designer Stream', name: 'Kyril Evangelista', linkedin: 'https://www.linkedin.com/in/kyril-louis-evangelista-303826193/', position: 'Lead Designer - UI/UX' },
     { photo: Bill, stream: 'Designer Stream', name: 'Saharat Akaradechawut', linkedin: 'https://www.linkedin.com/in/saharatb/', position: 'UI/UX Designer' },
     { photo: darsh, stream: 'Designer Stream', name: 'Darshjot Sohi', linkedin: 'https://www.linkedin.com/in/darshjot-kaur-sohi-18ba3b2b9/', position: 'UI/UX Designer' },

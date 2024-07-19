@@ -60,9 +60,9 @@ export const Goals = () => {
 
   return (
     <StyledGoalWrapper>
-      <h3>Goals</h3>
+      <StyledTitle>Goals</StyledTitle>
       {goals.map((goal) => (
-        <GoalBarChart
+        <StyledGoalBarChart
           key={goal.id}
           description={goal.goal_name}
           goal={goal.target_amount}
@@ -78,4 +78,13 @@ const StyledGoalWrapper = styled.div`
   border-radius: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   padding: 1rem;
+`;
+
+const StyledTitle = styled.h3`
+  font-size: 1.3rem;
+  font-weight: bold;
+`;
+
+const StyledGoalBarChart = styled(GoalBarChart)`
+  margin: 1rem 0;
 `;
