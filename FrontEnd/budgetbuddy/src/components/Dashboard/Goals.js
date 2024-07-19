@@ -88,3 +88,6 @@ const StyledTitle = styled.h3`
 const StyledGoalBarChart = styled(GoalBarChart)`
   margin: 1rem 0;
 `;
+
+
+// created the updated version for this 
