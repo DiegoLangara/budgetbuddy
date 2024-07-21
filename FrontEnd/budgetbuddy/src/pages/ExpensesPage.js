@@ -18,7 +18,8 @@ const transactionCategories = [
 
 const Container = styled.div`
   width: 100%;
-  padding: ${(props) => (props.isMobile ? "1vh" : "1vh 10vw 3vh calc(10vw + 60px)")};
+  padding: ${(props) =>
+    props.isMobile ? "1vh" : "1vh 10vw 3vh calc(10vw + 60px)"};
   margin: 0 auto;
 `;
 
@@ -30,7 +31,7 @@ export const ExpensesPage = () => {
   const [category, setCategory] = useState("All types");
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     const today = new Date();
@@ -73,8 +74,19 @@ export const ExpensesPage = () => {
         </button>
       </Box>
 
-      <Box className="filter-container" display="flex" flexDirection={{ xs: "column", md: "row" }} gap={2} mb={1}>
-        <Box display="flex" flexDirection={{ xs: "column", md: "row" }} gap={1} mb={1}>
+      <Box
+        className="filter-container"
+        display="flex"
+        flexDirection={{ xs: "column", md: "row" }}
+        gap={2}
+        mb={1}
+      >
+        <Box
+          display="flex"
+          flexDirection={{ xs: "column", md: "row" }}
+          gap={1}
+          mb={1}
+        >
           <Field label="Start date">
             <Input
               type="date"
@@ -90,7 +102,10 @@ export const ExpensesPage = () => {
             />
           </Field>
           <Field>
-            <Button onClick={handleApply} style={{ marginTop: isMobile ? "1rem" : "2rem" }}>
+            <Button
+              onClick={handleApply}
+              style={{ marginTop: isMobile ? "1rem" : "2rem" }}
+            >
               Apply
             </Button>
           </Field>

@@ -203,7 +203,7 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
 
   return (
     <>
-      <div className="scrollable-table shadow">
+      <div className="scrollable-table">
         <table className="responsive-table">
           <thead>
             <tr>
