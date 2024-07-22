@@ -79,10 +79,10 @@ export const MonthlySavings = () => {
         distributed: true,
       },
     },
-    colors: ["#F23645"],
+    colors: ["#22AB94"],
     stroke: {
-      curve: 'straight'
-    },
+      curve: 'straight',
+    }
   };
 
   return (
@@ -100,7 +100,6 @@ const StyledMonthlySavings = styled.div`
   padding: 1rem;
 `;
 
-const StyledTitle = styled.h3`
-  font-size: 1.3rem;
+const StyledTitle = styled.h4`
   font-weight: bold;
 `;

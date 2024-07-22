@@ -17,23 +17,27 @@ export const FinancialSuggestions = () => {
         financialData: [
           {
             category: "Entertainment",
-            budget: 1000,
+            budget: 6,
           },
           {
             category: "Food",
-            budget: 800,
+            budget: 8,
           },
           {
             category: "Home",
-            budget: 1600,
+            budget: 10,
           },
           {
             category: "Medical",
-            budget: 500,
+            budget: 14,
           },
           {
-            category: "Personal Items",
-            budget: 700,
+            category: "Personal",
+            budget: 28,
+          },
+          {
+            category: "Auto",
+            budget: 28,
           },
         ],
       },
@@ -46,23 +50,27 @@ export const FinancialSuggestions = () => {
         financialData: [
           {
             category: "Entertainment",
-            budget: 1000,
+            budget: 6,
           },
           {
             category: "Food",
-            budget: 800,
+            budget: 8,
           },
           {
             category: "Home",
-            budget: 1600,
+            budget: 10,
           },
           {
             category: "Medical",
-            budget: 500,
+            budget: 14,
           },
           {
-            category: "Personal Items",
-            budget: 700,
+            category: "Personal",
+            budget: 28,
+          },
+          {
+            category: "Auto",
+            budget: 28,
           },
         ],
       },
@@ -95,7 +103,6 @@ const StyledFinancialSuggestions = styled.div`
   padding: 1rem;
   grid-template-columns: 1fr;  `;
 
-const StyledTitle = styled.h3`
-  font-size: 1.3rem;
+const StyledTitle = styled.h4`
   font-weight: bold;
 `;

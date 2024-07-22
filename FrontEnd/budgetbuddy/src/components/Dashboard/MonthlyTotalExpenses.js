@@ -74,20 +74,23 @@ export const MonthlyTotalExpenses = () => {
     legend: {
       show: false,
     },
-    colors: ["#22AB94"],
+    colors: ["#F23645"],
     fill: {
       type: 'gradient',
       gradient: {
         shade: 'dark',
         type: "vertical",
         shadeIntensity: 1,
-        gradientToColors: ['#22AB94'],
+        gradientToColors: ['#F23645'],
         inverseColors: false,
         opacityFrom: 1,
         opacityTo: 1,
         stops: [0, 100]
       }
-    }
+    },
+    dataLabels: {
+      enabled: false,
+    },
   };
 
   return (
@@ -98,8 +101,7 @@ export const MonthlyTotalExpenses = () => {
   );
 };
 
-const StyledTitle = styled.h3`
-  font-size: 1.3rem;
+const StyledTitle = styled.h4`
   font-weight: bold;
 `;
 

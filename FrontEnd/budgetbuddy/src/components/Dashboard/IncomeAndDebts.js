@@ -20,6 +20,7 @@ const fetchIncomeAndDebts = async (user_id, token) => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
+    console.log(data);
     return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error('Failed to fetch income and debts:', error);
@@ -137,7 +138,6 @@ const StyledWrapper = styled.div`
   padding: 1rem;
 `;
 
-const StyledTitle = styled.h3`
-  font-size: 1.3rem;
+const StyledTitle = styled.h4`
   font-weight: bold;
 `;

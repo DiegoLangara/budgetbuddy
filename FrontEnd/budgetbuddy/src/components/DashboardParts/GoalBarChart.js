@@ -3,6 +3,8 @@ import ApexChart from "react-apexcharts";
 import styled from "styled-components";
 
 export const GoalBarChart = ({ description, savings, goal }) => {
+  const formattedSavings = savings.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  const formattedGoal = goal.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
   const percentage = Math.round((savings / goal) * 100);
 
   const options = {
@@ -17,7 +19,7 @@ export const GoalBarChart = ({ description, savings, goal }) => {
     plotOptions: {
       bar: {
         horizontal: true,
-        barHeight: "100%",
+        barHeight: "16px",
         colors: {
           backgroundBarColors: ["#CBE6FF"],
           backgroundBarOpacity: 1,
@@ -47,7 +49,7 @@ export const GoalBarChart = ({ description, savings, goal }) => {
           {description} ({percentage}%)
         </StyledText>
         <StyledText>
-          $ {savings} / $ {goal}
+          {formattedSavings} / {formattedGoal}
         </StyledText>
       </StyledTextWrapper>
       <ApexChart options={options} series={series} type="bar" height={20} />
@@ -56,7 +58,7 @@ export const GoalBarChart = ({ description, savings, goal }) => {
 };
 
 const StyledWrapper = styled.div`
-  margin-bottom: 2rem;
+  margin-bottom: 19px;
 `;
 
 const StyledTextWrapper = styled.div`
@@ -65,6 +67,7 @@ const StyledTextWrapper = styled.div`
 `;
 
 const StyledText = styled.p`
+  font-size: 11px;
   margin: 0;
   padding: 0;
 `;

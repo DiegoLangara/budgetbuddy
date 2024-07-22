@@ -80,8 +80,7 @@ const StyledGoalWrapper = styled.div`
   padding: 1rem;
 `;
 
-const StyledTitle = styled.h3`
-  font-size: 1.3rem;
+const StyledTitle = styled.h4`
   font-weight: bold;
 `;
 

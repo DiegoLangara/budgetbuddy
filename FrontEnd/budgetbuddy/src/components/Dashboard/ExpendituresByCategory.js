@@ -3,8 +3,8 @@ import ReactApexChart from "react-apexcharts";
 import styled from "styled-components";
 import { useAuth } from "../../contexts/AuthContext";
 import { Box } from '@mui/system';
-import { Field } from '../OnboardingParts/Field';
-import { Input } from '../OnboardingParts/Input';
+import { Field } from '../DashboardParts/Field';
+import { Input } from '../DashboardParts/Input';
 
 // Fetch expenditures from the backend
 const fetchExpenditures = async (user_id, token, start_date, end_date) => {
@@ -76,6 +76,7 @@ export const ExpendituresByCategory = () => {
     chart: {
       type: "donut",
       redrawOnParentResize: true,
+      height: '100px',
       toolbar: {
         show: false,
       },
@@ -97,20 +98,26 @@ export const ExpendituresByCategory = () => {
           return `${percentage}%`;
         }
       }
+    },
+    colors: ['#005D5D', '#1192E8', '#520408', '#6929C4', '#9F1853', '#FA4D56'],
+    plotOptions: {
+      donut: {
+        size: '200',
+      }
     }
   };
 
   return (
     <StyledExpendituresByCategory>
       <StyledTitle>Expenditures By Category</StyledTitle>
-      <Box sx={{ width: '100%' }} display="flex" alignItems="stretch" gap={1}>
+      <StyledBox sx={{ width: '100%' }} display="flex" alignItems="stretch" gap={1}>
         <Field label="Start date">
           <StyledInput type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
         </Field>
         <Field label="End date">
           <StyledInput type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </Field>
-      </Box>
+      </StyledBox>
       <ReactApexChart options={options} series={series} type="donut" />
     </StyledExpendituresByCategory>
   );
@@ -130,8 +137,12 @@ const StyledInput = styled(Input)`
   padding: 0 0.5rem;
 `;
 
-
 const StyledTitle = styled.h3`
   font-size: 1.3rem;
   font-weight: bold;
+  margin-bottom: 0;
+`;
+
+const StyledBox = styled(Box)`
+  margin-bottom: 0.5rem;
 `;
