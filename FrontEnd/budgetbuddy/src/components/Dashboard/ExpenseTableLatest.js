@@ -4,7 +4,7 @@ import { Modal, Button, Form as BootstrapForm } from "react-bootstrap";
 import "../../css/ExpenseTable.css";
 import { useOnboardingState } from "../../Hooks/useOnboardingState";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
+import styled from "styled-components";
 
 // Utility function to format the date
 const formatDate = (isoDate) => {
@@ -21,21 +21,19 @@ const decodeByteArray = (byteArray) => {
 };
 
 // Fetch all transactions from API
-async function fetchAllTransactions(token, user_id, start_date, end_date) {
+async function fetchLatestTransaction(token, user_id) {
   try {
     console.log(
-      `Fetching transactions with user_id=${user_id}, token=${token}, start_date=${start_date}, end_date=${end_date}`
+      `Fetching transactions with user_id=${user_id}, token=${token}`
     );
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/transactions/`,
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/dashboard/transactions/`,
       {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           user_id: user_id,
           token: token,
-          start_date: start_date,
-          end_date: end_date,
         },
       }
     );
@@ -51,35 +49,7 @@ async function fetchAllTransactions(token, user_id, start_date, end_date) {
   }
 }
 
-// Delete transaction by ID
-async function deleteTransactionById(user_id, token, id) {
-  try {
-    console.log(
-      `Fetching transactions with user_id=${user_id}, token=${token}, transaction_id=${id}`
-    );
-    const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/transaction/`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          token: token,
-          user_id: user_id,
-          transaction_id: id,
-        },
-      }
-    );
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.json();
-  } catch (error) {
-    console.error("Failed to delete transaction:", error);
-    return null;
-  }
-}
-
-export const ExpenseTable = ({ startDate, endDate, category }) => {
+export const ExpenseTableLatest = () => {
   const { currentUser } = useAuth();
   const token = currentUser?.token;
   const user_id = currentUser?.id;
@@ -100,13 +70,11 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
   });
 
   useEffect(() => {
-    if (token && user_id && startDate && endDate) {
+    if (token && user_id) {
       async function loadTransactions() {
-        const fetchedTransactions = await fetchAllTransactions(
+        const fetchedTransactions = await fetchLatestTransaction(
           token,
-          user_id,
-          startDate,
-          endDate
+          user_id
         );
         const formattedTransactions = fetchedTransactions.map(
           (transaction) => ({
@@ -128,17 +96,10 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
       }
       loadTransactions();
     }
-  }, [token, user_id, startDate, endDate]);
+  }, [token, user_id]);
 
-  // Filter transactions based on the selected category
-  const filteredTransactions =
-    category === "All types" || category === ""
-      ? transactions
-      : transactions.filter(
-          (transaction) => transaction.transaction_category === category
-        );
   // Sorting table items
-  const sortedTransactions = [...filteredTransactions];
+  const sortedTransactions = [...transactions];
   if (sortConfig.key !== null) {
     sortedTransactions.sort((a, b) => {
       if (a[sortConfig.key] < b[sortConfig.key]) {
@@ -168,42 +129,10 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
     setViewableTransaction(null);
   };
 
-  const handleEditClick = (id) => {
-    navigate(`/home/transactions/${id}`);
-  };
-
-  const handleDeleteClick = (transaction_id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3A3B3C",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await deleteTransactionById(user_id, token, transaction_id);
-          const updatedTransactions = transactions.filter(
-            (transaction) => transaction.id !== transaction_id
-          );
-          setTransactions(updatedTransactions);
-          setState({ ...state, transactions: updatedTransactions });
-        } catch (error) {
-          Swal.fire(
-            "Error",
-            "Failed to delete goal from the database",
-            "error"
-          );
-        }
-      }
-    });
-  };
-
   return (
-    <>
-      <div className="scrollable-table">
+    <StyledWrapper>
+      <StyledTitle>Latest 10 transactions</StyledTitle>
+      <div className="scrollable-table-dashboard shadow">
         <table className="responsive-table">
           <thead>
             <tr>
@@ -396,34 +325,6 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
                         />
                       </svg>
                     </a>
-                    <a href="#/" onClick={() => handleEditClick(data.id)}>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        className="bi bi-pencil-square"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                        <path
-                          fill-rule="evenodd"
-                          d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
-                        />
-                      </svg>
-                    </a>
-                    <a href="#/" onClick={() => handleDeleteClick(data.id)}>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        className="bi bi-trash3"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
-                      </svg>
-                    </a>
                   </div>
                 </td>
               </tr>
@@ -507,9 +408,17 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
           </Modal>
         )}
       </div>
-      {/* <div className="mt-3" style={{ fontWeight: "550", color: "#3a608f" }}>
-        {transactions.length} items shown
-      </div> */}
-    </>
+    </StyledWrapper>
   );
 };
+
+const StyledWrapper = styled.div`
+  border: 1px solid #fff;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  padding: 1rem;
+`;
+
+const StyledTitle = styled.h4`
+  font-weight: bold;
+`;

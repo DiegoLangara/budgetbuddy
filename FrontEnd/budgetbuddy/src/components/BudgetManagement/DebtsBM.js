@@ -291,11 +291,18 @@ export const DebtsBM = () => {
           <div className="d-flex align-items-end ml-3 pb-2">
             <Link
               to="#"
-              className="btn btn-outline-secondary rounded-pill"
+              className="btn rounded-pill"
               onClick={addDebt}
-              style={{ fontSize: ".9rem" }}
+              style={{
+                fontSize: ".9rem",
+                fontWeight: "bold",
+                color: "Black",
+                backgroundColor: "#eee",
+                border: "1px solid gray",
+                padding: ".6rem",
+              }}
             >
-              {debts.length === 0 ? "+ Create a debt" : "+ Add another debt"}
+              {debts.length === 0 ? "+ Create a Debt" : "+ Add More Debts"}
             </Link>
           </div>
         </div>

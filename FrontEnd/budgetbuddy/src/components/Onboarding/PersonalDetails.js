@@ -124,7 +124,7 @@ export const PersonalDetails = () => {
       if (responseData.success) {
         navigate("/onboarding/goals");
         Swal.fire({
-          position: "bottom-start",
+          position: "center",
           icon: "success",
           title: responseData.message,
           showConfirmButton: false,
@@ -133,7 +133,7 @@ export const PersonalDetails = () => {
         });
       } else {
         Swal.fire({
-          position: "bottom-start",
+          position: "center",
           icon: "error",
           title: responseData.message,
           showConfirmButton: false,
