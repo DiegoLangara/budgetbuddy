@@ -31,6 +31,10 @@ thead {
   border-top: 0;
 }
 
+.responsive-table th {
+  border-top: 0;
+}
+
 .plus {
   color: blue;
 }

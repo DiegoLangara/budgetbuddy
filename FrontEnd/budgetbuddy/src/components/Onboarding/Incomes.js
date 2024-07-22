@@ -219,7 +219,7 @@ export const Incomes = () => {
       if (responseData.success) {
         navigate("/onboarding/budgets");
         Swal.fire({
-          position: "bottom-start",
+          position: "center",
           icon: "success",
           title: responseData.message,
           showConfirmButton: false,
@@ -228,7 +228,7 @@ export const Incomes = () => {
         });
       } else {
         Swal.fire({
-          position: "bottom-start",
+          position: "center",
           icon: "error",
           title: responseData.message,
           showConfirmButton: false,
@@ -508,7 +508,7 @@ export const Incomes = () => {
                       <Link to="#" className="mt-2" onClick={addIncome}>
                         {incomes.length === 0
                           ? "Create an income"
-                          : "Add another income"}
+                          : "Add more incomes"}
                       </Link>
                     </div>
                   </div>

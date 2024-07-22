@@ -13,6 +13,7 @@ export const DashboardPage = () => {
   return (
     <>
       <DashboardContainer>
+
         <Goals />
         <ExpendituresByCategory />
         <MonthlySavings />
@@ -24,6 +25,7 @@ export const DashboardPage = () => {
       <DashboardTableContainer>
         <ExpenseTableLatest />
       </DashboardTableContainer>
+
     </>
   );
 };
