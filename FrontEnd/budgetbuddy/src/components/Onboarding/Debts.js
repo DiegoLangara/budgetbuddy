@@ -184,7 +184,7 @@ export const Debts = () => {
       if (responseData.success) {
         navigate("/onboarding/complete-process");
         Swal.fire({
-          position: "bottom-start",
+          position: "center",
           icon: "success",
           title: responseData.message,
           showConfirmButton: false,
@@ -193,7 +193,7 @@ export const Debts = () => {
         });
       } else {
         Swal.fire({
-          position: "bottom-start",
+          position: "center",
           icon: "error",
           title: responseData.message,
           showConfirmButton: false,
@@ -447,7 +447,7 @@ export const Debts = () => {
                       <Link to="#" className="mt-2" onClick={addDebt}>
                         {debts.length === 0
                           ? "Create a debt"
-                          : "Add another debt"}
+                          : "Add more debts"}
                       </Link>
                     </div>
                   </div>

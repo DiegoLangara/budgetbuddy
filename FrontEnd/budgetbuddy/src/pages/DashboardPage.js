@@ -10,21 +10,23 @@ import { IncomeAndDebts } from "../components/Dashboard/IncomeAndDebts";
 
 export const DashboardPage = () => {
   return (
-    <DashboardContainer>
-      <Column>
-        <Goals />
-        <BalanceOfBudgetAndExpenses />
-      </Column>
-      <Column>
-        <MonthlyTotalExpenses />
-        <ExpendituresByCategory />
-        <MonthlySavings />
-        <IncomeAndDebts />
-      </Column>
-      <Column>
-        <FinancialSuggestions />
-      </Column>
-    </DashboardContainer>
+    <>
+      <DashboardContainer>
+        <Column>
+          <Goals />
+          <BalanceOfBudgetAndExpenses />
+        </Column>
+        <Column>
+          <MonthlyTotalExpenses />
+          <ExpendituresByCategory />
+          <MonthlySavings />
+          <IncomeAndDebts />
+        </Column>
+        <Column>
+          <FinancialSuggestions />
+        </Column>
+      </DashboardContainer>
+    </>
   );
 };
 

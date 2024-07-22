@@ -183,7 +183,7 @@ export const Budgets = () => {
       if (responseData.success) {
         navigate("/onboarding/debts");
         Swal.fire({
-          position: "bottom-start",
+          position: "center",
           icon: "success",
           title: responseData.message,
           showConfirmButton: false,
@@ -192,7 +192,7 @@ export const Budgets = () => {
         });
       } else {
         Swal.fire({
-          position: "bottom-start",
+          position: "center",
           icon: "error",
           title: responseData.message,
           showConfirmButton: false,
@@ -203,7 +203,7 @@ export const Budgets = () => {
     } catch (error) {
       console.error("Failed to save data:", error);
       Swal.fire({
-        position: "bottom-start",
+        position: "center",
         icon: "error",
         title: "Failed to save data",
         showConfirmButton: false,
@@ -412,7 +412,7 @@ export const Budgets = () => {
                       <Link to="#" className="mt-2" onClick={addBudget}>
                         {budgets.length === 0
                           ? "Create a budget"
-                          : "Add another budget"}
+                          : "Add more budgets"}
                       </Link>
                     </div>
                   </div>

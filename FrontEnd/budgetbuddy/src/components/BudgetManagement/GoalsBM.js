@@ -287,11 +287,18 @@ export const GoalsBM = () => {
           <div className="d-flex align-items-end ml-3 pb-2">
             <Link
               to="#"
-              className="btn btn-outline-secondary rounded-pill"
+              className="btn rounded-pill"
               onClick={addGoal}
-              style={{ fontSize: ".9rem" }}
+              style={{
+                fontSize: ".9rem",
+                fontWeight: "bold",
+                color: "Black",
+                backgroundColor: "#eee",
+                border: "1px solid gray",
+                padding: ".6rem",
+              }}
             >
-              {goals.length === 0 ? "+ Create a goal" : "+ Add another goal"}
+              {goals.length === 0 ? "+ Create a Goal" : "+ Add More Goals"}
             </Link>
           </div>
         </div>
