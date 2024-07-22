@@ -3,8 +3,8 @@ import ApexChart from 'react-apexcharts';
 import styled from 'styled-components';
 import { useAuth } from '../../contexts/AuthContext';
 import { Box } from '@mui/system';
-import { Field } from '../OnboardingParts/Field';
-import { Input } from '../OnboardingParts/Input';
+import { Field } from '../DashboardParts/Field';
+import { Input } from '../DashboardParts/Input';
 
 // Fetch expenses from the backend
 const fetchBudgetExpenses = async (user_id, token, start_date, end_date) => {
@@ -89,6 +89,7 @@ export const BalanceOfBudgetAndExpenses = () => {
     plotOptions: {
       bar: {
         horizontal: true,
+        barHeight: '70%',
       },
     },
     dataLabels: {
@@ -104,18 +105,18 @@ export const BalanceOfBudgetAndExpenses = () => {
   };
 
   return (
-    <StyledBar>
+    <StyledWrapper>
       <StyledTitle>Budget And Expenses</StyledTitle>
-      <Box display="flex" alignItems="stretch" gap={1}>
+      <StyledBox display="flex" alignItems="stretch" gap={1}>
         <Field label="Start date">
           <StyledInput type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
         </Field>
         <Field label="End date">
           <StyledInput type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </Field>
-      </Box>
-      <ApexChart options={options} series={series} type={options.chart.type} height={350} />
-    </StyledBar>
+      </StyledBox>
+      <ApexChart options={options} series={series} type={options.chart.type} height={335} />
+    </StyledWrapper>
   );
 };
 
@@ -124,7 +125,9 @@ const StyledTitle = styled.h3`
   font-weight: bold;
 `;
 
-const StyledBar = styled.div`
+const StyledWrapper = styled.div`
+  grid-column: 1 / 2;
+  grid-row: 3 / 4;
   border: 1px solid #fff;
   border-radius: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -136,4 +139,7 @@ const StyledInput = styled(Input)`
   border-radius: 5px;
   border: 1px solid #ced4da;
   padding: 0 0.5rem;
+`;
+const StyledBox = styled(Box)`
+  margin-bottom: 0;
 `;

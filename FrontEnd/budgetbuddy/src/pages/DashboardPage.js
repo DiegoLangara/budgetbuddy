@@ -7,25 +7,25 @@ import { MonthlySavings } from "../components/Dashboard/MonthlySavings";
 import { FinancialSuggestions } from "../components/Dashboard/FinancialSuggestions";
 import styled from "styled-components";
 import { IncomeAndDebts } from "../components/Dashboard/IncomeAndDebts";
+import { ExpenseTableLatest } from "../components/Dashboard/ExpenseTableLatest";
 
 export const DashboardPage = () => {
   return (
     <>
       <DashboardContainer>
-        <Column>
-          <Goals />
-          <BalanceOfBudgetAndExpenses />
-        </Column>
-        <Column>
-          <MonthlyTotalExpenses />
-          <ExpendituresByCategory />
-          <MonthlySavings />
-          <IncomeAndDebts />
-        </Column>
-        <Column>
-          <FinancialSuggestions />
-        </Column>
+
+        <Goals />
+        <ExpendituresByCategory />
+        <MonthlySavings />
+        <MonthlyTotalExpenses />
+        <BalanceOfBudgetAndExpenses />
+        <IncomeAndDebts />
+        <FinancialSuggestions />
       </DashboardContainer>
+      <DashboardTableContainer>
+        <ExpenseTableLatest />
+      </DashboardTableContainer>
+
     </>
   );
 };
@@ -34,20 +34,35 @@ const DashboardContainer = styled.div`
   padding: 3vh 10vw 0 calc(10vw + 5vw);
   display: grid;
   grid-template-columns: 35% 35% 27%;
+  grid-auto-rows: auto;
   grid-gap: 1rem;
 
-  @media (max-width: 1024px) {
+  @media (max-width: 1200px) {
+    grid-template-columns: 49% 49%;
+  }
+
+  @media (max-width: 850px) {
+  padding: 3vh 10vw 0 calc(10vw + 5vw);
+    display: flex;
+    flex-flow: column nowrap;
     grid-template-columns: 1fr;
   }
 
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    padding: 3vh 5vw 0 5vw;
+  @media (max-width: 600px) {
+    padding: 3vh 0 0 0;
   }
 `;
 
-const Column = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+const DashboardTableContainer = styled.div`
+  padding: 1rem 10vw 0 calc(10vw + 5vw);
+  display: grid;
+  grid-template-columns: calc(2 * 35% + 1rem);
+
+  @media (max-width: 1200px) {
+    grid-template-columns: 1fr;
+  }
+
+  @media (max-width: 600px) {
+    padding: 3vh 0 0 0;
+  }
 `;

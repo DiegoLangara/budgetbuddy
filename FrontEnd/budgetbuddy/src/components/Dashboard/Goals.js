@@ -74,15 +74,18 @@ export const Goals = () => {
 };
 
 const StyledGoalWrapper = styled.div`
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  width: 100%;
   border: 1px solid #fff;
   border-radius: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   padding: 1rem;
 `;
 
-const StyledTitle = styled.h3`
-  font-size: 1.3rem;
+const StyledTitle = styled.h4`
   font-weight: bold;
+  margin-bottom: 2rem;
 `;
 
 const StyledGoalBarChart = styled(GoalBarChart)`
