@@ -1,44 +1,11 @@
 import React from "react";
-import ApexChart from "react-apexcharts";
+import { LinearProgress, Box, Typography } from '@mui/material';
 import styled from "styled-components";
 
 export const GoalBarChart = ({ description, savings, goal }) => {
+  const formattedSavings = savings.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  const formattedGoal = goal.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
   const percentage = Math.round((savings / goal) * 100);
-
-  const options = {
-    chart: {
-      toolbar: {
-        show: false,
-      },
-      sparkline: {
-        enabled: true,
-      },
-    },
-    plotOptions: {
-      bar: {
-        horizontal: true,
-        barHeight: "100%",
-        colors: {
-          backgroundBarColors: ["#CBE6FF"],
-          backgroundBarOpacity: 1,
-        },
-      },
-    },
-    xaxis: {
-      categories: ["Savings"],
-      max: 100,
-    },
-    fill: {
-      colors: ["#001E30"],
-    },
-  };
-
-  const series = [
-    {
-      name: "Savings",
-      data: [percentage],
-    },
-  ];
 
   return (
     <StyledWrapper>
@@ -47,16 +14,29 @@ export const GoalBarChart = ({ description, savings, goal }) => {
           {description} ({percentage}%)
         </StyledText>
         <StyledText>
-          $ {savings} / $ {goal}
+          {formattedSavings} / {formattedGoal}
         </StyledText>
       </StyledTextWrapper>
-      <ApexChart options={options} series={series} type="bar" height={20} />
+      <Box sx={{ width: '100%', mt: 1 }}>
+        <LinearProgress
+          variant="determinate"
+          value={percentage}
+          sx={{
+            height: 16,
+            borderRadius: 5,
+            backgroundColor: '#CBE6FF',
+            '& .MuiLinearProgress-bar': {
+              backgroundColor: '#001E30',
+            },
+          }}
+        />
+      </Box>
     </StyledWrapper>
   );
 };
 
 const StyledWrapper = styled.div`
-  margin-bottom: 2rem;
+  margin-bottom: 19px;
 `;
 
 const StyledTextWrapper = styled.div`
@@ -65,6 +45,7 @@ const StyledTextWrapper = styled.div`
 `;
 
 const StyledText = styled.p`
+  font-size: 11px;
   margin: 0;
   padding: 0;
 `;
