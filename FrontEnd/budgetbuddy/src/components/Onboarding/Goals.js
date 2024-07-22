@@ -192,7 +192,7 @@ export const Goals = () => {
       if (responseData.success) {
         navigate("/onboarding/incomes");
         Swal.fire({
-          position: "bottom-start",
+          position: "center",
           icon: "success",
           title: responseData.message,
           showConfirmButton: false,
@@ -201,7 +201,7 @@ export const Goals = () => {
         });
       } else {
         Swal.fire({
-          position: "bottom-start",
+          position: "center",
           icon: "error",
           title: responseData.message,
           showConfirmButton: false,
@@ -496,7 +496,7 @@ export const Goals = () => {
                       <Link to="#" className="mt-2" onClick={addGoal}>
                         {goals.length === 0
                           ? "Create a goal"
-                          : "Add another goal"}
+                          : "Add more goals"}
                       </Link>
                     </div>
                   </div>
