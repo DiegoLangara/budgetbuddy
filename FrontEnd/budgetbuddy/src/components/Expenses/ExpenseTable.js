@@ -507,9 +507,6 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
           </Modal>
         )}
       </div>
-      {/* <div className="mt-3" style={{ fontWeight: "550", color: "#3a608f" }}>
-        {transactions.length} items shown
-      </div> */}
     </>
   );
 };

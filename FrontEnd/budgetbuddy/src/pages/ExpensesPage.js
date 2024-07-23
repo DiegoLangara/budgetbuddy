@@ -111,7 +111,7 @@ export const ExpensesPage = () => {
           </Field>
         </Box>
         <Box className="type-wrapper">
-          <Field label="Type">
+          <Field label="Category">
             <select
               onChange={handleSelectChange}
               className="form-select w-100 p-2 border border-secondary-subtle rounded"
