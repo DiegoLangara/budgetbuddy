@@ -129,9 +129,23 @@ export const ExpenseTableLatest = () => {
     setViewableTransaction(null);
   };
 
+  const handleNavigate = () => {
+    navigate("/home/transactions");
+  };
+
   return (
     <StyledWrapper>
-      <StyledTitle>Latest 10 transactions</StyledTitle>
+      <StyledHeader>
+        <StyledTitle>Latest transactions</StyledTitle>
+        <button
+          type="button"
+          onClick={handleNavigate}
+          className="btn btn-secondary"
+          style={{ padding: "0 1rem" }}
+        >
+          {"+ "}Create
+        </button>
+      </StyledHeader>
       <div className="scrollable-table-dashboard shadow">
         <table className="responsive-table">
           <thead>
@@ -417,6 +431,13 @@ const StyledWrapper = styled.div`
   border-radius: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   padding: 1rem;
+`;
+
+const StyledHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 `;
 
 const StyledTitle = styled.h4`
