@@ -3,16 +3,17 @@ import ReactApexChart from 'react-apexcharts';
 import { useAuth } from '../../contexts/AuthContext';
 import styled from 'styled-components';
 
-const fetchIncomeAndDebts = async (user_id, token) => {
+const fetchedIncome = async (user_id, token) => {
   try {
     const response = await fetch(
-      `http://localhost:5001/api/dashboard/incomeanddebts/`,
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/balance/`,
       {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           token: token,
           user_id: user_id,
+          type: 'income',
         },
       }
     );
@@ -20,9 +21,34 @@ const fetchIncomeAndDebts = async (user_id, token) => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    return Array.isArray(data) ? data : [];
+    return data;
   } catch (error) {
-    console.error('Failed to fetch income and debts:', error);
+    console.error('Failed to fetch income:', error);
+    return [];
+  }
+};
+
+const fetchedDebts = async (user_id, token) => {
+  try {
+    const response = await fetch(
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/balance/`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          token: token,
+          user_id: user_id,
+          type: 'debts',
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch debts:', error);
     return [];
   }
 };
@@ -32,33 +58,29 @@ export const IncomeAndDebts = () => {
   const token = currentUser?.token;
   const user_id = currentUser?.id;
 
-  const [incomeAndDebts, setIncomeAndDebts] = useState([]);
+  const [income, setIncome] = useState([]);
+  const [debts, setDebts] = useState([]);
 
   useEffect(() => {
-    if (token && user_id) {
-      async function loadIncomeAndDebts() {
-        const fetchedIncomeAndDebts = await fetchIncomeAndDebts(user_id, token);
-        const formattedIncomeAndDebts = fetchedIncomeAndDebts.map((data) => ({
-          month: data.month || '',
-          income: data.income || 0,
-          debts: data.debts || 0,
-        }));
-        setIncomeAndDebts(formattedIncomeAndDebts);
-        console.log(incomeAndDebts);
+    const loadIncomeAndDebts = async () => {
+      if (user_id && token) {
+        const incomeData = await fetchedIncome(user_id, token);
+        const debtsData = await fetchedDebts(user_id, token);
+        setIncome(incomeData.balance);
+        setDebts(debtsData.balance);
       }
-      loadIncomeAndDebts();
-    }
-  }, [token, user_id]);
-
+    };
+    loadIncomeAndDebts();
+  }, [user_id, token]);
 
   const series = [
     {
       name: 'Income',
-      data: [3000, 3200, 2900, 3100, 2800, 3400, 3300, 3700, 3600, 3900, 4100, 4500] // Replace with your income data
+      data: [income]
     },
     {
       name: 'Debts',
-      data: [-1200, -1100, -1400, -1300, -1500, -1600, -1700, -1800, -1900, -2000, -2100, -2200] // Replace with your debts data
+      data: [-debts]
     }
   ];
 
@@ -111,8 +133,7 @@ export const IncomeAndDebts = () => {
       }
     },
     xaxis: {
-      categories: [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      categories: ['Total'
       ],
       labels: {
         formatter: function (val) {
