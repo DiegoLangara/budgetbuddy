@@ -14,11 +14,11 @@ export const DashboardPage = () => {
     <>
       <DashboardContainer>
         <Goals />
-        <ExpendituresByCategory />
+        <IncomeAndDebts />
         <MonthlySavings />
         <MonthlyTotalExpenses />
         <BalanceOfBudgetAndExpenses />
-        <IncomeAndDebts />
+        <ExpendituresByCategory />
         <FinancialSuggestions />
         <ExpenseTableLatest />
       </DashboardContainer>

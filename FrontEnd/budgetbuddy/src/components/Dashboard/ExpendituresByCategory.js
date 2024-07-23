@@ -125,7 +125,7 @@ export const ExpendituresByCategory = () => {
 
 const StyledExpendituresByCategory = styled.div`
   grid-column: 2 / 3;
-  grid-row: 1 / 2;
+  grid-row: 3 / 4;
   border: 1px solid #fff;
   border-radius: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
