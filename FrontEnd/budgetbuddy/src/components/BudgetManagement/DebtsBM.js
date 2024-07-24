@@ -371,7 +371,7 @@ export const DebtsBM = () => {
                           <Field label="Debt category">
                             <>
                               <select
-                                className="form-select w-100 p-2 border border-secondary-subtle rounded rounded-2"
+                                className="form-select w-100 p-3 border border-secondary-subtle rounded rounded-2"
                                 value={debt.debt_types_id || 0}
                                 onChange={(e) =>
                                   handleInputChange(

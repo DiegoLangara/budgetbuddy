@@ -25,9 +25,6 @@
   opacity: 0.85;
   z-index: -1; /* Ensure it stays behind the content */
 }
-#root > div > div > div > div > div > form > div > div.row.btn-row > div > div > button{
-  background-color: #0D2000;
-}
 
 .goals-background-container {
   display: flex;
@@ -64,7 +61,7 @@
   flex: 1;
   margin: 1rem;
   transition: flex-basis 0.3s ease;
-  width: 100%;
+  width: calc(50% - 1rem);
   max-width: 50%;
 }
 
@@ -104,11 +101,14 @@ select:not(:disabled) {
 }
 
 @media only screen and (max-width: 768px) {
-  .goals-background-container, .incomes-background-container,.budgets-background-container, .debts-background-container, .complete-process-background-container {
+  .goals-background-container,
+  .incomes-background-container,
+  .budgets-background-container,
+  .debts-background-container,
+  .complete-process-background-container {
     flex-direction: column;
-    justify-content: flex-end !important; 
+    justify-content: flex-end !important;
     align-items: center;
     padding: 0;
   }
 }
-

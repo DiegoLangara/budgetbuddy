@@ -63,19 +63,19 @@ export const ExpensesPage = () => {
   return (
     <Container isMobile={isMobile}>
       <Box display="flex" justifyContent="space-between" mb={4}>
-        <h2 className="mb-0">List of transactions</h2>
+        <h2 className="mb-0">Transaction List</h2>
         <button
           type="button"
           onClick={handleNavigate}
-          className="btn btn-secondary"
-          style={{ padding: "0 1rem" }}
+          className="btn"
+          style={{ padding: "0 1.5rem", backgroundColor: "#C9EEA7" }}
         >
           {"+ "}Create
         </button>
       </Box>
 
       <Box
-        className="filter-container"
+        className="filter-container justify-content-between"
         display="flex"
         flexDirection={{ xs: "column", md: "row" }}
         gap={2}
@@ -104,7 +104,12 @@ export const ExpensesPage = () => {
           <Field>
             <Button
               onClick={handleApply}
-              style={{ marginTop: isMobile ? "1rem" : "2rem" }}
+              className="apply-button"
+              style={{
+                marginTop: isMobile ? "1rem" : "2rem",
+                paddingLeft: "1.2rem",
+                paddingRight: "1.2rem",
+              }}
             >
               Apply
             </Button>
