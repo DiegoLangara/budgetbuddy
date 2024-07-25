@@ -1,17 +1,18 @@
 import React from "react";
-import { LinearProgress, Box, Typography } from '@mui/material';
+import { LinearProgress, Box } from '@mui/material';
 import styled from "styled-components";
 
 export const GoalBarChart = ({ description, savings, goal }) => {
   const formattedSavings = savings.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
   const formattedGoal = goal.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-  const percentage = Math.round((savings / goal) * 100);
+  const percentageForText = Math.round((savings / goal) * 100);
+  const percentageForChart = percentageForText > 100 ? 100 : percentageForText;
 
   return (
     <StyledWrapper>
       <StyledTextWrapper>
         <StyledText>
-          {description} ({percentage}%)
+          {description} ({percentageForText}%)
         </StyledText>
         <StyledText>
           {formattedSavings} / {formattedGoal}
@@ -20,7 +21,7 @@ export const GoalBarChart = ({ description, savings, goal }) => {
       <Box sx={{ width: '100%', mt: 1 }}>
         <LinearProgress
           variant="determinate"
-          value={percentage}
+          value={percentageForChart}
           sx={{
             height: 16,
             borderRadius: 5,
