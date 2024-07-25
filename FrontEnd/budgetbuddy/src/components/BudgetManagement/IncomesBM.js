@@ -378,7 +378,7 @@ export const IncomesBM = () => {
                     </div>
                     <div>
                       <div className="form-row">
-                        <div className="col-md-6 form-group mb-0">
+                        <div className="col-md-6 mb-0">
                           <Field label="Income name" className="mb-0">
                             <>
                               <Input
@@ -405,12 +405,12 @@ export const IncomesBM = () => {
                             </>
                           </Field>
                         </div>
-                        <div className="col-md-6 form-group mb-0">
+                        <div className="col-md-6 mb-0">
                           <Field label="Income category">
                             <>
                               <div className="mt-0">
                                 <select
-                                  className="form-select w-100 p-3 border border-secondary-subtle rounded"
+                                  className="form-select w-100 p-2 border border-secondary-subtle rounded"
                                   id={income.id}
                                   value={income.income_type_id || 0}
                                   onChange={(e) =>
@@ -445,7 +445,7 @@ export const IncomesBM = () => {
                         </div>
                       </div>
                       <div className="form-row">
-                        <div className="col-md-6 form-group mb-0">
+                        <div className="col-md-6 mb-0">
                           <Field label="Income amount">
                             <>
                               <>
@@ -495,12 +495,12 @@ export const IncomesBM = () => {
                             </>
                           </Field>
                         </div>
-                        <div className="col-md-6 form-group mb-0">
+                        <div className="col-md-6 mb-0">
                           <Field label="Income period">
                             <>
                               <div className="mt-0">
                                 <select
-                                  className="form-select w-100 p-3 border border-secondary-subtle rounded"
+                                  className="form-select w-100 p-2 border border-secondary-subtle rounded"
                                   id={income.id}
                                   value={income.period || 0}
                                   onChange={(e) =>

@@ -1,11 +1,11 @@
-/* Goals.css */
+/* Goals.js */
 .goals-background {
   position: relative;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden; /* Ensure pseudo-element doesn't affect layout */
+  overflow: hidden;
 }
 
 .goals-background::before {
@@ -38,12 +38,6 @@
   z-index: 1; /* Ensure content stays above the pseudo-element */
 }
 
-.container-bm {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: stretch;
-}
-
 .card {
   background: white;
   border-radius: 10px;
@@ -52,17 +46,6 @@
   min-height: 80vh;
   min-width: 380px;
   max-width: 600px;
-}
-
-.card-bm {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  margin: 1rem;
-  transition: flex-basis 0.3s ease;
-  width: calc(50% - 1rem);
-  max-width: 50%;
 }
 
 .card.editable {
@@ -110,5 +93,41 @@ select:not(:disabled) {
     justify-content: flex-end !important;
     align-items: center;
     padding: 0;
+  }
+}
+
+/* GoalsBM.js */
+
+.container-bm {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+  gap: 1rem;
+}
+
+.card-bm {
+  flex: 1 1 calc(50% - 1rem);
+  margin: 0;
+  box-sizing: border-box;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  box-shadow: 0.3rem 0.3rem 0.3rem rgba(0, 0, 0, 0.1);
+}
+
+.card-content-bm {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 1100px) {
+  .container-bm {
+    flex-direction: column;
+  }
+
+  .card-bm {
+    max-width: 100%;
+    flex: 1 1 100%;
   }
 }

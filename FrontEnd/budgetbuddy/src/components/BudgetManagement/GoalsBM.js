@@ -8,6 +8,7 @@ import { Card, Container, Button as BootstrapButton } from "react-bootstrap";
 import "../../css/Goals.css";
 import { useAuth } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
+import { styled } from "styled-components";
 
 // Utility function to format the date
 const formatDate = (isoDate) => {
@@ -329,270 +330,288 @@ export const GoalsBM = () => {
           </Link>
         </div>
       </div>
-      <Container className="mx-0 px-0">
-        <div className="d-flex px-0 row">
-          {goals.map((goal, index) => (
-            <Card
-              key={index}
-              className={`p-3 m-2 col card-bm ${
-                editableGoalId === goal.id ? "editable" : null
+      <div className="container-bm">
+        {goals.map((goal, index) => (
+          <div
+            key={index}
+            className={`p-3 m-0 card-bm ${
+              editableGoalId === goal.id ? "editable" : null
+            }`}
+            style={{ minHeight: "auto" }}
+          >
+            <div
+              key={goal.id}
+              className={`card-content-bm mb-0 ${
+                editableGoalId === goal.id ? "editable" : "non-editable"
               }`}
-              style={{ minHeight: "auto", maxWidth: "50%" }}
             >
-              <div
-                key={goal.id}
-                className={`mb-0 ${
-                  editableGoalId === goal.id ? "editable" : "non-editable"
-                }`}
-              >
-                <div className="mt-1">
-                  <div
-                    className="mb-3"
-                    style={{
-                      padding: ".3rem 0",
-                    }}
-                  >
-                    <div className="d-flex justify-content-between align-items-center">
-                      <h5 style={{ margin: ".2rem 0" }}>
-                        <strong>Goal {index + 1}</strong>{" "}
-                        <span style={{ fontSize: "1rem" }}>
-                          {goal.goal_name ? " - " + goal.goal_name : ""}
-                        </span>
-                      </h5>
-                      <div></div>
+              <div className="mt-1">
+                <div
+                  className="mb-3"
+                  style={{
+                    padding: ".3rem 0",
+                  }}
+                >
+                  <div className="d-flex justify-content-between align-items-center">
+                    <h5
+                      style={{
+                        margin: goal.goal_name ? ".2rem 0" : "1.75rem 0 .2rem",
+                      }}
+                    >
+                      <span style={{ fontSize: "1.3rem" }}>
+                        <strong>{goal.goal_name ? goal.goal_name : ""}</strong>
+                      </span>
+                    </h5>
+                    <div></div>
+                  </div>
+                </div>
+                <div>
+                  <div className="form-row">
+                    <div className="col-md-6 mb-0">
+                      <Field label="Your goal" className="mb-0">
+                        <>
+                          <Input
+                            type="text"
+                            value={goal.goal_name || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                goal.id,
+                                "goal_name",
+                                e.target.value
+                              )
+                            }
+                            placeholder="ex. Buy a Tesla"
+                            disabled={editableGoalId !== goal.id}
+                            style={{ fontSize: ".8rem" }}
+                            required
+                          />
+                          {goalErrors[index]?.goal_name && (
+                            <div className="text-danger">
+                              {goalErrors[index]?.goal_name}
+                            </div>
+                          )}
+                        </>
+                      </Field>
+                    </div>
+                    <div className="col-md-6 mb-0">
+                      <Field label="Goal category">
+                        <>
+                          <div className="mt-0">
+                            <select
+                              className="form-select w-100 p-2 px-2 border border-secondary-subtle rounded"
+                              value={goal.goal_type_id || 0}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  goal.id,
+                                  "goal_type_id",
+                                  Number(e.target.value)
+                                )
+                              }
+                              disabled={editableGoalId !== goal.id}
+                              style={{ fontSize: ".8rem" }}
+                              required
+                            >
+                              {goalTypeOptions.map((option) => (
+                                <option
+                                  key={option.id}
+                                  value={option.id}
+                                  disabled={option.disabled}
+                                >
+                                  {option.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          {goalErrors[index]?.goal_type_id && (
+                            <div className="text-danger">
+                              {goalErrors[index]?.goal_type_id}
+                            </div>
+                          )}
+                        </>
+                      </Field>
                     </div>
                   </div>
-                  <div>
-                    <div className="form-row">
-                      <div className="col-md-6 form-group mb-0">
-                        <Field label="Your goal" className="mb-0">
-                          <>
-                            <Input
-                              type="text"
-                              value={goal.goal_name || ""}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  goal.id,
-                                  "goal_name",
-                                  e.target.value
-                                )
-                              }
-                              placeholder="ex. Buy a Tesla"
-                              disabled={editableGoalId !== goal.id}
-                              style={{ fontSize: ".8rem" }}
-                              required
-                            />
-                            {goalErrors[index]?.goal_name && (
-                              <div className="text-danger">
-                                {goalErrors[index]?.goal_name}
-                              </div>
-                            )}
-                          </>
-                        </Field>
-                      </div>
-                      <div className="col-md-6 form-group mb-0">
-                        <Field label="Goal category">
-                          <>
-                            <div className="mt-0">
-                              <select
-                                className="form-select w-100 p-3 border border-secondary-subtle rounded"
-                                value={goal.goal_type_id || 0}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    goal.id,
-                                    "goal_type_id",
-                                    Number(e.target.value)
-                                  )
-                                }
-                                disabled={editableGoalId !== goal.id}
-                                style={{ fontSize: ".8rem" }}
-                                required
-                              >
-                                {goalTypeOptions.map((option) => (
-                                  <option
-                                    key={option.id}
-                                    value={option.id}
-                                    disabled={option.disabled}
-                                  >
-                                    {option.name}
-                                  </option>
-                                ))}
-                              </select>
+                  <div className="form-row">
+                    <div className="col-md-6 mb-0">
+                      <Field label="Target date" className="col">
+                        <>
+                          <Input
+                            type="date"
+                            value={goal.target_date || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                goal.id,
+                                "target_date",
+                                e.target.value
+                              )
+                            }
+                            min={new Date().toISOString().split("T")[0]}
+                            disabled={editableGoalId !== goal.id}
+                            style={{ fontSize: ".8rem" }}
+                            required
+                          />
+                          {goalErrors[index]?.target_date && (
+                            <div className="text-danger">
+                              {goalErrors[index]?.target_date}
                             </div>
-                            {goalErrors[index]?.goal_type_id && (
-                              <div className="text-danger">
-                                {goalErrors[index]?.goal_type_id}
-                              </div>
-                            )}
-                          </>
-                        </Field>
-                      </div>
+                          )}
+                        </>
+                      </Field>
                     </div>
-                    <div className="form-row">
-                      <div className="col-md-6 form-group mb-0">
-                        <Field label="Target date" className="col">
-                          <>
+                    <div className="col-md-6 mb-0">
+                      <Field label="Saved amount">
+                        <>
+                          {/* <> */}
+                          <div className="input-group">
+                            <span
+                              className="input-group-text bg-white"
+                              style={{ fontSize: ".8rem" }}
+                            >
+                              $
+                            </span>
                             <Input
-                              type="date"
-                              value={goal.target_date || ""}
+                              type="number"
+                              value={goal.current_amount || ""}
                               onChange={(e) =>
-                                handleInputChange(
+                                handleNumberInputChange(
                                   goal.id,
-                                  "target_date",
+                                  "current_amount",
                                   e.target.value
                                 )
                               }
-                              min={new Date().toISOString().split("T")[0]}
+                              onKeyDown={(e) => {
+                                if (e.key === "e") {
+                                  e.preventDefault();
+                                }
+                              }}
+                              placeholder="ex. 5000"
+                              className="form-control"
+                              step="100"
+                              min="100"
                               disabled={editableGoalId !== goal.id}
                               style={{ fontSize: ".8rem" }}
                               required
                             />
-                            {goalErrors[index]?.target_date && (
-                              <div className="text-danger">
-                                {goalErrors[index]?.target_date}
-                              </div>
-                            )}
-                          </>
-                        </Field>
-                      </div>
-                      <div className="col-md-6 form-group mb-0">
-                        <Field label="Saved amount">
-                          <>
-                            {/* <> */}
-                            <div className="input-group">
-                              <span
-                                className="input-group-text bg-white"
-                                style={{ fontSize: ".8rem" }}
-                              >
-                                $
-                              </span>
-                              <Input
-                                type="number"
-                                value={goal.current_amount || ""}
-                                onChange={(e) =>
-                                  handleNumberInputChange(
-                                    goal.id,
-                                    "current_amount",
-                                    e.target.value
-                                  )
-                                }
-                                onKeyDown={(e) => {
-                                  if (e.key === "e") {
-                                    e.preventDefault();
-                                  }
-                                }}
-                                placeholder="ex. 5000"
-                                className="form-control"
-                                step="100"
-                                min="100"
-                                disabled={editableGoalId !== goal.id}
-                                style={{ fontSize: ".8rem" }}
-                                required
-                              />
-                            </div>
-                            {/* {goal.current_amount_error && (
+                          </div>
+                          {/* {goal.current_amount_error && (
                                 <div className="text-danger">
                                   {goal.current_amount_error}
                                 </div>
                               )}
                             </> */}
-                            {goalErrors[index]?.current_amount && (
-                              <div className="text-danger">
-                                {goalErrors[index]?.current_amount}
-                              </div>
-                            )}
-                          </>
-                        </Field>
-                      </div>
-                    </div>
-                    <div className="form-row">
-                      <div className="col-md-6 form-group mb-0">
-                        <Field label="Target amount">
-                          <>
-                            {/* <> */}
-                            <div className="input-group">
-                              <span
-                                className="input-group-text bg-white"
-                                style={{ fontSize: ".8rem" }}
-                              >
-                                $
-                              </span>
-                              <Input
-                                type="number"
-                                value={goal.target_amount || ""}
-                                onChange={(e) =>
-                                  handleNumberInputChange(
-                                    goal.id,
-                                    "target_amount",
-                                    e.target.value
-                                  )
-                                }
-                                onKeyDown={(e) => {
-                                  if (e.key === "e") {
-                                    e.preventDefault();
-                                  }
-                                }}
-                                placeholder="ex. 3000"
-                                className="form-control"
-                                step="100"
-                                min="100"
-                                disabled={editableGoalId !== goal.id}
-                                style={{ fontSize: ".8rem" }}
-                                required
-                              />
+                          {goalErrors[index]?.current_amount && (
+                            <div className="text-danger">
+                              {goalErrors[index]?.current_amount}
                             </div>
-                            {/* {goal.target_amount_error && (
+                          )}
+                        </>
+                      </Field>
+                    </div>
+                  </div>
+                  <div className="form-row">
+                    <div className="col-md-6 mb-0">
+                      <Field label="Target amount">
+                        <>
+                          {/* <> */}
+                          <div className="input-group">
+                            <span
+                              className="input-group-text bg-white"
+                              style={{ fontSize: ".8rem" }}
+                            >
+                              $
+                            </span>
+                            <Input
+                              type="number"
+                              value={goal.target_amount || ""}
+                              onChange={(e) =>
+                                handleNumberInputChange(
+                                  goal.id,
+                                  "target_amount",
+                                  e.target.value
+                                )
+                              }
+                              onKeyDown={(e) => {
+                                if (e.key === "e") {
+                                  e.preventDefault();
+                                }
+                              }}
+                              placeholder="ex. 3000"
+                              className="form-control"
+                              step="100"
+                              min="100"
+                              disabled={editableGoalId !== goal.id}
+                              style={{ fontSize: ".8rem" }}
+                              required
+                            />
+                          </div>
+                          {/* {goal.target_amount_error && (
                                 <div className="text-danger">
                                   {goal.target_amount_error}
                                 </div>
                               )}
                             </> */}
-                            {goalErrors[index]?.target_amount && (
-                              <div className="text-danger">
-                                {goalErrors[index]?.target_amount}
-                              </div>
-                            )}
-                          </>
-                        </Field>
-                      </div>
+                          {goalErrors[index]?.target_amount && (
+                            <div className="text-danger">
+                              {goalErrors[index]?.target_amount}
+                            </div>
+                          )}
+                        </>
+                      </Field>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="d-flex justify-content-end">
-                {editableGoalId !== goal.id ? (
-                  <button
-                    className="btn btn-secondary btn-sm px-3 mr-2 mt-1"
-                    type="button"
-                    onClick={() => setEditableGoal(goal.id)}
+            </div>
+            <div className="d-flex justify-content-end">
+              {editableGoalId !== goal.id ? (
+                <a href="#/" onClick={() => setEditableGoal(goal.id)}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    className="bi bi-pencil-square mr-3 hover"
+                    viewBox="0 0 16 16"
                   >
-                    Edit
-                  </button>
-                ) : (
-                  <button
-                    className="btn btn-primary btn-sm px-3 mr-2 mt-1"
-                    type="button"
-                    onClick={() => handleSave(goal)}
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                    <path
+                      fill-rule="evenodd"
+                      d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
+                    />
+                  </svg>
+                </a>
+              ) : (
+                <a href="#/" onClick={() => handleSave(goal)}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    class="bi bi-floppy mr-3"
+                    viewBox="0 0 16 16"
                   >
-                    Save
-                  </button>
-                )}
-                {goal.deletable === 1 || index > 0 ? (
-                  <button
-                    className="btn btn-danger btn-sm mt-1"
-                    type="button"
-                    onClick={() => deleteGoal(goal.id)}
+                    <path d="M11 2H9v3h2z" />
+                    <path d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5 1.5 0 0 1 1.5 0M1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5m3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4zM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5z" />
+                  </svg>
+                </a>
+              )}
+              {goal.deletable === 1 || index > 0 ? (
+                <a href="#/" onClick={() => deleteGoal(goal.id)}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    className="bi bi-trash3"
+                    viewBox="0 0 16 16"
                   >
-                    Delete
-                  </button>
-                ) : (
-                  ""
-                )}
-              </div>
-            </Card>
-          ))}
-        </div>
-      </Container>
+                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+                  </svg>
+                </a>
+              ) : (
+                ""
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
       {/* <div className="d-flex justify-content-end">
           <BootstrapButton
             type="submit"
@@ -605,3 +624,23 @@ export const GoalsBM = () => {
     </div>
   );
 };
+
+// const StyledCard = styled.div`
+//   flex: 1 1 calc(50% - 1rem);
+//   margin: 0;
+//   box-sizing: border-box;
+//   padding: 1rem;
+//   border: 1px solid #ccc;
+//   border-radius: 0.5rem;
+//   background-color: #fff;
+//   box-shadow: 0.3rem 0.3rem 0.3rem rgba(0, 0, 0, 0.1);
+// `;
+
+// const StyledInputWrap = styled.div`
+//   width: 100%;
+//   padding: 0.5rem;
+//   margin-bottom: 1rem;
+//   border: 1px solid #ced4da;
+//   border-radius: 0.25rem;
+//   font-size: 1rem;
+// `;
