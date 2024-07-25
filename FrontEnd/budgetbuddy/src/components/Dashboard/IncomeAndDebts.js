@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import { useAuth } from '../../contexts/AuthContext';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 const fetchedIncome = async (user_id, token) => {
   try {
@@ -61,17 +62,29 @@ export const IncomeAndDebts = () => {
   const [income, setIncome] = useState([]);
   const [debts, setDebts] = useState([]);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const loadIncomeAndDebts = async () => {
       if (user_id && token) {
         const incomeData = await fetchedIncome(user_id, token);
         const debtsData = await fetchedDebts(user_id, token);
-        setIncome(incomeData.balance);
-        setDebts(debtsData.balance);
+        setIncome(
+          incomeData.balance === null ? 0 : incomeData.balance
+        );
+        setDebts(
+          debtsData.balance === null ? 0 : debtsData.balance
+        );
       }
     };
     loadIncomeAndDebts();
   }, [user_id, token]);
+
+  let noDataCheckFlag = income === 0 && debts === 0 ? true : false;
+
+  const handleNavigate = () => {
+    navigate("/home/budget/incomes-bm");
+  };
 
   const series = [
     {
@@ -145,8 +158,24 @@ export const IncomeAndDebts = () => {
 
   return (
     <StyledWrapper>
-      <StyledTitle>Income and Debts</StyledTitle>
-      <ReactApexChart options={options} series={series} type="bar" height={400} />
+      <StyledTitle>Incomes and Debts</StyledTitle>
+      {noDataCheckFlag ? (
+        <StyledNoDataWrapper>
+          <StyledNoDataMessage>No Incomes and Debts.</StyledNoDataMessage>
+          <StyledNoDataMessage>Let's create new transaction.</StyledNoDataMessage>
+          <StyledButton
+            type="button"
+            onClick={handleNavigate}
+            className="btn btn-secondary"
+            style={{ padding: "0.5rem 1rem" }}
+          >
+            {"+ "}Create Incomes
+          </StyledButton>
+        </StyledNoDataWrapper>
+      ) : (
+        <ReactApexChart options={options} series={series} type="bar" height={400} />
+      )
+      }
     </StyledWrapper>
   );
 }
@@ -162,4 +191,22 @@ const StyledWrapper = styled.div`
 
 const StyledTitle = styled.h4`
   font-weight: bold;
+`;
+
+const StyledNoDataWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1rem 0;
+`;
+
+const StyledNoDataMessage = styled.p`
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 0;
+`;
+
+const StyledButton = styled.button`
+  margin-top: 1rem;
 `;
