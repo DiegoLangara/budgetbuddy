@@ -20,7 +20,7 @@ export const FinancialSuggestionsSection = ({ suggestion, financialData }) => {
       position: 'bottom',
       horizontalAlign: 'center'
     },
-    colors: ['#9F1853', '#FA4D56', '#520408', '#005D5D', '#1192E8', '#6929C4'],
+    colors: ['#005D5D', '#1192E8', '#520408', '#6929C4', '#9F1853', '#FA4D56'],
   };
 
   return (
@@ -35,14 +35,14 @@ export const FinancialSuggestionsSection = ({ suggestion, financialData }) => {
 
 const StyledFinancialSuggestionsSection = styled.div`
   border: 1px solid #CBD5E1;
-  border-radius: 6px;
-  padding: 0.7rem;
+  border-radius: 5px;
+  padding: 0.5rem;
   margin-bottom: 1rem;
 `;
 
 const StyledText = styled.p`
   margin: 0;
-  font-size: 11px;
+  font-size: 0.8rem;
 `;
 
 const StyledReactApexChart = styled(ReactApexChart)`

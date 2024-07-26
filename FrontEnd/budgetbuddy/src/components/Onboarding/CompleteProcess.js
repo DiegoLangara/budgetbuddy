@@ -25,9 +25,9 @@ export const CompleteProcess = () => {
                 />
                 <h3 className="text-left mb-0 ml-1">Budget Buddy</h3>
               </div>
-              <div className="content mt-5 mb-5 pb-3">
+              <div className="content mt-4 mb-5 pb-3">
                 <h1
-                  className="text-left mt-5 mb-4"
+                  className="text-left mt-3 mb-4"
                   style={{ fontSize: "3.7rem" }}
                 >
                   You're All Set!

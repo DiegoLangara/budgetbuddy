@@ -5,6 +5,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Box } from '@mui/system';
 import { Field } from '../DashboardParts/Field';
 import { Input } from '../DashboardParts/Input';
+import { useNavigate } from 'react-router-dom';
 
 // Fetch expenditures from the backend
 const fetchExpenditures = async (user_id, token, start_date, end_date) => {
@@ -42,6 +43,8 @@ export const ExpendituresByCategory = () => {
 
   const [expenditures, setExpenditures] = useState([]);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const today = new Date();
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -68,9 +71,16 @@ export const ExpendituresByCategory = () => {
     }
   }, [token, user_id, startDate, endDate]);
 
+  const handleNavigate = () => {
+    navigate("/home/budget/incomes-bm");
+  };
+
   // divide the data into labels and series
   const labels = expenditures.map((data) => data.budget_name);
   const series = expenditures.map((data) => data.expense);
+
+  const total = series.reduce((a, b) => a + b, 0);
+  let noDataCheckFlag = total === 0 ? true : false;
 
   const options = {
     chart: {
@@ -110,22 +120,39 @@ export const ExpendituresByCategory = () => {
   return (
     <StyledExpendituresByCategory>
       <StyledTitle>Expenditures By Category</StyledTitle>
-      <StyledBox sx={{ width: '100%' }} display="flex" alignItems="stretch" gap={1}>
-        <Field label="Start date">
-          <StyledInput type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-        </Field>
-        <Field label="End date">
-          <StyledInput type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-        </Field>
-      </StyledBox>
-      <ReactApexChart options={options} series={series} type="donut" />
-    </StyledExpendituresByCategory>
+      {noDataCheckFlag ? (
+        <StyledNoDataWrapper>
+          <StyledNoDataMessage>No Expenses.</StyledNoDataMessage>
+          <StyledNoDataMessage>Let's create new transactions.</StyledNoDataMessage>
+          <StyledButton
+            type="button"
+            onClick={handleNavigate}
+            className="btn btn-secondary"
+            style={{ padding: "0.5rem 1rem" }}
+          >
+            {"+ "}Create transactions
+          </StyledButton>
+        </StyledNoDataWrapper>
+      ) : (
+        <>
+          <StyledBox sx={{ width: '100%' }} display="flex" alignItems="stretch" gap={1}>
+            <Field label="Start date">
+              <StyledInput type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+            </Field>
+            <Field label="End date">
+              <StyledInput type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+            </Field>
+          </StyledBox>
+          <ReactApexChart options={options} series={series} type="donut" />
+        </>
+      )}
+    </StyledExpendituresByCategory >
   );
 };
 
 const StyledExpendituresByCategory = styled.div`
   grid-column: 2 / 3;
-  grid-row: 1 / 2;
+  grid-row: 3 / 4;
   border: 1px solid #fff;
   border-radius: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -139,12 +166,28 @@ const StyledInput = styled(Input)`
   padding: 0 0.5rem;
 `;
 
-const StyledTitle = styled.h3`
-  font-size: 1.3rem;
+const StyledTitle = styled.h4`
   font-weight: bold;
-  margin-bottom: 0;
 `;
 
 const StyledBox = styled(Box)`
   margin-bottom: 0.5rem;
+`;
+
+const StyledNoDataWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1rem 0;
+`;
+
+const StyledNoDataMessage = styled.p`
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 0;
+`;
+
+const StyledButton = styled.button`
+  margin-top: 1rem;
 `;

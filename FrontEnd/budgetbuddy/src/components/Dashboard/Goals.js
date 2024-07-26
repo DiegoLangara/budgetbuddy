@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { GoalBarChart } from "../DashboardParts/GoalBarChart";
 import styled from "styled-components";
 import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 // Fetch goals from the backend
 async function fetchGoals(user_id, token) {
@@ -34,6 +35,7 @@ export const Goals = () => {
   const user_id = currentUser?.id;
 
   const [goals, setGoals] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (token && user_id) {
@@ -58,17 +60,37 @@ export const Goals = () => {
     }
   }, [user_id, token]);
 
+  let noDataCheckFlag = goals.length === 1 && goals[0].goal_name === "No goals available" ? true : false;
+
+  const handleNavigate = () => {
+    navigate("/home/budget/goals-bm");
+  };
+
   return (
     <StyledGoalWrapper>
       <StyledTitle>Goals</StyledTitle>
-      {goals.map((goal) => (
-        <StyledGoalBarChart
-          key={goal.id}
-          description={goal.goal_name}
-          goal={goal.target_amount}
-          savings={goal.current_amount}
-        />
-      ))}
+      {noDataCheckFlag
+        ? <StyledNoDataWrapper>
+          <StyledNoDataMessage>No Goals.</StyledNoDataMessage>
+          <StyledNoDataMessage>Let's create your financial goal.</StyledNoDataMessage>
+          <StyledButton
+            type="button"
+            onClick={handleNavigate}
+            className="btn btn-secondary"
+            style={{ padding: "0.5rem 1rem" }}
+          >
+            {"+ "}Create Goals
+          </StyledButton>
+        </StyledNoDataWrapper>
+        : goals.map((goal) => (
+          <StyledGoalBarChart
+            key={goal.id}
+            description={goal.goal_name}
+            goal={goal.target_amount}
+            savings={goal.current_amount}
+          />
+        ))
+      }
     </StyledGoalWrapper>
   );
 };
@@ -85,9 +107,27 @@ const StyledGoalWrapper = styled.div`
 
 const StyledTitle = styled.h4`
   font-weight: bold;
-  margin-bottom: 2rem;
 `;
 
 const StyledGoalBarChart = styled(GoalBarChart)`
   margin: 1rem 0;
 `;
+
+const StyledNoDataWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1rem 0;
+`;
+
+const StyledNoDataMessage = styled.p`
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 0;
+`;
+
+const StyledButton = styled.button`
+  margin-top: 1rem;
+`;
+

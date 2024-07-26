@@ -2,17 +2,19 @@ import React, { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import { useAuth } from '../../contexts/AuthContext';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
-const fetchIncomeAndDebts = async (user_id, token) => {
+const fetchedIncome = async (user_id, token) => {
   try {
     const response = await fetch(
-      `http://localhost:5001/api/dashboard/incomeanddebts/`,
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/balance/`,
       {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           token: token,
           user_id: user_id,
+          type: 'income',
         },
       }
     );
@@ -20,9 +22,34 @@ const fetchIncomeAndDebts = async (user_id, token) => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    return Array.isArray(data) ? data : [];
+    return data;
   } catch (error) {
-    console.error('Failed to fetch income and debts:', error);
+    console.error('Failed to fetch income:', error);
+    return [];
+  }
+};
+
+const fetchedDebts = async (user_id, token) => {
+  try {
+    const response = await fetch(
+      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/balance/`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          token: token,
+          user_id: user_id,
+          type: 'debts',
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch debts:', error);
     return [];
   }
 };
@@ -32,33 +59,41 @@ export const IncomeAndDebts = () => {
   const token = currentUser?.token;
   const user_id = currentUser?.id;
 
-  const [incomeAndDebts, setIncomeAndDebts] = useState([]);
+  const [income, setIncome] = useState([]);
+  const [debts, setDebts] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (token && user_id) {
-      async function loadIncomeAndDebts() {
-        const fetchedIncomeAndDebts = await fetchIncomeAndDebts(user_id, token);
-        const formattedIncomeAndDebts = fetchedIncomeAndDebts.map((data) => ({
-          month: data.month || '',
-          income: data.income || 0,
-          debts: data.debts || 0,
-        }));
-        setIncomeAndDebts(formattedIncomeAndDebts);
-        console.log(incomeAndDebts);
+    const loadIncomeAndDebts = async () => {
+      if (user_id && token) {
+        const incomeData = await fetchedIncome(user_id, token);
+        const debtsData = await fetchedDebts(user_id, token);
+        setIncome(
+          incomeData.balance === null ? 0 : incomeData.balance
+        );
+        setDebts(
+          debtsData.balance === null ? 0 : debtsData.balance
+        );
       }
-      loadIncomeAndDebts();
-    }
-  }, [token, user_id]);
+    };
+    loadIncomeAndDebts();
+  }, [user_id, token]);
 
+  let noDataCheckFlag = income === 0 && debts === 0 ? true : false;
+
+  const handleNavigate = () => {
+    navigate("/home/budget/incomes-bm");
+  };
 
   const series = [
     {
       name: 'Income',
-      data: [3000, 3200, 2900, 3100, 2800, 3400, 3300, 3700, 3600, 3900, 4100, 4500] // Replace with your income data
+      data: [income]
     },
     {
       name: 'Debts',
-      data: [-1200, -1100, -1400, -1300, -1500, -1600, -1700, -1800, -1900, -2000, -2100, -2200] // Replace with your debts data
+      data: [-debts]
     }
   ];
 
@@ -111,8 +146,7 @@ export const IncomeAndDebts = () => {
       }
     },
     xaxis: {
-      categories: [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      categories: ['Total'
       ],
       labels: {
         formatter: function (val) {
@@ -124,15 +158,31 @@ export const IncomeAndDebts = () => {
 
   return (
     <StyledWrapper>
-      <StyledTitle>Income and Debts</StyledTitle>
-      <ReactApexChart options={options} series={series} type="bar" height={400} />
+      <StyledTitle>Incomes and Debts</StyledTitle>
+      {noDataCheckFlag ? (
+        <StyledNoDataWrapper>
+          <StyledNoDataMessage>No Incomes and Debts.</StyledNoDataMessage>
+          <StyledNoDataMessage>Let's create new transaction.</StyledNoDataMessage>
+          <StyledButton
+            type="button"
+            onClick={handleNavigate}
+            className="btn btn-secondary"
+            style={{ padding: "0.5rem 1rem" }}
+          >
+            {"+ "}Create Incomes
+          </StyledButton>
+        </StyledNoDataWrapper>
+      ) : (
+        <ReactApexChart options={options} series={series} type="bar" height={300} />
+      )
+      }
     </StyledWrapper>
   );
 }
 
 const StyledWrapper = styled.div`
   grid-column: 2 / 3;
-  grid-row: 3 / 4;
+  grid-row: 1 / 2;
   border: 1px solid #fff;
   border-radius: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -141,4 +191,22 @@ const StyledWrapper = styled.div`
 
 const StyledTitle = styled.h4`
   font-weight: bold;
+`;
+
+const StyledNoDataWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1rem 0;
+`;
+
+const StyledNoDataMessage = styled.p`
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 0;
+`;
+
+const StyledButton = styled.button`
+  margin-top: 1rem;
 `;

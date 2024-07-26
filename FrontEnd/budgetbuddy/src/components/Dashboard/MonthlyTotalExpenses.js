@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { useAuth } from "../../contexts/AuthContext";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 // Fetch monthly total expenses from the backend
 const fetchMonthlyTotalExpenses = async (user_id, token) => {
@@ -36,6 +37,8 @@ export const MonthlyTotalExpenses = () => {
   const [monthlyTotalExpenses, setMonthlyTotalExpenses] = useState([]);
   const [categories, setCategories] = useState([]);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (token && user_id) {
       async function loadMonthlyTotalExpenses() {
@@ -55,6 +58,16 @@ export const MonthlyTotalExpenses = () => {
       loadMonthlyTotalExpenses();
     }
   }, [token, user_id]);
+
+  const chkTotalExpenses = monthlyTotalExpenses.reduce((accumulator, series) => {
+    return accumulator + series.data.reduce((sum, value) => sum + value, 0);
+  }, 0);
+
+  let noDataCheckFlag = chkTotalExpenses === 0 ? true : false;
+
+  const handleNavigate = () => {
+    navigate("/home/transactions");
+  };
 
   const options = {
     chart: {
@@ -96,7 +109,21 @@ export const MonthlyTotalExpenses = () => {
   return (
     <StyledMonthlyTotalExpenses>
       <StyledTitle>Monthly Total Expenses</StyledTitle>
-      <ReactApexChart options={options} series={monthlyTotalExpenses} type="bar" />
+      {noDataCheckFlag ? (
+        <StyledNoDataWrapper>
+          <StyledNoDataMessage>No Expenses.</StyledNoDataMessage>
+          <StyledNoDataMessage>Let's create new transaction.</StyledNoDataMessage>
+          <StyledButton
+            type="button"
+            onClick={handleNavigate}
+            className="btn btn-secondary"
+            style={{ padding: "0.5rem 1rem" }}
+          >
+            {"+ "}Create transactions
+          </StyledButton>
+        </StyledNoDataWrapper>
+      ) : <ReactApexChart options={options} series={monthlyTotalExpenses} type="bar" />
+      }
     </StyledMonthlyTotalExpenses>
   );
 };
@@ -112,4 +139,22 @@ const StyledMonthlyTotalExpenses = styled.div`
   border-radius: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   padding: 1rem;
+`;
+
+const StyledNoDataWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1rem 0;
+`;
+
+const StyledNoDataMessage = styled.p`
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 0;
+`;
+
+const StyledButton = styled.button`
+  margin-top: 1rem;
 `;
