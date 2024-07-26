@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ApexChart from "react-apexcharts";
 import styled from "styled-components";
 import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 // Fetch savings from the backend
 async function fetchSavings(user_id, token) {
@@ -35,6 +36,8 @@ export const MonthlySavings = () => {
 
   const [savings, setSavings] = useState([]);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (token && user_id) {
       async function loadSavings() {
@@ -53,9 +56,17 @@ export const MonthlySavings = () => {
   const monthlySavings = [
     {
       name: "Total Savings",
-      data: savings.map((data) => data.total_savings),
+      data: savings.map((data) => data.total_savings || 0),
     },
   ];
+
+  const chkTotalSavings = monthlySavings[0].data.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
+  let noDataCheckFlag = chkTotalSavings === 0 ? true : false;
+
+  const handleNavigate = () => {
+    navigate("/home/transactions");
+  };
 
   const options = {
     dataLabels: {
@@ -88,13 +99,27 @@ export const MonthlySavings = () => {
   return (
     <StyledMonthlySavings>
       <StyledTitle>Monthly Savings</StyledTitle>
-      <ApexChart options={options} series={monthlySavings} type="area" />
+      {noDataCheckFlag ? (
+        <StyledNoDataWrapper>
+          <StyledNoDataMessage>No Savings.</StyledNoDataMessage>
+          <StyledNoDataMessage>Let's create new savings.</StyledNoDataMessage>
+          <StyledButton
+            type="button"
+            onClick={handleNavigate}
+            className="btn btn-secondary"
+            style={{ padding: "0.5rem 1rem" }}
+          >
+            {"+ "}Create transactions
+          </StyledButton>
+        </StyledNoDataWrapper>) : (
+        < ApexChart options={options} series={monthlySavings} type="area" />
+      )}
     </StyledMonthlySavings>
   );
 };
 
 const StyledMonthlySavings = styled.div`
-  grid-column: 1 / 2
+  grid-column: 1 / 2;
   grid-row: 2 / 3;
   border: 1px solid #fff;
   border-radius: 5px;
@@ -104,4 +129,22 @@ const StyledMonthlySavings = styled.div`
 
 const StyledTitle = styled.h4`
   font-weight: bold;
+`;
+
+const StyledNoDataWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1rem 0;
+`;
+
+const StyledNoDataMessage = styled.p`
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 0;
+`;
+
+const StyledButton = styled.button`
+  margin-top: 1rem;
 `;
