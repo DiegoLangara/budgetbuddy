@@ -53,20 +53,22 @@ export const BudgetPage = () => {
 
   return (
     <Container isMobile={isMobile}>
-      <ShrinkedNav isMobile={isMobile}>
-        <ul className="list-group">
-          {pageOptions.map((page, index) => (
-            <li key={index} className="list-group-item">
-              <Link
-                to={pageLinks[index]}
-                className="px-0 mx-0 d-flex text-decoration-none align-items-center justify-content-between"
-              >
-                {page}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </ShrinkedNav>
+      {isMobile && (
+        <ShrinkedNav isMobile={isMobile}>
+          <ul className="list-group">
+            {pageOptions.map((page, index) => (
+              <li key={index} className="list-group-item">
+                <Link
+                  to={pageLinks[index]}
+                  className="px-0 mx-0 d-flex text-decoration-none align-items-center justify-content-between"
+                >
+                  {page}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </ShrinkedNav>
+      )}
 
       <div
         style={{
@@ -76,24 +78,30 @@ export const BudgetPage = () => {
           flexDirection: isMobile ? "column" : "row",
         }}
       >
-        <Aside isMobile={isMobile}>
-          <nav>
-            <ul className="list-group">
-              {pageOptions.map((page, index) => (
-                <li key={index} className="list-group-item">
-                  <Link
-                    to={pageLinks[index]}
-                    className="px-0 mx-0 d-flex text-decoration-none align-items-center justify-content-between"
-                  >
-                    {page}
-                    <div>{" >"}</div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </Aside>
-        <main style={{ flexBasis: "100%" }}>
+        {!isMobile && (
+          <Aside isMobile={isMobile}>
+            <nav>
+              <ul className="list-group">
+                {pageOptions.map((page, index) => (
+                  <li key={index} className="list-group-item">
+                    <div>{""}</div>
+                    <Link
+                      to={pageLinks[index]}
+                      className="px-0 mx-0 d-flex text-decoration-none align-items-center justify-content-between"
+                    >
+                      {page}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </Aside>
+        )}
+        <main style={{ 
+          flexBasis: "100%",
+
+
+        }}>
           <Routes>
             <Route path="goals-bm" element={<GoalsBM />} />
             <Route path="incomes-bm" element={<IncomesBM />} />
