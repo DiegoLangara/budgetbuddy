@@ -341,7 +341,7 @@ export const DebtsBM = () => {
                     </div>
                     <div>
                       <div className="form-row">
-                        <div className="col-md-6 form-group mb-0">
+                        <div className="col-md-6 mb-0">
                           <Field label="Debt name" className="mb-0">
                             <>
                               <Input
@@ -367,7 +367,7 @@ export const DebtsBM = () => {
                             </>
                           </Field>
                         </div>
-                        <div className="col-md-6 form-group mb-0">
+                        <div className="col-md-6 mb-0">
                           <Field label="Debt category">
                             <>
                               <select
@@ -404,7 +404,7 @@ export const DebtsBM = () => {
                         </div>
                       </div>
                       <div className="form-row">
-                        <div className="col-md-6 form-group mb-0">
+                        <div className="col-md-6 mb-0">
                           <Field label="Debt amount">
                             <>
                               <div className="input-group">
@@ -451,7 +451,7 @@ export const DebtsBM = () => {
                             </>
                           </Field>
                         </div>
-                        <div className="col-md-6 form-group mb-0">
+                        <div className="col-md-6 mb-0">
                           <Field label="Due date">
                             <>
                               <Input

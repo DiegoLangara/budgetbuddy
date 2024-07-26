@@ -44,6 +44,9 @@ export default function Signup() {
         icon: data.message_icon,
         title: data.message_title,
         text: data.message_text,
+        showConfirmButton: false,
+      timer: 1200,
+      width: "300px",
       }).then(() => {
         if (data.success) {
           navigate("/login");

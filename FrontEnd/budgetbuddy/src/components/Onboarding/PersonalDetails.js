@@ -184,7 +184,7 @@ export const PersonalDetails = () => {
               </p>
               <div className="container px-0 pb-4">
                 <div className="form-row">
-                  <div className="col-md-6 form-group">
+                  <div className="col-md-6">
                     <Field label="First Name">
                       <Input
                         name="firstname"
@@ -198,7 +198,7 @@ export const PersonalDetails = () => {
                       />
                     </Field>
                   </div>
-                  <div className="col-md-6 form-group">
+                  <div className="col-md-6">
                     <Field label="Last Name">
                       <Input
                         name="lastname"
@@ -213,7 +213,7 @@ export const PersonalDetails = () => {
                     </Field>
                   </div>
                 </div>
-                <div className="form-group">
+                <div>
                   <Field label="Date of Birth">
                     <Input
                       name="dob"
@@ -233,7 +233,7 @@ export const PersonalDetails = () => {
                     />
                   </Field>
                 </div>
-                <div className="form-group">
+                <div>
                   <Field label="Country (Where you live)">
                     <Input
                       name="country"
@@ -247,7 +247,7 @@ export const PersonalDetails = () => {
                     />
                   </Field>
                 </div>
-                <div className="form-group">
+                <div>
                   <Field label="Occupation">
                     <Input
                       name="occupation"

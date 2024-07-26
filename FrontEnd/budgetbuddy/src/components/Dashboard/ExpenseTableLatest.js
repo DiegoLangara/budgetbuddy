@@ -98,6 +98,8 @@ export const ExpenseTableLatest = () => {
     }
   }, [token, user_id]);
 
+  let noDataCheckFlag = transactions.length === 0 ? true : false;
+
   // Sorting table items
   const sortedTransactions = [...transactions];
   if (sortConfig.key !== null) {
@@ -129,285 +131,306 @@ export const ExpenseTableLatest = () => {
     setViewableTransaction(null);
   };
 
+  const handleNavigate = () => {
+    navigate("/home/transactions");
+  };
+
   return (
     <StyledWrapper>
-      <StyledTitle>Latest 10 transactions</StyledTitle>
-      <div className="scrollable-table-dashboard shadow">
-        <table className="responsive-table">
-          <thead>
-            <tr>
-              <th
-                onClick={() => handleSort("transaction_date")}
-                style={{ cursor: "pointer" }}
-              >
-                Date
-                {sortConfig.key === "transaction_date" ? (
-                  sortConfig.direction === "ascending" ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      class="bi bi-caret-up-fill"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
-                    </svg>
-                  ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      class="bi bi-caret-down-fill"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-                    </svg>
-                  )
-                ) : null}
-              </th>
-              <th
-                onClick={() => handleSort("transaction_category")}
-                style={{ cursor: "pointer" }}
-              >
-                Category
-                {sortConfig.key === "transaction_category" ? (
-                  sortConfig.direction === "ascending" ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      class="bi bi-caret-up-fill"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
-                    </svg>
-                  ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      class="bi bi-caret-down-fill"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-                    </svg>
-                  )
-                ) : null}
-              </th>
-              <th
-                onClick={() => handleSort("transaction_name")}
-                style={{ cursor: "pointer" }}
-              >
-                Name
-                {sortConfig.key === "transaction_name" ? (
-                  sortConfig.direction === "ascending" ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      class="bi bi-caret-up-fill"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
-                    </svg>
-                  ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      class="bi bi-caret-down-fill"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-                    </svg>
-                  )
-                ) : null}
-              </th>
-              <th
-                onClick={() => handleSort("transaction_note")}
-                style={{ cursor: "pointer" }}
-              >
-                Note
-                {sortConfig.key === "transaction_note" ? (
-                  sortConfig.direction === "ascending" ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      class="bi bi-caret-up-fill"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
-                    </svg>
-                  ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      class="bi bi-caret-down-fill"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-                    </svg>
-                  )
-                ) : null}
-              </th>
-              <th
-                onClick={() => handleSort("transaction_amount")}
-                style={{ cursor: "pointer" }}
-              >
-                Amount
-                {sortConfig.key === "transaction_amount" ? (
-                  sortConfig.direction === "ascending" ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      class="bi bi-caret-up-fill"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
-                    </svg>
-                  ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      class="bi bi-caret-down-fill"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-                    </svg>
-                  )
-                ) : null}
-              </th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedTransactions.map((data) => (
-              <tr key={data.id}>
-                <td data-label="Date">{data.transaction_date}</td>
-                <td data-label="Category">{data.transaction_category}</td>
-                <td data-label="Name">{data.transaction_name}</td>
-                <td data-label="Note">{data.transaction_note}</td>
-                <td
-                  data-label="Amount"
-                  className={data.transaction_amount > 0 ? "plus" : "minus"}
+      <StyledHeader>
+        <StyledTitle>Latest transactions</StyledTitle>
+        <button
+          type="button"
+          onClick={handleNavigate}
+          className="btn btn-secondary"
+          style={{ padding: "0 1rem" }}
+        >
+          {"+ "}Create
+        </button>
+      </StyledHeader>
+      {noDataCheckFlag ? (
+        <StyledNoDataWrapper>
+          <StyledNoDataMessage>No transactions.</StyledNoDataMessage>
+          <StyledNoDataMessage>Let's create new transaction.</StyledNoDataMessage>
+        </StyledNoDataWrapper>
+      ) : (
+        <div className="scrollable-table-dashboard shadow">
+          <table className="responsive-table">
+            <thead>
+              <tr>
+                <th
+                  onClick={() => handleSort("transaction_date")}
+                  style={{ cursor: "pointer" }}
                 >
-                  {data.transaction_amount}
-                </td>
-
-                <td data-label="">
-                  <div className="icons">
-                    <a href="#/" onClick={() => handleViewClick(data)}>
+                  Date
+                  {sortConfig.key === "transaction_date" ? (
+                    sortConfig.direction === "ascending" ? (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"
                         height="16"
                         fill="currentColor"
-                        class="bi bi-arrow-up-right-square"
+                        class="bi bi-caret-up-fill"
                         viewBox="0 0 16 16"
                       >
-                        <path
-                          fill-rule="evenodd"
-                          d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm5.854 8.803a.5.5 0 1 1-.708-.707L9.243 6H6.475a.5.5 0 1 1 0-1h3.975a.5.5 0 0 1 .5.5v3.975a.5.5 0 1 1-1 0V6.707z"
-                        />
+                        <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
                       </svg>
-                    </a>
-                  </div>
-                </td>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-caret-down-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                      </svg>
+                    )
+                  ) : null}
+                </th>
+                <th
+                  onClick={() => handleSort("transaction_category")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Category
+                  {sortConfig.key === "transaction_category" ? (
+                    sortConfig.direction === "ascending" ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-caret-up-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
+                      </svg>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-caret-down-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                      </svg>
+                    )
+                  ) : null}
+                </th>
+                <th
+                  onClick={() => handleSort("transaction_name")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Name
+                  {sortConfig.key === "transaction_name" ? (
+                    sortConfig.direction === "ascending" ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-caret-up-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
+                      </svg>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-caret-down-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                      </svg>
+                    )
+                  ) : null}
+                </th>
+                <th
+                  onClick={() => handleSort("transaction_note")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Note
+                  {sortConfig.key === "transaction_note" ? (
+                    sortConfig.direction === "ascending" ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-caret-up-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
+                      </svg>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-caret-down-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                      </svg>
+                    )
+                  ) : null}
+                </th>
+                <th
+                  onClick={() => handleSort("transaction_amount")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Amount
+                  {sortConfig.key === "transaction_amount" ? (
+                    sortConfig.direction === "ascending" ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-caret-up-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
+                      </svg>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-caret-down-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                      </svg>
+                    )
+                  ) : null}
+                </th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        {viewableTransaction && (
-          <Modal show={showModal} onHide={handleModalClose}>
-            <Modal.Header closeButton>
-              <Modal.Title>View Transaction</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <BootstrapForm>
-                <BootstrapForm.Group controlId="transactionDate">
-                  <BootstrapForm.Label>Date</BootstrapForm.Label>
-                  <BootstrapForm.Control
-                    type="date"
-                    defaultValue={viewableTransaction.transaction_date}
-                    readOnly
-                  />
-                </BootstrapForm.Group>
-                <BootstrapForm.Group controlId="transactionCategory">
-                  <BootstrapForm.Label>Category</BootstrapForm.Label>
-                  <BootstrapForm.Control
-                    type="text"
-                    defaultValue={viewableTransaction.transaction_category}
-                    readOnly
-                  />
-                </BootstrapForm.Group>
-                <BootstrapForm.Group controlId="transactionName">
-                  <BootstrapForm.Label>Name</BootstrapForm.Label>
-                  <BootstrapForm.Control
-                    type="text"
-                    defaultValue={viewableTransaction.transaction_name}
-                    readOnly
-                  />
-                </BootstrapForm.Group>
-                <BootstrapForm.Group controlId="transactionNote">
-                  <BootstrapForm.Label>Note</BootstrapForm.Label>
-                  <BootstrapForm.Control
-                    type="text"
-                    defaultValue={viewableTransaction.transaction_note}
-                    readOnly
-                  />
-                </BootstrapForm.Group>
-                <BootstrapForm.Group controlId="transactionAmount">
-                  <BootstrapForm.Label>Amount</BootstrapForm.Label>
-                  <BootstrapForm.Control
-                    type="number"
-                    defaultValue={viewableTransaction.transaction_amount}
-                    readOnly
-                  />
-                </BootstrapForm.Group>
-                <BootstrapForm.Group controlId="transactionType">
-                  <BootstrapForm.Label>Type</BootstrapForm.Label>
-                  <BootstrapForm.Control
-                    type="text"
-                    defaultValue={viewableTransaction.transaction_type}
-                    readOnly
-                  />
-                </BootstrapForm.Group>
-                <BootstrapForm.Group controlId="transactionImageURL">
-                  <BootstrapForm.Label>Image</BootstrapForm.Label>
-                  {viewableTransaction.transaction_image_url && (
-                    <div className="transaction-image">
-                      <img
-                        src={viewableTransaction.transaction_image_url}
-                        alt="Transaction"
-                        style={{ width: "100%", height: "auto" }}
-                      />
+            </thead>
+            <tbody>
+              {sortedTransactions.map((data) => (
+                <tr key={data.id}>
+                  <td data-label="Date">{data.transaction_date}</td>
+                  <td data-label="Category">{data.transaction_category}</td>
+                  <td data-label="Name">{data.transaction_name}</td>
+                  <td data-label="Note">{data.transaction_note}</td>
+                  <td
+                    data-label="Amount"
+                    className={data.transaction_amount > 0 ? "plus" : "minus"}
+                  >
+                    {data.transaction_amount}
+                  </td>
+
+                  <td data-label="">
+                    <div className="icons">
+                      <a href="#/" onClick={() => handleViewClick(data)}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          class="bi bi-arrow-up-right-square"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm5.854 8.803a.5.5 0 1 1-.708-.707L9.243 6H6.475a.5.5 0 1 1 0-1h3.975a.5.5 0 0 1 .5.5v3.975a.5.5 0 1 1-1 0V6.707z"
+                          />
+                        </svg>
+                      </a>
                     </div>
-                  )}
-                </BootstrapForm.Group>
-              </BootstrapForm>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={handleModalClose}>
-                Close
-              </Button>
-            </Modal.Footer>
-          </Modal>
-        )}
-      </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {viewableTransaction && (
+            <Modal show={showModal} onHide={handleModalClose}>
+              <Modal.Header closeButton>
+                <Modal.Title>View Transaction</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <BootstrapForm>
+                  <BootstrapForm.Group controlId="transactionDate">
+                    <BootstrapForm.Label>Date</BootstrapForm.Label>
+                    <BootstrapForm.Control
+                      type="date"
+                      defaultValue={viewableTransaction.transaction_date}
+                      readOnly
+                    />
+                  </BootstrapForm.Group>
+                  <BootstrapForm.Group controlId="transactionCategory">
+                    <BootstrapForm.Label>Category</BootstrapForm.Label>
+                    <BootstrapForm.Control
+                      type="text"
+                      defaultValue={viewableTransaction.transaction_category}
+                      readOnly
+                    />
+                  </BootstrapForm.Group>
+                  <BootstrapForm.Group controlId="transactionName">
+                    <BootstrapForm.Label>Name</BootstrapForm.Label>
+                    <BootstrapForm.Control
+                      type="text"
+                      defaultValue={viewableTransaction.transaction_name}
+                      readOnly
+                    />
+                  </BootstrapForm.Group>
+                  <BootstrapForm.Group controlId="transactionNote">
+                    <BootstrapForm.Label>Note</BootstrapForm.Label>
+                    <BootstrapForm.Control
+                      type="text"
+                      defaultValue={viewableTransaction.transaction_note}
+                      readOnly
+                    />
+                  </BootstrapForm.Group>
+                  <BootstrapForm.Group controlId="transactionAmount">
+                    <BootstrapForm.Label>Amount</BootstrapForm.Label>
+                    <BootstrapForm.Control
+                      type="number"
+                      defaultValue={viewableTransaction.transaction_amount}
+                      readOnly
+                    />
+                  </BootstrapForm.Group>
+                  <BootstrapForm.Group controlId="transactionType">
+                    <BootstrapForm.Label>Type</BootstrapForm.Label>
+                    <BootstrapForm.Control
+                      type="text"
+                      defaultValue={viewableTransaction.transaction_type}
+                      readOnly
+                    />
+                  </BootstrapForm.Group>
+                  <BootstrapForm.Group controlId="transactionImageURL">
+                    <BootstrapForm.Label>Image</BootstrapForm.Label>
+                    {viewableTransaction.transaction_image_url && (
+                      <div className="transaction-image">
+                        <img
+                          src={viewableTransaction.transaction_image_url}
+                          alt="Transaction"
+                          style={{ width: "100%", height: "auto" }}
+                        />
+                      </div>
+                    )}
+                  </BootstrapForm.Group>
+                </BootstrapForm>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleModalClose}>
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
+          )}
+        </div>
+      )}
     </StyledWrapper>
   );
 };
@@ -417,8 +440,30 @@ const StyledWrapper = styled.div`
   border-radius: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   padding: 1rem;
+  grid-column: 1 / 3;
+`;
+
+const StyledHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 `;
 
 const StyledTitle = styled.h4`
   font-weight: bold;
+`;
+
+const StyledNoDataWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1rem 0;
+`;
+
+const StyledNoDataMessage = styled.p`
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 0;
 `;

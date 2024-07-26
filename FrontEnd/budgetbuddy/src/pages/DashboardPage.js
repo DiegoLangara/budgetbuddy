@@ -13,19 +13,15 @@ export const DashboardPage = () => {
   return (
     <>
       <DashboardContainer>
-
         <Goals />
-        <ExpendituresByCategory />
+        <IncomeAndDebts />
         <MonthlySavings />
         <MonthlyTotalExpenses />
         <BalanceOfBudgetAndExpenses />
-        <IncomeAndDebts />
+        <ExpendituresByCategory />
         <FinancialSuggestions />
-      </DashboardContainer>
-      <DashboardTableContainer>
         <ExpenseTableLatest />
-      </DashboardTableContainer>
-
+      </DashboardContainer>
     </>
   );
 };
@@ -53,16 +49,3 @@ const DashboardContainer = styled.div`
   }
 `;
 
-const DashboardTableContainer = styled.div`
-  padding: 1rem 10vw 0 calc(10vw + 5vw);
-  display: grid;
-  grid-template-columns: calc(2 * 35% + 1rem);
-
-  @media (max-width: 1200px) {
-    grid-template-columns: 1fr;
-  }
-
-  @media (max-width: 600px) {
-    padding: 3vh 0 0 0;
-  }
-`;

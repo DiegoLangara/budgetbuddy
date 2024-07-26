@@ -378,7 +378,7 @@ export const IncomesBM = () => {
                     </div>
                     <div>
                       <div className="form-row">
-                        <div className="col-md-6 form-group mb-0">
+                        <div className="col-md-6 mb-0">
                           <Field label="Income name" className="mb-0">
                             <>
                               <Input
@@ -405,7 +405,7 @@ export const IncomesBM = () => {
                             </>
                           </Field>
                         </div>
-                        <div className="col-md-6 form-group mb-0">
+                        <div className="col-md-6 mb-0">
                           <Field label="Income category">
                             <>
                               <div className="mt-0">
@@ -445,7 +445,7 @@ export const IncomesBM = () => {
                         </div>
                       </div>
                       <div className="form-row">
-                        <div className="col-md-6 form-group mb-0">
+                        <div className="col-md-6 mb-0">
                           <Field label="Income amount">
                             <>
                               <>
@@ -495,7 +495,7 @@ export const IncomesBM = () => {
                             </>
                           </Field>
                         </div>
-                        <div className="col-md-6 form-group mb-0">
+                        <div className="col-md-6 mb-0">
                           <Field label="Income period">
                             <>
                               <div className="mt-0">

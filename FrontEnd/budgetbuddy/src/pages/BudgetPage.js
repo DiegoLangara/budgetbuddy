@@ -10,7 +10,8 @@ import "../css/BudgetPage.css";
 
 const Container = styled.div`
   width: 100%;
-  padding: ${(props) => (props.isMobile ? "1vh" : "1vh 10vw 3vh calc(10vw + 60px)")};
+  padding: ${(props) =>
+    props.isMobile ? "1vh" : "1vh 10vw 3vh calc(10vw + 60px)"};
   margin: 0 auto;
 `;
 
@@ -46,7 +47,7 @@ const Aside = styled.aside`
 
 export const BudgetPage = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const pageOptions = ["Goals", "Incomes", "Budgets", "Debts"];
   const pageLinks = ["goals-bm", "incomes-bm", "budgets-bm", "debts-bm"];
 
@@ -67,7 +68,14 @@ export const BudgetPage = () => {
         </ul>
       </ShrinkedNav>
 
-      <div style={{ width: "100%", display: "flex", flex: "1", flexDirection: isMobile ? "column" : "row" }}>
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          flex: "1",
+          flexDirection: isMobile ? "column" : "row",
+        }}
+      >
         <Aside isMobile={isMobile}>
           <nav>
             <ul className="list-group">
