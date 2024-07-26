@@ -173,7 +173,7 @@ export const IncomeAndDebts = () => {
           </StyledButton>
         </StyledNoDataWrapper>
       ) : (
-        <ReactApexChart options={options} series={series} type="bar" height={400} />
+        <ReactApexChart options={options} series={series} type="bar" height={300} />
       )
       }
     </StyledWrapper>
