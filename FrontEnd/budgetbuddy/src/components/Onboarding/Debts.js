@@ -283,19 +283,26 @@ export const Debts = () => {
                           >
                             <div className="d-flex justify-content-between align-items-center">
                               <h5 style={{ margin: ".2rem 0" }}>
-                                Debt {index + 1}{" "}
+                                Debt{" "}
                                 {expandedDebtId !== debt.id && debt.debt_name
                                   ? " - " + debt.debt_name
                                   : ""}
                               </h5>
                               {debt.deletable === 1 || index > 0 ? (
-                                <button
-                                  className="btn btn-outline-danger btn-sm"
-                                  type="button"
+                                <a
+                                  href="#/"
                                   onClick={() => deleteDebt(debt.id)}
                                 >
-                                  Delete
-                                </button>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    className="bi bi-trash3"
+                                    viewBox="0 0 16 16"
+                                  >
+                                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+                                  </svg>
+                                </a>
                               ) : (
                                 ""
                               )}
@@ -305,7 +312,7 @@ export const Debts = () => {
                             <div className="accordion-collapse collapse show">
                               <div className="accordion-body pt-2 px-0 container">
                                 <div className="form-row">
-                                  <div className="col-md-6 form-group mb-0">
+                                  <div className="col-md-6 mb-0">
                                     <Field label="Debt name" className="mb-0">
                                       <>
                                         <Input
@@ -329,7 +336,7 @@ export const Debts = () => {
                                       </>
                                     </Field>
                                   </div>
-                                  <div className="col-md-6 form-group mb-0">
+                                  <div className="col-md-6 mb-0">
                                     <Field label="Debt category">
                                       <>
                                         <select
@@ -364,7 +371,7 @@ export const Debts = () => {
                                   </div>
                                 </div>
                                 <div className="form-row">
-                                  <div className="col-md-6 form-group mb-0">
+                                  <div className="col-md-6 mb-0">
                                     <Field label="Debt amount">
                                       <>
                                         <div className="input-group">
@@ -406,7 +413,7 @@ export const Debts = () => {
                                       </>
                                     </Field>
                                   </div>
-                                  <div className="col-md-6 form-group mb-0">
+                                  <div className="col-md-6 mb-0">
                                     <Field label="Due date">
                                       <>
                                         <Input
@@ -443,13 +450,13 @@ export const Debts = () => {
                       </div>
                     ))}
 
-                    <div className="d-flex justify-content-center">
+                    {/* <div className="d-flex justify-content-center">
                       <Link to="#" className="mt-2" onClick={addDebt}>
                         {debts.length === 0
                           ? "Create a debt"
                           : "Add more debts"}
                       </Link>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 
@@ -466,7 +473,7 @@ export const Debts = () => {
                         type="submit"
                         className="btn btn-primary w-50 ml-3"
                       >
-                        Continue
+                        Save
                       </BootstrapButton>
                     </div>
                   </div>
