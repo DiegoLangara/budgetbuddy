@@ -131,7 +131,7 @@ export const ExpenseTableLatest = () => {
 
   return (
     <StyledWrapper>
-      <StyledTitle>Latest 10 transactions</StyledTitle>
+      <StyledTitle>Latest transactions</StyledTitle>
       <div className="scrollable-table-dashboard shadow">
         <table className="responsive-table">
           <thead>

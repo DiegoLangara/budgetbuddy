@@ -80,8 +80,8 @@ export const Goals = () => {
         id: goal.goal_id || index + 1,
         goal_name: goal.goal_name || "",
         goal_type_id: goal.goal_type_id ?? 0,
-        target_amount: goal.target_amount || "",
-        current_amount: goal.current_amount || "",
+        target_amount: goal.target_amount || '',
+        current_amount: goal.current_amount ?? 0,
         deletable: goal.deletable || "",
         target_date: goal.target_date ? formatDate(goal.target_date) : "",
       }));
@@ -128,11 +128,15 @@ export const Goals = () => {
   const validateGoals = () => {
     const errors = goals.map((goal) => {
       const error = {};
-      if (!goal.goal_name) error.goal_name = "Input required";
-      if (goal.goal_type_id === 0) error.goal_type_id = "Input required";
-      if (!goal.target_date) error.target_date = "Input required";
-      if (!goal.current_amount) error.current_amount = "Input required";
-      if (!goal.target_amount) error.target_amount = "Input required";
+      if (!goal.goal_name) error.goal_name = "Please enter a name for your goal";
+      if (goal.goal_type_id === 0) error.goal_type_id = "Please select a category";
+      if (!goal.target_date) error.target_date = "Please enter a target date for your goal";
+      if (goal.current_amount === null || goal.current_amount === undefined || goal.current_amount === '') {
+        error.current_amount = "Saved amount is required (enter 0 if none)";
+      }
+      if (goal.target_amount === null || goal.target_amount === undefined || goal.target_amount === '' || goal.target_amount <= 0) {
+        error.target_amount = "Target amount is required and must be greater than 0";
+      }
       return error;
     });
     setGoalErrors(errors);
@@ -403,7 +407,7 @@ export const Goals = () => {
                                             </span>
                                             <Input
                                               type="number"
-                                              value={goal.current_amount || ""}
+                                              value={goal.current_amount}
                                               onChange={(e) =>
                                                 handleNumberInputChange(
                                                   goal.id,

@@ -16,6 +16,10 @@ import {
 import Webcam from "react-webcam";
 import "../css/AddTransaction.css"; // Ensure you have corresponding CSS for styling
 import { useParams } from "react-router-dom";
+import { useTheme, useMediaQuery } from "@mui/material";
+import styled from "styled-components";
+
+
 
 export const AddTransaction = () => {
   const money_format = (value) => {
@@ -43,6 +47,16 @@ export const AddTransaction = () => {
   const [selectedDevice, setSelectedDevice] = useState("");
   const [balance, setBalance] = useState(0);
   const [date, setDate] = useState(new Date().toISOString().substr(0, 10)); // Current date set by default
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+
+  const Container = styled.div`
+  width: 100%;
+  padding: ${(props) =>
+    props.isMobile ? "1vh" : "1vh 10vw 3vh calc(10vw + 60px)"};
+  margin: 0 auto;
+`;
 
   // transaction id passed from ExpenseTable.js to edit data
   const { id } = useParams();
@@ -314,7 +328,8 @@ export const AddTransaction = () => {
   };
 
   return (
-    <div className="addTransactions">
+    <Container isMobile={isMobile}>
+   <div className="addTransactions">
       <div class="transaction_header">
         <h1>Create a transaction</h1>
         <h2>Available Funds: <br/> ${money_format(balance)}</h2>
@@ -552,5 +567,6 @@ export const AddTransaction = () => {
         </Modal.Footer>
       </Modal>
     </div>
+    </Container>
   );
 };

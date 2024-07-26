@@ -121,10 +121,13 @@ export const Debts = () => {
   const validateDebts = () => {
     const errors = debts.map((debt) => {
       const error = {};
-      if (!debt.debt_name) error.debt_name = "Input required";
-      if (!debt.debt_types_id) error.debt_types_id = "Input required";
-      if (!debt.amount) error.amount = "Input required";
-      if (!debt.due_date) error.due_date = "Input required";
+      if (!debt.debt_name) error.debt_name = "Please enter a name for your debt";
+      if (!debt.debt_types_id) error.debt_types_id = "Please select a category";
+      if (debt.amount === null || debt.amount === undefined || debt.amount === '' || debt.amount <= 0) {
+        error.amount = "Debt amount is required and must be greater than 0";
+      }
+      
+      if (!debt.due_date) error.due_date = "Please select a due date";
       return error;
     });
     setDebtErrors(errors);

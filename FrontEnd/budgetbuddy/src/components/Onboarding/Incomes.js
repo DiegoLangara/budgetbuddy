@@ -154,10 +154,12 @@ export const Incomes = () => {
   const validateIncomes = () => {
     const errors = incomes.map((income) => {
       const error = {};
-      if (!income.income_name) error.income_name = "Input required";
-      if (income.income_type_id === 0) error.income_type_id = "Input required";
-      if (!income.amount) error.amount = "Input required";
-      if (!income.period) error.period = "Input required";
+      if (!income.income_name) error.income_name = "Name for your income is required";
+      if (income.income_type_id === 0) error.income_type_id = "Please select a category for your income";
+      if (income.amount === null || income.amount === undefined || income.amount === '' || income.amount <= 0) {
+        error.amount = "Amount is required and must be greater than 0";
+      }
+      if (!income.period) error.period = "Please select a period for your income";
       return error;
     });
     setIncomeErrors(errors);

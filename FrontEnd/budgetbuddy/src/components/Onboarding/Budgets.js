@@ -114,9 +114,9 @@ export const Budgets = () => {
   const validateBudgets = () => {
     const errors = budgets.map((budget) => {
       const error = {};
-      if (!budget.budget_name) error.budget_name = "Input required";
-      if (!budget.amount) error.amount = "Input required";
-      if (!budget.end_date) error.end_date = "Input required";
+      if (!budget.budget_name) error.budget_name = "Please enter a name for your budget";
+      if (!budget.amount) error.amount = "Amount is required and must be greater than 0";
+      if (!budget.end_date) error.end_date = "Date for your budget to end is required";
       return error;
     });
     setBudgetErrors(errors);

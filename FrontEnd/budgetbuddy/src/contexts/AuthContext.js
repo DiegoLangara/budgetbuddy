@@ -49,6 +49,9 @@ export function AuthProvider({ children }) {
           icon: data.message_icon,
           title: data.message_title,
           text: data.message_text,
+          showConfirmButton: false,
+      timer: 1200,
+      width: "300px",
         }).then(() => {
           navigate("/login");
         });
@@ -57,6 +60,9 @@ export function AuthProvider({ children }) {
           icon: data.message_icon,
           title: data.message_title,
           text: data.message_text,
+          showConfirmButton: false,
+      timer: 1200,
+      width: "300px",
         }).then(() => {
           setCurrentUser({ id: data.user_id, token: data.token });
           data.onboarding === true
