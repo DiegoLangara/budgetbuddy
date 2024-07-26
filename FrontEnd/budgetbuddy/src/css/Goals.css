@@ -100,13 +100,14 @@ select:not(:disabled) {
 
 .container-bm {
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
-  justify-content: start;
   gap: 1rem;
 }
 
 .card-bm {
-  flex: 1 1 calc(50% - 1rem);
+  /* flex: 1 1 calc(50% - 1rem); */
+  width: 50%;
   margin: 0;
   box-sizing: border-box;
   padding: 1rem;

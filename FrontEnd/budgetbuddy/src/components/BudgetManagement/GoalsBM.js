@@ -8,7 +8,6 @@ import { Card, Container, Button as BootstrapButton } from "react-bootstrap";
 import "../../css/Goals.css";
 import { useAuth } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
-import { styled } from "styled-components";
 
 // Utility function to format the date
 const formatDate = (isoDate) => {
@@ -65,12 +64,13 @@ export const GoalsBM = () => {
   const user_id = currentUser.id;
 
   const [goals, setGoals] = useState(
-    state.goals || [{ id: 1, goal_type_id: 0 }]
+    state.goals || [{ goal_id: 1, goal_type_id: 0 }]
   );
   console.log(goals);
   const [editableGoalId, setEditableGoalId] = useState(null);
   const [goalErrors, setGoalErrors] = useState([]);
   const [savingGoalId, setSavingGoalId] = useState(null);
+  const [newGoal, setNewGoal] = useState(null);
 
   // Fetch goals on component mount
   useEffect(() => {
@@ -78,7 +78,7 @@ export const GoalsBM = () => {
       const fetchedGoals = await fetchGoals(user_id, token);
       // console.log("Fetched goal data:", fetchGoals); // Debug output
       const formattedGoals = fetchedGoals.map((goal, index) => ({
-        id: goal.goal_id || index + 1,
+        goal_id: goal.goal_id || index + 1,
         goal_name: goal.goal_name || "",
         goal_type_id: goal.goal_type_id ?? 0,
         target_amount: goal.target_amount || "",
@@ -87,12 +87,12 @@ export const GoalsBM = () => {
         target_date: goal.target_date ? formatDate(goal.target_date) : "",
       }));
       // Sort goals by id in ascending order
-      formattedGoals.sort((a, b) => a.id - b.id);
+      formattedGoals.sort((a, b) => a.goal_id - b.goal_id);
 
       setGoals(
         formattedGoals.length > 0
           ? formattedGoals
-          : [{ id: 1, goal_type_id: 0 }]
+          : [{ goal_id: 1, goal_type_id: 0 }]
       );
       setState({ ...state, goals: formattedGoals });
       setGoalErrors([]);
@@ -100,17 +100,16 @@ export const GoalsBM = () => {
     loadGoals();
   }, [user_id, token, setState]);
 
-  const handleInputChange = (id, field, value) => {
+  const handleInputChange = (goal_id, field, value) => {
     setGoals((prevGoals) =>
       prevGoals.map((goal) =>
-        goal.id === id ? { ...goal, [field]: value } : goal
+        goal.goal_id === goal_id ? { ...goal, [field]: value } : goal
       )
     );
   };
 
-  const handleNumberInputChange = (id, field, value) => {
-    let errorField = field + "_error";
-    let errorMessage = "";
+  const handleNumberInputChange = (goal_id, field, value) => {
+    let errorMessage;
 
     if (!/^\d*\.?\d*$/.test(value)) {
       errorMessage = "Please enter a valid number.";
@@ -119,9 +118,7 @@ export const GoalsBM = () => {
     }
     setGoals((prevGoals) =>
       prevGoals.map((goal) =>
-        goal.id === id
-          ? { ...goal, [field]: value, [errorField]: errorMessage }
-          : goal
+        goal.goal_id === goal_id ? { ...goal, [field]: value } : goal
       )
     );
   };
@@ -138,18 +135,19 @@ export const GoalsBM = () => {
 
   const addGoal = () => {
     const newId =
-      goals.length > 0 ? Math.max(...goals.map((g) => g.id)) + 1 : 1;
-    const newGoal = { id: newId, goal_type_id: 0 };
+      goals.length > 0 ? Math.max(...goals.map((g) => g.goal_id)) + 1 : 1;
+    const newGoal = { goal_id: newId, goal_type_id: 0 };
     const updatedGoals = [...goals, newGoal];
-    updatedGoals.sort((a, b) => a.id - b.id);
+    updatedGoals.sort((a, b) => a.goal_id - b.goal_id);
     setGoals(updatedGoals);
+    setNewGoal(newId);
   };
 
-  const setEditableGoal = (id) => {
-    setEditableGoalId(id);
+  const setEditableGoal = (goal_id) => {
+    setEditableGoalId(goal_id);
   };
 
-  const deleteGoalFromDatabase = async (user_id, token, id) => {
+  const deleteGoalFromDatabase = async (user_id, token, goal_id) => {
     try {
       const response = await fetch(
         `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/goal/`,
@@ -157,7 +155,7 @@ export const GoalsBM = () => {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            goal_id: id,
+            goal_id: goal_id,
             token: token,
             user_id: user_id,
           },
@@ -166,14 +164,16 @@ export const GoalsBM = () => {
       if (!response.ok) {
         throw new Error("Failed to delete goal from the database");
       }
-      console.log(`Goal with ID ${id} deleted successfully from the database`);
+      console.log(
+        `Goal with ID ${goal_id} deleted successfully from the database`
+      );
     } catch (error) {
       console.error("Failed to delete goal:", error);
       throw error;
     }
   };
 
-  const deleteGoal = (id) => {
+  const deleteGoal = (goal_id) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -185,11 +185,11 @@ export const GoalsBM = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await deleteGoalFromDatabase(user_id, token, id);
-          const updatedGoals = goals.filter((goal) => goal.id !== id);
+          await deleteGoalFromDatabase(user_id, token, goal_id);
+          const updatedGoals = goals.filter((goal) => goal.goal_id !== goal_id);
           setGoals(updatedGoals);
           setState({ ...state, goals: updatedGoals });
-          if (editableGoalId === id) {
+          if (editableGoalId === goal_id) {
             setEditableGoalId(null);
           }
         } catch (error) {
@@ -203,10 +203,16 @@ export const GoalsBM = () => {
     });
   };
 
-  const saveToDatabase = async (goal) => {
+  const updateData = async (goal) => {
     console.log(
-      "goal_id: " + goal.id + " token: " + token + " user_id: " + user_id
+      "goal_id: " + goal.goal_id + " token: " + token + " user_id: " + user_id
     );
+    console.log(goal);
+
+    // Create a copy of the goal object without the error fields
+    const { current_amount_error, target_amount_error, ...goalWithoutErrors } =
+      goal;
+
     try {
       const response = await fetch(
         `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/goal/`,
@@ -214,14 +220,14 @@ export const GoalsBM = () => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            goal_id: goal.id,
+            goal_id: goal.goal_id,
             token: token,
             user_id: user_id,
           },
-          body: JSON.stringify(goal),
+          body: JSON.stringify(goalWithoutErrors),
         }
       );
-      console.log(JSON.stringify(goal));
+      console.log(JSON.stringify(goalWithoutErrors));
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -260,6 +266,18 @@ export const GoalsBM = () => {
     }
   };
 
+  const handleSave = async (goal) => {
+    const validationErrors = validateGoal(goal);
+    if (Object.keys(validationErrors).length === 0) {
+      setSavingGoalId(goal.goal_id);
+      await updateData(goal);
+      setEditableGoalId(null);
+      setSavingGoalId(null);
+    } else {
+      setGoalErrors(validationErrors);
+    }
+  };
+
   // const saveData = async (event) => {
   //   event.preventDefault();
   //   if (!validateGoals()) return;
@@ -271,17 +289,96 @@ export const GoalsBM = () => {
   //   await saveToDatabase(combinedData);
   // };
 
-  const handleSave = async (goal) => {
-    const validationErrors = validateGoal(goal);
-    if (Object.keys(validationErrors).length === 0) {
-      setSavingGoalId(goal.id);
-      await saveToDatabase(goal);
-      setEditableGoalId(null);
-      setSavingGoalId(null);
-    } else {
-      setGoalErrors(validationErrors);
+  // save new item
+  const saveToDatabase = async (data) => {
+    try {
+      const response = await fetch(
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/goals/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+            user_id: user_id,
+          },
+          body: JSON.stringify({ goals: data.goals }),
+        }
+      );
+      console.log(JSON.stringify({ goals: data.goals }));
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const responseData = await response.json();
+      console.log("Data saved successfully:", responseData);
+
+      if (responseData.success) {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: responseData.message,
+          showConfirmButton: false,
+          timer: 1200,
+          width: "300px",
+        });
+      } else {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: responseData.message,
+          showConfirmButton: false,
+          timer: 1200,
+          width: "300px",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to save data:", error);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "Failed to save data",
+        showConfirmButton: false,
+        timer: 1200,
+        width: "300px",
+      });
     }
   };
+
+  const saveData = async (event) => {
+    event.preventDefault();
+    // if (!validateGoal()) return;
+
+    let isValid = true;
+    const validationErrors = goals.map((goal) => {
+      const errors = validateGoal(goal);
+      if (Object.keys(errors).length > 0) {
+        isValid = false;
+      }
+      return errors;
+    });
+
+    setGoalErrors(validationErrors);
+
+    if (!isValid) return;
+
+    // Transform data to the required schema
+    const transformedGoals = goals.map((goal) => ({
+      goal_id: goal.goal_id,
+      goal_name: goal.goal_name,
+      goal_type_id: goal.goal_type_id,
+      target_amount: goal.target_amount,
+      current_amount: goal.current_amount,
+      deletable: goal.deletable,
+      target_date: formatDate(goal.target_date),
+    }));
+    console.log(transformedGoals);
+    const combinedData = {
+      ...state,
+      goals: transformedGoals,
+    };
+    setState(combinedData);
+    await saveToDatabase(combinedData);
+  };
+
   //     setGoalErrors((prevErrors) =>
   //       prevErrors.map((error, index) =>
   //         goal.id === goals[index].id ? goalError : error
@@ -335,14 +432,14 @@ export const GoalsBM = () => {
           <div
             key={index}
             className={`p-3 m-0 card-bm ${
-              editableGoalId === goal.id ? "editable" : null
+              editableGoalId === goal.goal_id ? "editable" : null
             }`}
             style={{ minHeight: "auto" }}
           >
             <div
               key={goal.id}
               className={`card-content-bm mb-0 ${
-                editableGoalId === goal.id ? "editable" : "non-editable"
+                editableGoalId === goal.goal_id ? "editable" : "non-editable"
               }`}
             >
               <div className="mt-1">
@@ -375,19 +472,19 @@ export const GoalsBM = () => {
                             value={goal.goal_name || ""}
                             onChange={(e) =>
                               handleInputChange(
-                                goal.id,
+                                goal.goal_id,
                                 "goal_name",
                                 e.target.value
                               )
                             }
                             placeholder="ex. Buy a Tesla"
-                            disabled={editableGoalId !== goal.id}
+                            disabled={editableGoalId !== goal.goal_id}
                             style={{ fontSize: ".8rem" }}
                             required
                           />
                           {goalErrors[index]?.goal_name && (
                             <div className="text-danger">
-                              {goalErrors[index]?.goal_name}
+                              {goalErrors[index].goal_name}
                             </div>
                           )}
                         </>
@@ -402,12 +499,12 @@ export const GoalsBM = () => {
                               value={goal.goal_type_id || 0}
                               onChange={(e) =>
                                 handleInputChange(
-                                  goal.id,
+                                  goal.goal_id,
                                   "goal_type_id",
                                   Number(e.target.value)
                                 )
                               }
-                              disabled={editableGoalId !== goal.id}
+                              disabled={editableGoalId !== goal.goal_id}
                               style={{ fontSize: ".8rem" }}
                               required
                             >
@@ -440,13 +537,13 @@ export const GoalsBM = () => {
                             value={goal.target_date || ""}
                             onChange={(e) =>
                               handleInputChange(
-                                goal.id,
+                                goal.goal_id,
                                 "target_date",
                                 e.target.value
                               )
                             }
                             min={new Date().toISOString().split("T")[0]}
-                            disabled={editableGoalId !== goal.id}
+                            disabled={editableGoalId !== goal.goal_id}
                             style={{ fontSize: ".8rem" }}
                             required
                           />
@@ -474,7 +571,7 @@ export const GoalsBM = () => {
                               value={goal.current_amount || ""}
                               onChange={(e) =>
                                 handleNumberInputChange(
-                                  goal.id,
+                                  goal.goal_id,
                                   "current_amount",
                                   e.target.value
                                 )
@@ -488,7 +585,7 @@ export const GoalsBM = () => {
                               className="form-control"
                               step="100"
                               min="100"
-                              disabled={editableGoalId !== goal.id}
+                              disabled={editableGoalId !== goal.goal_id}
                               style={{ fontSize: ".8rem" }}
                               required
                             />
@@ -525,7 +622,7 @@ export const GoalsBM = () => {
                               value={goal.target_amount || ""}
                               onChange={(e) =>
                                 handleNumberInputChange(
-                                  goal.id,
+                                  goal.goal_id,
                                   "target_amount",
                                   e.target.value
                                 )
@@ -539,7 +636,7 @@ export const GoalsBM = () => {
                               className="form-control"
                               step="100"
                               min="100"
-                              disabled={editableGoalId !== goal.id}
+                              disabled={editableGoalId !== goal.goal_id}
                               style={{ fontSize: ".8rem" }}
                               required
                             />
@@ -563,8 +660,8 @@ export const GoalsBM = () => {
               </div>
             </div>
             <div className="d-flex justify-content-end">
-              {editableGoalId !== goal.id ? (
-                <a href="#/" onClick={() => setEditableGoal(goal.id)}>
+              {editableGoalId !== goal.goal_id ? (
+                <a href="#/" onClick={() => setEditableGoal(goal.goal_id)}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
@@ -580,7 +677,10 @@ export const GoalsBM = () => {
                   </svg>
                 </a>
               ) : (
-                <a href="#/" onClick={() => handleSave(goal)}>
+                <a
+                  href="#/"
+                  onClick={newGoal != null ? saveData : () => handleSave(goal)}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
@@ -594,7 +694,7 @@ export const GoalsBM = () => {
                 </a>
               )}
               {goal.deletable === 1 || index > 0 ? (
-                <a href="#/" onClick={() => deleteGoal(goal.id)}>
+                <a href="#/" onClick={() => deleteGoal(goal.goal_id)}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
@@ -624,23 +724,3 @@ export const GoalsBM = () => {
     </div>
   );
 };
-
-// const StyledCard = styled.div`
-//   flex: 1 1 calc(50% - 1rem);
-//   margin: 0;
-//   box-sizing: border-box;
-//   padding: 1rem;
-//   border: 1px solid #ccc;
-//   border-radius: 0.5rem;
-//   background-color: #fff;
-//   box-shadow: 0.3rem 0.3rem 0.3rem rgba(0, 0, 0, 0.1);
-// `;
-
-// const StyledInputWrap = styled.div`
-//   width: 100%;
-//   padding: 0.5rem;
-//   margin-bottom: 1rem;
-//   border: 1px solid #ced4da;
-//   border-radius: 0.25rem;
-//   font-size: 1rem;
-// `;
