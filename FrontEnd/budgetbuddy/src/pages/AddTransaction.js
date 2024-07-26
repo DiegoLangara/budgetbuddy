@@ -161,7 +161,7 @@ export const AddTransaction = () => {
    
         Swal.fire({
           position: "center",
-          icon: "error",
+          icon: "success",
           title:  `${responseData.message}`,
           showConfirmButton: false,
           timer: 3000,
