@@ -50,9 +50,9 @@ export const AddTransaction = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const Container_home = styled.div`
-    width: 100%;
+    width: 97%;
     padding: ${(props) =>
-      props.isMobile ? "1vh" : "1vh 10vw 3vh calc(10vw + 60px)"};
+      props.isMobile ? "1vh" : "1vh 10vw 3vh calc(10vw + 63px)"};
     margin: 0 auto;
   `;
   
