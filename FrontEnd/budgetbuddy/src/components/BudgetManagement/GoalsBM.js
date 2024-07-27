@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useOnboardingState } from "../../Hooks/useOnboardingState";
 import { Field } from "../OnboardingParts/Field";
-import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
-import { Card, Container, Button as BootstrapButton } from "react-bootstrap";
 import "../../css/Goals.css";
 import { useAuth } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
@@ -35,10 +33,9 @@ async function fetchGoals(user_id, token) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    console.log("Fetched data:", data);
     return Array.isArray(data) ? data : [];
   } catch (error) {
-    console.error("Failed to fetch goals:", error);
+    // console.error("Failed to fetch goals:", error);
     return [];
   }
 }
@@ -66,11 +63,13 @@ export const GoalsBM = () => {
   const [goals, setGoals] = useState(
     state.goals || [{ goal_id: 1, goal_type_id: 0 }]
   );
-  console.log(goals);
+  // console.log(goals);
   const [editableGoalId, setEditableGoalId] = useState(null);
   const [goalErrors, setGoalErrors] = useState([]);
   const [savingGoalId, setSavingGoalId] = useState(null);
   const [newGoal, setNewGoal] = useState(null);
+  const [isNewGoal, setIsNewGoal] = useState(false);
+  const [addedGoal, setAddedGoal] = useState([]);
 
   // Fetch goals on component mount
   useEffect(() => {
@@ -140,7 +139,7 @@ export const GoalsBM = () => {
     const updatedGoals = [...goals, newGoal];
     updatedGoals.sort((a, b) => a.goal_id - b.goal_id);
     setGoals(updatedGoals);
-    setNewGoal(newId);
+    setIsNewGoal(true);
   };
 
   const setEditableGoal = (goal_id) => {
@@ -164,9 +163,6 @@ export const GoalsBM = () => {
       if (!response.ok) {
         throw new Error("Failed to delete goal from the database");
       }
-      console.log(
-        `Goal with ID ${goal_id} deleted successfully from the database`
-      );
     } catch (error) {
       console.error("Failed to delete goal:", error);
       throw error;
@@ -203,12 +199,8 @@ export const GoalsBM = () => {
     });
   };
 
+  // save(update) existing item
   const updateData = async (goal) => {
-    console.log(
-      "goal_id: " + goal.goal_id + " token: " + token + " user_id: " + user_id
-    );
-    console.log(goal);
-
     // Create a copy of the goal object without the error fields
     const { current_amount_error, target_amount_error, ...goalWithoutErrors } =
       goal;
@@ -227,12 +219,12 @@ export const GoalsBM = () => {
           body: JSON.stringify(goalWithoutErrors),
         }
       );
-      console.log(JSON.stringify(goalWithoutErrors));
+      // console.log(JSON.stringify(goalWithoutErrors));
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const responseData = await response.json();
-      console.log("Data saved successfully:", responseData);
+      // console.log("Data saved successfully:", responseData);
 
       if (responseData.success) {
         Swal.fire({
@@ -278,22 +270,11 @@ export const GoalsBM = () => {
     }
   };
 
-  // const saveData = async (event) => {
-  //   event.preventDefault();
-  //   if (!validateGoals()) return;
-  //   const combinedData = {
-  //     ...state,
-  //     goals: goals,
-  //   };
-  //   setState(combinedData);
-  //   await saveToDatabase(combinedData);
-  // };
-
   // save new item
-  const saveToDatabase = async (data) => {
+  const saveToDatabase = async (goal) => {
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/goals/`,
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/goal/`,
         {
           method: "POST",
           headers: {
@@ -301,10 +282,9 @@ export const GoalsBM = () => {
             token: token,
             user_id: user_id,
           },
-          body: JSON.stringify({ goals: data.goals }),
+          body: JSON.stringify(goal),
         }
       );
-      console.log(JSON.stringify({ goals: data.goals }));
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -343,25 +323,9 @@ export const GoalsBM = () => {
     }
   };
 
-  const saveData = async (event) => {
-    event.preventDefault();
-    // if (!validateGoal()) return;
-
-    let isValid = true;
-    const validationErrors = goals.map((goal) => {
-      const errors = validateGoal(goal);
-      if (Object.keys(errors).length > 0) {
-        isValid = false;
-      }
-      return errors;
-    });
-
-    setGoalErrors(validationErrors);
-
-    if (!isValid) return;
-
-    // Transform data to the required schema
-    const transformedGoals = goals.map((goal) => ({
+  const saveData = async (goal) => {
+    // // Transform data to the required schema
+    const transformedGoal = {
       goal_id: goal.goal_id,
       goal_name: goal.goal_name,
       goal_type_id: goal.goal_type_id,
@@ -369,29 +333,11 @@ export const GoalsBM = () => {
       current_amount: goal.current_amount,
       deletable: goal.deletable,
       target_date: formatDate(goal.target_date),
-    }));
-    console.log(transformedGoals);
-    const combinedData = {
-      ...state,
-      goals: transformedGoals,
     };
-    setState(combinedData);
-    await saveToDatabase(combinedData);
+    setAddedGoal(transformedGoal);
+    await saveToDatabase(addedGoal);
+    setIsNewGoal(false);
   };
-
-  //     setGoalErrors((prevErrors) =>
-  //       prevErrors.map((error, index) =>
-  //         goal.id === goals[index].id ? goalError : error
-  //       )
-  //     );
-  //     return;
-  //   }
-  //   setSavingGoalId(goal.id);
-  //   await saveToDatabase(goal);
-  //   setEditableGoalId(null);
-  //   setSavingGoalId(null);
-  //   setGoals((prevGoals) => prevGoals.map((g) => ({ ...g, editable: false })));
-  // };
 
   return (
     <div
@@ -401,7 +347,6 @@ export const GoalsBM = () => {
         width: "100%",
       }}
     >
-      {/* <Form onSubmit={saveData} className="my-2 pb-0"> */}
       <div className="d-flex justify-content-between mt-2 mb-3">
         <div>
           <h3 style={{ fontSize: "2.1rem" }}>Set Your Goals</h3>
@@ -432,7 +377,7 @@ export const GoalsBM = () => {
           <div
             key={index}
             className={`p-3 m-0 card-bm ${
-              editableGoalId === goal.goal_id ? "editable" : null
+              editableGoalId === goal.goal_id ? "editable" : ""
             }`}
             style={{ minHeight: "auto" }}
           >
@@ -558,44 +503,44 @@ export const GoalsBM = () => {
                     <div className="col-md-6 mb-0">
                       <Field label="Saved amount">
                         <>
-                          {/* <> */}
-                          <div className="input-group">
-                            <span
-                              className="input-group-text bg-white"
-                              style={{ fontSize: ".8rem" }}
-                            >
-                              $
-                            </span>
-                            <Input
-                              type="number"
-                              value={goal.current_amount || ""}
-                              onChange={(e) =>
-                                handleNumberInputChange(
-                                  goal.goal_id,
-                                  "current_amount",
-                                  e.target.value
-                                )
-                              }
-                              onKeyDown={(e) => {
-                                if (e.key === "e") {
-                                  e.preventDefault();
+                          <>
+                            <div className="input-group">
+                              <span
+                                className="input-group-text bg-white"
+                                style={{ fontSize: ".8rem" }}
+                              >
+                                $
+                              </span>
+                              <Input
+                                type="number"
+                                value={goal.current_amount || ""}
+                                onChange={(e) =>
+                                  handleNumberInputChange(
+                                    goal.goal_id,
+                                    "current_amount",
+                                    e.target.value
+                                  )
                                 }
-                              }}
-                              placeholder="ex. 5000"
-                              className="form-control"
-                              step="100"
-                              min="100"
-                              disabled={editableGoalId !== goal.goal_id}
-                              style={{ fontSize: ".8rem" }}
-                              required
-                            />
-                          </div>
-                          {/* {goal.current_amount_error && (
-                                <div className="text-danger">
-                                  {goal.current_amount_error}
-                                </div>
-                              )}
-                            </> */}
+                                onKeyDown={(e) => {
+                                  if (e.key === "e") {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                placeholder="ex. 5000"
+                                className="form-control"
+                                step="100"
+                                min="100"
+                                disabled={editableGoalId !== goal.goal_id}
+                                style={{ fontSize: ".8rem" }}
+                                required
+                              />
+                            </div>
+                            {goal.current_amount_error && (
+                              <div className="text-danger">
+                                {goal.current_amount_error}
+                              </div>
+                            )}
+                          </>
                           {goalErrors[index]?.current_amount && (
                             <div className="text-danger">
                               {goalErrors[index]?.current_amount}
@@ -609,44 +554,44 @@ export const GoalsBM = () => {
                     <div className="col-md-6 mb-0">
                       <Field label="Target amount">
                         <>
-                          {/* <> */}
-                          <div className="input-group">
-                            <span
-                              className="input-group-text bg-white"
-                              style={{ fontSize: ".8rem" }}
-                            >
-                              $
-                            </span>
-                            <Input
-                              type="number"
-                              value={goal.target_amount || ""}
-                              onChange={(e) =>
-                                handleNumberInputChange(
-                                  goal.goal_id,
-                                  "target_amount",
-                                  e.target.value
-                                )
-                              }
-                              onKeyDown={(e) => {
-                                if (e.key === "e") {
-                                  e.preventDefault();
+                          <>
+                            <div className="input-group">
+                              <span
+                                className="input-group-text bg-white"
+                                style={{ fontSize: ".8rem" }}
+                              >
+                                $
+                              </span>
+                              <Input
+                                type="number"
+                                value={goal.target_amount || ""}
+                                onChange={(e) =>
+                                  handleNumberInputChange(
+                                    goal.goal_id,
+                                    "target_amount",
+                                    e.target.value
+                                  )
                                 }
-                              }}
-                              placeholder="ex. 3000"
-                              className="form-control"
-                              step="100"
-                              min="100"
-                              disabled={editableGoalId !== goal.goal_id}
-                              style={{ fontSize: ".8rem" }}
-                              required
-                            />
-                          </div>
-                          {/* {goal.target_amount_error && (
-                                <div className="text-danger">
-                                  {goal.target_amount_error}
-                                </div>
-                              )}
-                            </> */}
+                                onKeyDown={(e) => {
+                                  if (e.key === "e") {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                placeholder="ex. 3000"
+                                className="form-control"
+                                step="100"
+                                min="100"
+                                disabled={editableGoalId !== goal.goal_id}
+                                style={{ fontSize: ".8rem" }}
+                                required
+                              />
+                            </div>
+                            {goal.target_amount_error && (
+                              <div className="text-danger">
+                                {goal.target_amount_error}
+                              </div>
+                            )}
+                          </>
                           {goalErrors[index]?.target_amount && (
                             <div className="text-danger">
                               {goalErrors[index]?.target_amount}
@@ -679,7 +624,11 @@ export const GoalsBM = () => {
               ) : (
                 <a
                   href="#/"
-                  onClick={newGoal != null ? saveData : () => handleSave(goal)}
+                  onClick={
+                    isNewGoal == true
+                      ? () => saveData(goal)
+                      : () => handleSave(goal)
+                  }
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -712,15 +661,6 @@ export const GoalsBM = () => {
           </div>
         ))}
       </div>
-      {/* <div className="d-flex justify-content-end">
-          <BootstrapButton
-            type="submit"
-            className="btn btn-primary w-25 rounded-pill mt-3"
-          >
-            Save
-          </BootstrapButton>
-        </div> */}
-      {/* </Form> */}
     </div>
   );
 };
