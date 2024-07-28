@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useOnboardingState } from "../../Hooks/useOnboardingState";
 import { Field } from "../OnboardingParts/Field";
-import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
-import { Card, Container, Button as BootstrapButton } from "react-bootstrap";
 import "../../css/Incomes.css";
 import { useAuth } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
@@ -27,7 +25,7 @@ async function fetchIncomes(user_id, token) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    console.log("Fetched data:", data); // Debugging log
+    // console.log("Fetched data:", data);
     return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error("Failed to fetch incomes:", error);
@@ -91,16 +89,20 @@ export const IncomesBM = () => {
   const user_id = currentUser.id;
 
   const [incomes, setIncomes] = useState(
-    state.incomes || [{ id: 1, income_type_id: 0 }]
+    state.incomes || [{ income_id: 1, income_type_id: 0 }]
   );
   const [editableIncomeId, setEditableIncomeId] = useState(null);
   const [incomeErrors, setIncomeErrors] = useState([]);
+  const [savingIncomeId, setSavingIncomeId] = useState(null);
+  const [isNewIncome, setIsNewIncome] = useState(false);
+  const [addedIncome, setAddedIncome] = useState([]);
 
+  // Fetch incomes on component mount
   useEffect(() => {
     async function loadIncomes() {
       const fetchedIncomes = await fetchIncomes(user_id, token);
       const formattedIncomes = fetchedIncomes.map((income, index) => ({
-        id: income.income_id || index + 1,
+        income_id: income.income_id || index + 1,
         income_name: income.income_name || "",
         income_type_id: income.income_type_id ?? 0,
         amount: income.amount || "",
@@ -108,29 +110,29 @@ export const IncomesBM = () => {
         deletable: income.deletable || "",
       }));
       // Sort incomes by id in ascending order
-      formattedIncomes.sort((a, b) => a.id - b.id);
+      formattedIncomes.sort((a, b) => a.income_id - b.income_id);
 
       setIncomes(
         formattedIncomes.length > 0
           ? formattedIncomes
-          : [{ id: 1, income_type_id: 0 }]
+          : [{ income_id: 1, income_type_id: 0 }]
       );
       setState({ ...state, incomes: formattedIncomes });
+      setIncomeErrors([]);
     }
     loadIncomes();
   }, [user_id, token, setState]);
 
-  const handleInputChange = (id, field, value) => {
+  const handleInputChange = (income_id, field, value) => {
     setIncomes((prevIncomes) =>
       prevIncomes.map((income) =>
-        income.id === id ? { ...income, [field]: value } : income
+        income.income_id === income_id ? { ...income, [field]: value } : income
       )
     );
   };
 
-  const handleNumberInputChange = (id, field, value) => {
-    let errorField = field + "_error";
-    let errorMessage = "";
+  const handleNumberInputChange = (income_id, field, value) => {
+    let errorMessage;
 
     if (!/^\d*\.?\d*$/.test(value)) {
       errorMessage = "Please enter a valid number.";
@@ -139,9 +141,7 @@ export const IncomesBM = () => {
     }
     setIncomes((prevIncomes) =>
       prevIncomes.map((income) =>
-        income.id === id
-          ? { ...income, [field]: value, [errorField]: errorMessage }
-          : income
+        income.income_id === income_id ? { ...income, [field]: value } : income
       )
     );
   };
@@ -161,18 +161,19 @@ export const IncomesBM = () => {
 
   const addIncome = () => {
     const newId =
-      incomes.length > 0 ? Math.max(...incomes.map((g) => g.id)) + 1 : 1;
-    const newIncome = { id: newId, income_type_id: 0 };
+      incomes.length > 0 ? Math.max(...incomes.map((g) => g.income_id)) + 1 : 1;
+    const newIncome = { income_id: newId, income_type_id: 0 };
     const updatedIncomes = [...incomes, newIncome];
-    updatedIncomes.sort((a, b) => a.id - b.id); // Ensure order is maintained
+    updatedIncomes.sort((a, b) => a.income_id - b.income_id); // Ensure order is maintained
     setIncomes(updatedIncomes);
+    setIsNewIncome(true);
   };
 
-  const setEditableIncome = (id) => {
-    setEditableIncomeId(id);
+  const setEditableIncome = (income_id) => {
+    setEditableIncomeId(income_id);
   };
 
-  const deleteIncomeFromDatabase = async (user_id, token, id) => {
+  const deleteIncomeFromDatabase = async (user_id, token, income_id) => {
     try {
       const response = await fetch(
         `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/income/`,
@@ -180,7 +181,7 @@ export const IncomesBM = () => {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            income_id: id,
+            income_id: income_id,
             token: token,
             user_id: user_id,
           },
@@ -189,16 +190,13 @@ export const IncomesBM = () => {
       if (!response.ok) {
         throw new Error("Failed to delete income from the database");
       }
-      console.log(
-        `Income with ID ${id} deleted successfully from the database`
-      );
     } catch (error) {
       console.error("Failed to delete income:", error);
       throw error;
     }
   };
 
-  const deleteIncome = (id) => {
+  const deleteIncome = (income_id) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -210,11 +208,13 @@ export const IncomesBM = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await deleteIncomeFromDatabase(user_id, token, id); // Delete from database first
-          const updatedIncomes = incomes.filter((income) => income.id !== id);
+          await deleteIncomeFromDatabase(user_id, token, income_id); // Delete from database first
+          const updatedIncomes = incomes.filter(
+            (income) => income.income_id !== income_id
+          );
           setIncomes(updatedIncomes);
           setState({ ...state, incomes: updatedIncomes });
-          if (editableIncomeId === id) {
+          if (editableIncomeId === income_id) {
             setEditableIncomeId(null);
           }
         } catch (error) {
@@ -228,10 +228,79 @@ export const IncomesBM = () => {
     });
   };
 
-  const saveToDatabase = async (data) => {
+  // save(update) existing item
+  const updateData = async (income) => {
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/incomes/`,
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/income/`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            income_id: income.income_id,
+            token: token,
+            user_id: user_id,
+          },
+          body: JSON.stringify(income),
+        }
+      );
+      // console.log(JSON.stringify(income));
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const responseData = await response.json();
+      // console.log("Data saved successfully:", responseData);
+
+      if (responseData.success) {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: responseData.message,
+          showConfirmButton: false,
+          timer: 1200,
+          width: "300px",
+        });
+      } else {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: responseData.message,
+          showConfirmButton: false,
+          timer: 1200,
+          width: "300px",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to save data:", error);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "Failed to save data",
+        showConfirmButton: false,
+        timer: 1200,
+        width: "300px",
+      });
+    }
+  };
+
+  const handleSave = async (income) => {
+    const validationErrors = validateIncomes(income);
+    if (Object.keys(validationErrors).length === 0) {
+      setSavingIncomeId(income.income_id);
+      await updateData(income);
+      setEditableIncomeId(null);
+      setSavingIncomeId(null);
+      setIsNewIncome(false);
+    } else {
+      setIncomeErrors(validationErrors);
+    }
+  };
+
+  // save new item
+  const saveToDatabase = async (income) => {
+    try {
+      const response = await fetch(
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/income/`,
         {
           method: "POST",
           headers: {
@@ -239,10 +308,9 @@ export const IncomesBM = () => {
             token: token,
             user_id: user_id,
           },
-          body: JSON.stringify({ incomes: data.incomes }),
+          body: JSON.stringify(income),
         }
       );
-      console.log(JSON.stringify({ incomes: data.incomes }));
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -281,12 +349,11 @@ export const IncomesBM = () => {
     }
   };
 
-  const saveData = async (event) => {
-    event.preventDefault();
+  const saveData = async (income) => {
     if (!validateIncomes()) return;
     // Transform data to the required schema
-    const transformedIncomes = incomes.map((income) => ({
-      income_id: income.id,
+    const transformedIncome = {
+      income_id: income.income_id,
       income_name: income.income_name || null,
       income_type_id: income.income_type_id,
       amount: income.amount,
@@ -295,14 +362,10 @@ export const IncomesBM = () => {
         incomeCategoryOptions.find(
           (category) => category.id === income.income_type_id
         )?.name || "",
-    }));
-    console.log(transformedIncomes);
-    const combinedData = {
-      ...state,
-      incomes: transformedIncomes,
     };
-    setState(combinedData);
-    await saveToDatabase(combinedData);
+    setAddedIncome(transformedIncome);
+    await saveToDatabase(addedIncome);
+    setIsNewIncome(false);
   };
 
   return (
@@ -313,263 +376,289 @@ export const IncomesBM = () => {
         width: "100%",
       }}
     >
-      <Form onSubmit={saveData} className="my-2 pb-0">
-        <div className="d-flex justify-content-between mb-3">
-          <div>
-            <h3 style={{ fontSize: "2.1rem" }}>Set Your Incomes</h3>
-            <p className="mb-1" style={{ fontSize: ".95rem" }}>
-              How much do you earn?
-            </p>
-          </div>
-          <div className="d-flex align-items-end ml-3 pb-2">
-            <Link
-              to="#"
-              className="btn rounded-pill"
-              onClick={addIncome}
-              style={{
-                fontSize: ".9rem",
-                fontWeight: "bold",
-                color: "Black",
-                backgroundColor: "#eee",
-                border: "1px solid gray",
-                padding: ".6rem",
-              }}
-            >
-              {incomes.length === 0
-                ? "+ Create an Income"
-                : "+ Add More Incomes"}
-            </Link>
-          </div>
+      <div className="d-flex justify-content-between mt-2 mb-3">
+        <div>
+          <h3 style={{ fontSize: "2.1rem" }}>Set Your Incomes</h3>
+          <p className="mb-1" style={{ fontSize: ".95rem" }}>
+            How much do you earn?
+          </p>
         </div>
-        <Container className="mx-0 px-0">
-          <div className="d-flex px-0 row">
-            {incomes.map((income, index) => (
-              <Card
-                key={index}
-                className={`p-3 m-2 col card-bm ${
-                  editableIncomeId === income.id ? "editable" : null
-                }`}
-                style={{ minHeight: "auto", maxWidth: "50%" }}
-              >
+        <div className="d-flex align-items-end ml-3 pb-2">
+          <Link
+            to="#"
+            className="btn rounded-pill"
+            onClick={addIncome}
+            style={{
+              fontSize: ".9rem",
+              fontWeight: "bold",
+              color: "Black",
+              backgroundColor: "#eee",
+              border: "1px solid gray",
+              padding: ".6rem",
+            }}
+          >
+            {incomes.length === 0 ? "+ Create an Income" : "+ Add More Incomes"}
+          </Link>
+        </div>
+      </div>
+      <div className="container-bm">
+        {incomes.map((income, index) => (
+          <div
+            key={index}
+            className={`p-3 m-0 card-bm ${
+              editableIncomeId === income.income_id ? "editable" : null
+            }`}
+            style={{ minHeight: "auto" }}
+          >
+            <div
+              key={income.income_id}
+              className={`card-content-bm mb-0 ${
+                editableIncomeId === income.income_id
+                  ? "editable"
+                  : "non-editable"
+              }`}
+            >
+              <div className="mt-1">
                 <div
-                  key={income.id}
-                  className={`mb-0 ${
-                    editableIncomeId === income.id ? "editable" : "non-editable"
-                  }`}
+                  className="mb-3"
+                  style={{
+                    padding: ".3rem 0",
+                  }}
                 >
-                  <div className="mt-1">
-                    <div
-                      className="mb-3"
+                  <div className="d-flex justify-content-between align-items-center">
+                    <h5
                       style={{
-                        padding: ".3rem 0",
+                        margin: income.income_name
+                          ? ".2rem 0"
+                          : "1.75rem 0 .2rem",
                       }}
                     >
-                      <div className="d-flex justify-content-between align-items-center">
-                        <h5 style={{ margin: ".2rem 0" }}>
-                          <strong>Income {index + 1}</strong>{" "}
-                          <span style={{ fontSize: "1rem" }}>
-                            {income.income_name
-                              ? " - " + income.income_name
-                              : ""}
-                          </span>
-                        </h5>
-                        <div></div>
-                      </div>
+                      <span style={{ fontSize: "1.3rem" }}>
+                        <strong>
+                          {income.income_name ? income.income_name : ""}
+                        </strong>
+                      </span>
+                    </h5>
+                    <div></div>
+                  </div>
+                </div>
+                <div>
+                  <div className="form-row">
+                    <div className="col-md-6 mb-0">
+                      <Field label="Income name" className="mb-0">
+                        <>
+                          <Input
+                            type="text"
+                            value={income.income_name || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                income.income_id,
+                                "income_name",
+                                e.target.value
+                              )
+                            }
+                            placeholder="ex. House rental"
+                            disabled={editableIncomeId !== income.income_id}
+                            style={{ fontSize: ".8rem" }}
+                            required
+                          />
+                          {incomeErrors[index]?.income_name && (
+                            <div className="text-danger">
+                              {incomeErrors[index]?.income_name}
+                            </div>
+                          )}
+                        </>
+                      </Field>
                     </div>
-                    <div>
-                      <div className="form-row">
-                        <div className="col-md-6 mb-0">
-                          <Field label="Income name" className="mb-0">
-                            <>
+                    <div className="col-md-6 mb-0">
+                      <Field label="Income category">
+                        <>
+                          <div className="mt-0">
+                            <select
+                              className="form-select w-100 p-2 border border-secondary-subtle rounded"
+                              value={income.income_type_id || 0}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  income.income_id,
+                                  "income_type_id",
+                                  Number(e.target.value)
+                                )
+                              }
+                              disabled={editableIncomeId !== income.income_id}
+                              style={{ fontSize: ".8rem" }}
+                              required
+                            >
+                              {incomeCategoryOptions.map((option) => (
+                                <option
+                                  key={option.id}
+                                  value={option.id}
+                                  disabled={option.disabled}
+                                >
+                                  {option.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          {incomeErrors[index]?.income_type_id && (
+                            <div className="text-danger">
+                              {incomeErrors[index]?.income_type_id}
+                            </div>
+                          )}
+                        </>
+                      </Field>
+                    </div>
+                  </div>
+                  <div className="form-row">
+                    <div className="col-md-6 mb-0">
+                      <Field label="Income amount">
+                        <>
+                          <>
+                            <div className="input-group">
+                              <span
+                                className="input-group-text bg-white"
+                                style={{ fontSize: ".8rem" }}
+                              >
+                                $
+                              </span>
                               <Input
-                                type="text"
-                                id={income.id}
-                                value={income.income_name || ""}
+                                type="number"
+                                value={income.amount || ""}
                                 onChange={(e) =>
-                                  handleInputChange(
-                                    income.id,
-                                    "income_name",
+                                  handleNumberInputChange(
+                                    income.income_id,
+                                    "amount",
                                     e.target.value
                                   )
                                 }
-                                placeholder="ex. House rental"
-                                disabled={editableIncomeId !== income.id}
+                                onKeyDown={(e) => {
+                                  if (e.key === "e") {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                placeholder="ex. 2500"
+                                className="form-control"
+                                step="100"
+                                min="0"
+                                disabled={editableIncomeId !== income.income_id}
                                 style={{ fontSize: ".8rem" }}
                                 required
                               />
-                              {incomeErrors[index]?.income_name && (
-                                <div className="text-danger">
-                                  {incomeErrors[index]?.income_name}
-                                </div>
-                              )}
-                            </>
-                          </Field>
-                        </div>
-                        <div className="col-md-6 mb-0">
-                          <Field label="Income category">
-                            <>
-                              <div className="mt-0">
-                                <select
-                                  className="form-select w-100 p-2 border border-secondary-subtle rounded"
-                                  id={income.id}
-                                  value={income.income_type_id || 0}
-                                  onChange={(e) =>
-                                    handleInputChange(
-                                      income.id,
-                                      "income_type_id",
-                                      Number(e.target.value)
-                                    )
-                                  }
-                                  disabled={editableIncomeId !== income.id}
-                                  style={{ fontSize: ".8rem" }}
-                                  required
-                                >
-                                  {incomeCategoryOptions.map((option) => (
-                                    <option
-                                      key={option.id}
-                                      value={option.id}
-                                      disabled={option.disabled}
-                                    >
-                                      {option.name}
-                                    </option>
-                                  ))}
-                                </select>
+                            </div>
+                            {income.amount_error && (
+                              <div className="text-danger">
+                                {income.amount_error}
                               </div>
-                              {incomeErrors[index]?.income_type_id && (
-                                <div className="text-danger">
-                                  {incomeErrors[index]?.income_type_id}
-                                </div>
-                              )}
-                            </>
-                          </Field>
-                        </div>
-                      </div>
-                      <div className="form-row">
-                        <div className="col-md-6 mb-0">
-                          <Field label="Income amount">
-                            <>
-                              <>
-                                <div className="input-group">
-                                  <span
-                                    className="input-group-text bg-white"
-                                    style={{ fontSize: ".8rem" }}
-                                  >
-                                    $
-                                  </span>
-                                  <Input
-                                    type="number"
-                                    id={income.id}
-                                    value={income.amount || ""}
-                                    onChange={(e) =>
-                                      handleNumberInputChange(
-                                        income.id,
-                                        "amount",
-                                        e.target.value
-                                      )
-                                    }
-                                    onKeyDown={(e) => {
-                                      if (e.key === "e") {
-                                        e.preventDefault();
-                                      }
-                                    }}
-                                    placeholder="ex. 2500"
-                                    className="form-control"
-                                    step="100"
-                                    min="0"
-                                    disabled={editableIncomeId !== income.id}
-                                    style={{ fontSize: ".8rem" }}
-                                    required
-                                  />
-                                </div>
-                                {income.amount_error && (
-                                  <div className="text-danger">
-                                    {income.amount_error}
-                                  </div>
-                                )}
-                              </>
-                              {incomeErrors[index]?.amount && (
-                                <div className="text-danger">
-                                  {incomeErrors[index]?.amount}
-                                </div>
-                              )}
-                            </>
-                          </Field>
-                        </div>
-                        <div className="col-md-6 mb-0">
-                          <Field label="Income period">
-                            <>
-                              <div className="mt-0">
-                                <select
-                                  className="form-select w-100 p-2 border border-secondary-subtle rounded"
-                                  id={income.id}
-                                  value={income.period || 0}
-                                  onChange={(e) =>
-                                    handleInputChange(
-                                      income.id,
-                                      "period",
-                                      Number(e.target.value)
-                                    )
-                                  }
-                                  disabled={editableIncomeId !== income.id}
-                                  style={{ fontSize: ".8rem" }}
-                                  required
+                            )}
+                          </>
+                          {incomeErrors[index]?.amount && (
+                            <div className="text-danger">
+                              {incomeErrors[index]?.amount}
+                            </div>
+                          )}
+                        </>
+                      </Field>
+                    </div>
+                    <div className="col-md-6 mb-0">
+                      <Field label="Income period">
+                        <>
+                          <div className="mt-0">
+                            <select
+                              className="form-select w-100 p-2 border border-secondary-subtle rounded"
+                              value={income.period || 0}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  income.income_id,
+                                  "period",
+                                  Number(e.target.value)
+                                )
+                              }
+                              disabled={editableIncomeId !== income.income_id}
+                              style={{ fontSize: ".8rem" }}
+                              required
+                            >
+                              {incomePeriodOptions.map((option) => (
+                                <option
+                                  key={option.id}
+                                  value={option.id}
+                                  disabled={option.disabled}
                                 >
-                                  {incomePeriodOptions.map((option) => (
-                                    <option
-                                      key={option.id}
-                                      value={option.id}
-                                      disabled={option.disabled}
-                                    >
-                                      {option.name}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                              {incomeErrors[index]?.period && (
-                                <div className="text-danger">
-                                  {incomeErrors[index]?.period}
-                                </div>
-                              )}
-                            </>
-                          </Field>
-                        </div>
-                      </div>
+                                  {option.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          {incomeErrors[index]?.period && (
+                            <div className="text-danger">
+                              {incomeErrors[index]?.period}
+                            </div>
+                          )}
+                        </>
+                      </Field>
                     </div>
                   </div>
                 </div>
-                <div className="d-flex justify-content-end">
-                  <button
-                    className="btn btn-secondary btn-sm px-3 mr-2 mt-1"
-                    type="button"
-                    onClick={() => setEditableIncome(income.id)}
+              </div>
+            </div>
+            <div className="d-flex justify-content-end">
+              {editableIncomeId !== income.income_id ? (
+                <a
+                  href="#/"
+                  onClick={() => setEditableIncome(income.income_id)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    className="bi bi-pencil-square mr-3 hover"
+                    viewBox="0 0 16 16"
                   >
-                    Edit
-                  </button>
-                  {income.deletable === 1 || index > 0 ? (
-                    <button
-                      className="btn btn-danger btn-sm mt-1"
-                      type="button"
-                      onClick={() => deleteIncome(income.id)}
-                    >
-                      Delete
-                    </button>
-                  ) : (
-                    ""
-                  )}
-                </div>
-              </Card>
-            ))}
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                    <path
+                      fill-rule="evenodd"
+                      d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
+                    />
+                  </svg>
+                </a>
+              ) : (
+                <a
+                  href="#/"
+                  onClick={
+                    isNewIncome == true
+                      ? () => saveData(income)
+                      : () => handleSave(income)
+                  }
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    class="bi bi-floppy mr-3"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M11 2H9v3h2z" />
+                    <path d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5 1.5 0 0 1 1.5 0M1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5m3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4zM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5z" />
+                  </svg>
+                </a>
+              )}
+              {income.deletable === 1 || index > 0 ? (
+                <a href="#/" onClick={() => deleteIncome(income.income_id)}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    className="bi bi-trash3"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+                  </svg>
+                </a>
+              ) : (
+                ""
+              )}
+            </div>
           </div>
-        </Container>
-        <div className="d-flex justify-content-end">
-          <BootstrapButton
-            type="submit"
-            className="btn btn-primary w-25 rounded-pill mt-3"
-          >
-            Save
-          </BootstrapButton>
-        </div>
-      </Form>
+        ))}
+      </div>
     </div>
   );
 };
