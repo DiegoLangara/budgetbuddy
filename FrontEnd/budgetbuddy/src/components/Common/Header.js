@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, IconButton, Typography, Avatar, Button, Menu, MenuItem, Divider, useMediaQuery, useTheme } from '@mui/material';
+import { useLocation } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import PrintIcon from '@mui/icons-material/Print';
 import PersonIcon from '@mui/icons-material/Person';
@@ -13,15 +14,15 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Profile } from '../Profile/Profile';
 
 const HeaderContainer = styled.div`
-  width: 100%;
-  padding: ${(props) => (props.isMobile ? "1vh" : "2vh 10vw 3vh calc(10vw + 5vw)")};
+  width: 97%;
+  padding: ${(props) => (props.isMobile ? "1vh" : "2vh 10vw 3vh calc(10vw + 5.3vw)")};
   margin: 0 auto;
 `;
 
 const StyledAppBar = styled(AppBar)`
   background-color: #3A608F !important;
   border-radius: 1vh;
-  padding: 1vh 3vw;
+  padding: 1vh;
 `;
 
 const StyledToolbar = styled(Toolbar)`
@@ -77,21 +78,19 @@ export const Header = ({ toggleDrawer }) => {
   const [user, setUser] = useState({});
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [headerTitle, setHeaderTitle] = useState('Welcome back buddy!');
   const [showProfile, setShowProfile] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const location = useLocation();
 
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleToggleProfile = () => {
-    setShowProfile(!showProfile);
-    handleMenuClose();
+  const getHeaderTitle = (pathname) => {
+    switch (pathname) {
+      case '/budget':
+        return 'Budget';
+      case '/expenses':
+        return 'Transactions';
+      default:
+        return 'Welcome back buddy!';
+    }
   };
 
   useEffect(() => {
@@ -121,6 +120,21 @@ export const Header = ({ toggleDrawer }) => {
 
     fetchUser();
   }, [token, user_id]);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleToggleProfile = () => {
+    setShowProfile(!showProfile);
+    handleMenuClose();
+  };
+
+  const headerTitle = getHeaderTitle(location.pathname);
 
   return (
     <HeaderContainer isMobile={isMobile}>
@@ -182,6 +196,6 @@ export const Header = ({ toggleDrawer }) => {
       <Profile open={showProfile} onClose={handleToggleProfile} />
     </HeaderContainer>
   );
-}
+};
 
 export default Header;

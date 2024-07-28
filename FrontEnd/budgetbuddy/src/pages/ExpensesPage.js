@@ -17,9 +17,9 @@ const transactionCategories = [
 ];
 
 const Container = styled.div`
-  width: 100%;
+  width: 97%;
   padding: ${(props) =>
-    props.isMobile ? "1vh" : "1vh 10vw 3vh calc(10vw + 60px)"};
+    props.isMobile ? "1vh" : "1vh 9vw 3vh calc(10vw + 60px)"};
   margin: 0 auto;
 `;
 
