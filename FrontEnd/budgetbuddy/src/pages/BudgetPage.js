@@ -43,7 +43,6 @@ const Aside = styled.aside`
   }
   nav ul li {
     margin-bottom: ${(props) => (props.isMobile ? "0.5rem" : "0")} !important;
-    margin-bottom: 1rem !important;
   }
 
   .list-group-item {
@@ -68,17 +67,23 @@ const StyledLink = styled(Link)`
 
   list-style: none !important;
   text-decoration: none !important;
-    
-  svg {
-    margin: 0 8px;
+
+  svg:first-child {
+    margin-right: 8px;
+  }
+
+  svg:last-child {
+    margin-left: auto;
   }
 `;
 
 const NavItem = ({ to, children, iconBefore, iconAfter }) => (
   <li className="list-group-item">
     <StyledLink to={to} isMobile={useMediaQuery('(max-width:600px)')}>
-      {iconBefore}
-      {children}
+      <span style={{ display: 'flex', alignItems: 'center' }}>
+        {iconBefore}
+        {children}
+      </span>
       {iconAfter}
     </StyledLink>
   </li>
@@ -116,7 +121,7 @@ export const BudgetPage = () => {
               </svg>
               }
             >
-              Financial Goals
+              Goals
             </NavItem>
             <NavItem 
               to="incomes-bm" 
@@ -214,7 +219,7 @@ export const BudgetPage = () => {
                     </svg>
                   }
                 >
-                  Financial Goals
+                  Goals
                 </NavItem>
                 <NavItem 
                   to="incomes-bm" 
