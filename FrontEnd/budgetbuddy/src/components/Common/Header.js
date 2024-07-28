@@ -82,17 +82,6 @@ export const Header = ({ toggleDrawer }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const location = useLocation();
 
-  const getHeaderTitle = (pathname) => {
-    switch (pathname) {
-      case '/budget':
-        return 'Budget';
-      case '/expenses':
-        return 'Transactions';
-      default:
-        return 'Welcome back buddy!';
-    }
-  };
-
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -111,7 +100,6 @@ export const Header = ({ toggleDrawer }) => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log("Fetched data:", data);
         setUser(data);
       } catch (error) {
         console.error("Failed to fetch user:", error);
@@ -134,7 +122,22 @@ export const Header = ({ toggleDrawer }) => {
     handleMenuClose();
   };
 
-  const headerTitle = getHeaderTitle(location.pathname);
+  const getHeaderTitle = () => {
+    switch (true) {
+      case /^\/home\/budget/.test(location.pathname):
+        return 'Budget management';
+      case /^\/home\/expenses/.test(location.pathname):
+        return 'Transactions';
+      case /^\/home\/expenses/.test(location.pathname):
+        return 'Transactions';
+      case /^\/home\/dashboard/.test(location.pathname):
+        return 'Welcome back buddy!';
+      default:
+        return '';
+    }
+  };
+
+  const headerTitle = getHeaderTitle();
 
   return (
     <HeaderContainer isMobile={isMobile}>
@@ -155,12 +158,12 @@ export const Header = ({ toggleDrawer }) => {
               </Typography>
             </WelcomeMessage>
           ) : (
-            <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', fontSize: '3vh' }}>
+            <Typography variant="h2" component="div" sx={{ fontWeight: 'bold', fontSize: '3vh' }}>
               {headerTitle}
             </Typography>
           )}
           <Spacer />
-          {!isMobile && (
+          {/* {!isMobile && (
             <Button
               variant="contained"
               sx={{ backgroundColor: 'black', color: 'white', marginRight: '2vw' }}
@@ -168,7 +171,7 @@ export const Header = ({ toggleDrawer }) => {
             >
               Print
             </Button>
-          )}
+          )} */}
           <IconButton edge="end" color="inherit" onClick={handleMenuOpen}>
             <Avatar src="/path-to-avatar-image.jpg" alt="User Avatar" style={{ width: '5vh', height: '5vh' }} />
           </IconButton>
