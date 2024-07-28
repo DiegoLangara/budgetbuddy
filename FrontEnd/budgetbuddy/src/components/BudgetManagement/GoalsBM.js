@@ -67,7 +67,6 @@ export const GoalsBM = () => {
   const [editableGoalId, setEditableGoalId] = useState(null);
   const [goalErrors, setGoalErrors] = useState([]);
   const [savingGoalId, setSavingGoalId] = useState(null);
-  const [newGoal, setNewGoal] = useState(null);
   const [isNewGoal, setIsNewGoal] = useState(false);
   const [addedGoal, setAddedGoal] = useState([]);
 
@@ -122,14 +121,18 @@ export const GoalsBM = () => {
     );
   };
 
-  const validateGoal = (goal) => {
-    const error = {};
-    if (!goal.goal_name) error.goal_name = "Input required";
-    if (goal.goal_type_id === 0) error.goal_type_id = "Input required";
-    if (!goal.target_date) error.target_date = "Input required";
-    if (!goal.current_amount) error.current_amount = "Input required";
-    if (!goal.target_amount) error.target_amount = "Input required";
-    return error;
+  const validateGoals = () => {
+    const errors = goals.map((goal) => {
+      const error = {};
+      if (!goal.goal_name) error.goal_name = "Input required";
+      if (goal.goal_type_id === 0) error.goal_type_id = "Input required";
+      if (!goal.target_date) error.target_date = "Input required";
+      if (!goal.current_amount) error.current_amount = "Input required";
+      if (!goal.target_amount) error.target_amount = "Input required";
+      return error;
+    });
+    setGoalErrors(errors);
+    return errors.every((error) => Object.keys(error).length === 0);
   };
 
   const addGoal = () => {
@@ -259,12 +262,13 @@ export const GoalsBM = () => {
   };
 
   const handleSave = async (goal) => {
-    const validationErrors = validateGoal(goal);
+    const validationErrors = validateGoals(goal);
     if (Object.keys(validationErrors).length === 0) {
       setSavingGoalId(goal.goal_id);
       await updateData(goal);
       setEditableGoalId(null);
       setSavingGoalId(null);
+      setIsNewGoal(false);
     } else {
       setGoalErrors(validationErrors);
     }
@@ -324,15 +328,17 @@ export const GoalsBM = () => {
   };
 
   const saveData = async (goal) => {
-    // // Transform data to the required schema
+    if (!validateGoals()) return;
+    console.log(goal);
+    // Transform data to the required schema
     const transformedGoal = {
       goal_id: goal.goal_id,
-      goal_name: goal.goal_name,
+      goal_name: goal.goal_name || null,
       goal_type_id: goal.goal_type_id,
       target_amount: goal.target_amount,
       current_amount: goal.current_amount,
       deletable: goal.deletable,
-      target_date: formatDate(goal.target_date),
+      target_date: formatDate(goal.target_date) || null,
     };
     setAddedGoal(transformedGoal);
     await saveToDatabase(addedGoal);
@@ -377,12 +383,12 @@ export const GoalsBM = () => {
           <div
             key={index}
             className={`p-3 m-0 card-bm ${
-              editableGoalId === goal.goal_id ? "editable" : ""
+              editableGoalId === goal.goal_id ? "editable" : null
             }`}
             style={{ minHeight: "auto" }}
           >
             <div
-              key={goal.id}
+              key={goal.goal_id}
               className={`card-content-bm mb-0 ${
                 editableGoalId === goal.goal_id ? "editable" : "non-editable"
               }`}

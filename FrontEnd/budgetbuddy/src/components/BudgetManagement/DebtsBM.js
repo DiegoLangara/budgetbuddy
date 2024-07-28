@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useOnboardingState } from "../../Hooks/useOnboardingState";
 import { Field } from "../OnboardingParts/Field";
-import { Form } from "../OnboardingParts/Form";
 import { Input } from "../OnboardingParts/Input";
-import { Card, Container, Button as BootstrapButton } from "react-bootstrap";
 import "../../css/Debts.css";
 import { useAuth } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
@@ -36,7 +34,7 @@ async function fetchDebts(user_id, token) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    console.log("Fetched data:", data); // Debugging log
+    // console.log("Fetched data:", data);
     return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error("Failed to fetch debts:", error);
@@ -60,46 +58,49 @@ export const DebtsBM = () => {
   const user_id = currentUser.id;
 
   const [debts, setDebts] = useState(
-    state.debts || [{ id: 1, debt_types_id: 0 }]
+    state.debts || [{ debt_id: 1, debt_types_id: 0 }]
   );
   const [editableDebtId, setEditableDebtId] = useState(null);
   const [debtErrors, setDebtErrors] = useState([]);
+  const [savingDebtId, setSavingDebtId] = useState(null);
+  const [isNewDebt, setIsNewDebt] = useState(false);
+  const [addedDebt, setAddedDebt] = useState([]);
 
   useEffect(() => {
     async function loadDebts() {
       const fetchedDebts = await fetchDebts(user_id, token);
       const formattedDebts = fetchedDebts.map((debt, index) => ({
-        id: debt.debt_id || index + 1,
+        debt_id: debt.debt_id || index + 1,
         debt_name: debt.debt_name || "",
         debt_types_id: debt.debt_types_id ?? 0,
         amount: debt.amount || "",
         due_date: debt.due_date ? formatDate(debt.due_date) : "",
         deletable: debt.deletable || "",
       }));
-      // Sort incomes by id in ascending order
-      formattedDebts.sort((a, b) => a.id - b.id);
+      // Sort debts by id in ascending order
+      formattedDebts.sort((a, b) => a.debt_id - b.debt_id);
 
       setDebts(
         formattedDebts.length > 0
           ? formattedDebts
-          : [{ id: 1, debt_types_id: 0 }]
+          : [{ debt_id: 1, debt_types_id: 0 }]
       );
       setState({ ...state, debts: formattedDebts });
+      setDebtErrors([]);
     }
     loadDebts();
   }, [user_id, token, setState]);
 
-  const handleInputChange = (id, field, value) => {
+  const handleInputChange = (debt_id, field, value) => {
     setDebts((prevDebts) =>
       prevDebts.map((debt) =>
-        debt.id === id ? { ...debt, [field]: value } : debt
+        debt.debt_id === debt_id ? { ...debt, [field]: value } : debt
       )
     );
   };
 
-  const handleNumberInputChange = (id, field, value) => {
-    let errorField = field + "_error";
-    let errorMessage = "";
+  const handleNumberInputChange = (debt_id, field, value) => {
+    let errorMessage;
 
     if (!/^\d*\.?\d*$/.test(value)) {
       errorMessage = "Please enter a valid number.";
@@ -108,9 +109,7 @@ export const DebtsBM = () => {
     }
     setDebts((prevDebts) =>
       prevDebts.map((debt) =>
-        debt.id === id
-          ? { ...debt, [field]: value, [errorField]: errorMessage }
-          : debt
+        debt.debt_id === debt_id ? { ...debt, [field]: value } : debt
       )
     );
   };
@@ -130,27 +129,28 @@ export const DebtsBM = () => {
 
   const addDebt = () => {
     const newId =
-      debts.length > 0 ? Math.max(...debts.map((g) => g.id)) + 1 : 1;
-    const newDebt = { id: newId, debt_types_id: 0 };
+      debts.length > 0 ? Math.max(...debts.map((g) => g.debt_id)) + 1 : 1;
+    const newDebt = { debt_id: newId, debt_types_id: 0 };
     const updatedDebts = [...debts, newDebt];
-    updatedDebts.sort((a, b) => a.id - b.id); // Ensure order is maintained
+    updatedDebts.sort((a, b) => a.debt_id - b.debt_id); // Ensure order is maintained
     setDebts(updatedDebts);
+    setIsNewDebt(true);
   };
 
-  const setEditableDebt = (id) => {
-    setEditableDebtId(id);
+  const setEditableDebt = (debt_id) => {
+    setEditableDebtId(debt_id);
   };
 
-  const deleteDebtFromDatabase = async (user_id, token, id) => {
+  const deleteDebtFromDatabase = async (user_id, token, debt_id) => {
     try {
-      console.log(user_id, token, id);
+      console.log(user_id, token, debt_id);
       const response = await fetch(
         `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debt/`,
         {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            debt_id: id,
+            debt_id: debt_id,
             token: token,
             user_id: user_id,
           },
@@ -159,14 +159,13 @@ export const DebtsBM = () => {
       if (!response.ok) {
         throw new Error("Failed to delete debt from the database");
       }
-      console.log(`Debt with ID ${id} deleted successfully from the database`);
     } catch (error) {
       console.error("Failed to delete debt:", error);
       throw error;
     }
   };
 
-  const deleteDebt = (id) => {
+  const deleteDebt = (debt_id) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -178,11 +177,11 @@ export const DebtsBM = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await deleteDebtFromDatabase(user_id, token, id); // Delete from database first
-          const updatedDebts = debts.filter((debt) => debt.id !== id);
+          await deleteDebtFromDatabase(user_id, token, debt_id); // Delete from database first
+          const updatedDebts = debts.filter((debt) => debt.debt_id !== debt_id);
           setDebts(updatedDebts);
           setState({ ...state, debts: updatedDebts });
-          if (editableDebtId === id) {
+          if (editableDebtId === debt_id) {
             setEditableDebtId(null);
           }
         } catch (error) {
@@ -196,10 +195,79 @@ export const DebtsBM = () => {
     });
   };
 
-  const saveToDatabase = async (data) => {
+  // save(update) existing item
+  const updateData = async (debt) => {
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debts/`,
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debt/`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            debt_id: debt.debt_id,
+            token: token,
+            user_id: user_id,
+          },
+          body: JSON.stringify(debt),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const responseData = await response.json();
+      console.log(responseData);
+
+      if (responseData.success) {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: responseData.message,
+          showConfirmButton: false,
+          timer: 1200,
+          width: "300px",
+        });
+      } else {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: responseData.message,
+          showConfirmButton: false,
+          timer: 1200,
+          width: "300px",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to save data:", error);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "Failed to save data",
+        showConfirmButton: false,
+        timer: 1200,
+        width: "300px",
+      });
+    }
+  };
+
+  const handleUpdateData = async (debt) => {
+    const validationErrors = validateDebts(debt);
+    if (Object.keys(validationErrors).length === 0) {
+      setSavingDebtId(debt.debt_id);
+      await updateData(debt);
+      console.log(debt);
+      setEditableDebtId(null);
+      setSavingDebtId(null);
+      setIsNewDebt(false);
+    } else {
+      setDebtErrors(validationErrors);
+    }
+  };
+
+  // save new item
+  const saveAddedData = async (debt) => {
+    try {
+      const response = await fetch(
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debt/`,
         {
           method: "POST",
           headers: {
@@ -207,10 +275,9 @@ export const DebtsBM = () => {
             token: token,
             user_id: user_id,
           },
-          body: JSON.stringify({ debts: data.debts }),
+          body: JSON.stringify(debt),
         }
       );
-      console.log(JSON.stringify({ debts: data.debts }));
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -249,28 +316,99 @@ export const DebtsBM = () => {
     }
   };
 
-  const saveData = async (event) => {
-    event.preventDefault();
+  const handleSaveAddedData = async (debt) => {
     if (!validateDebts()) return;
     // Transform data to the required schema
-    const transformedDebts = debts.map((debt) => ({
+    const transformedDebt = {
       debt_id: debt.id,
       debt_name: debt.debt_name || null,
       debt_types_id: debt.debt_types_id,
       amount: debt.amount,
       due_date: formatDate(debt.due_date) || null,
-      debt_type_name:
-        debtCategoryOptions.find(
-          (category) => category.id === debt.debt_type_id
-        )?.name || "",
-    }));
-    const combinedData = {
-      ...state,
-      debts: transformedDebts,
     };
-    setState(combinedData);
-    await saveToDatabase(combinedData);
+    setAddedDebt(transformedDebt);
+    console.log(transformedDebt);
+    console.log(addedDebt);
+    await saveAddedData(addedDebt);
+    setIsNewDebt(false);
   };
+
+  // save new item (sync save method)
+  // const saveToDatabase = async (data) => {
+  //   try {
+  //     const response = await fetch(
+  //       `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debts/`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           token: token,
+  //           user_id: user_id,
+  //         },
+  //         body: JSON.stringify({ debts: data.debts }),
+  //       }
+  //     );
+  //     console.log(JSON.stringify({ debts: data.debts }));
+  //     if (!response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
+  //     const responseData = await response.json();
+  //     console.log("Data saved successfully:", responseData);
+
+  //     if (responseData.success) {
+  //       Swal.fire({
+  //         position: "center",
+  //         icon: "success",
+  //         title: responseData.message,
+  //         showConfirmButton: false,
+  //         timer: 1200,
+  //         width: "300px",
+  //       });
+  //     } else {
+  //       Swal.fire({
+  //         position: "center",
+  //         icon: "error",
+  //         title: responseData.message,
+  //         showConfirmButton: false,
+  //         timer: 1200,
+  //         width: "300px",
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to save data:", error);
+  //     Swal.fire({
+  //       position: "center",
+  //       icon: "error",
+  //       title: "Failed to save data",
+  //       showConfirmButton: false,
+  //       timer: 1200,
+  //       width: "300px",
+  //     });
+  //   }
+  // };
+
+  // const saveData = async (event) => {
+  //   event.preventDefault();
+  //   if (!validateDebts()) return;
+  //   // Transform data to the required schema
+  //   const transformedDebts = debts.map((debt) => ({
+  //     debt_id: debt.id,
+  //     debt_name: debt.debt_name || null,
+  //     debt_types_id: debt.debt_types_id,
+  //     amount: debt.amount,
+  //     due_date: formatDate(debt.due_date) || null,
+  //     debt_type_name:
+  //       debtCategoryOptions.find(
+  //         (category) => category.id === debt.debt_type_id
+  //       )?.name || "",
+  //   }));
+  //   const combinedData = {
+  //     ...state,
+  //     debts: transformedDebts,
+  //   };
+  //   setState(combinedData);
+  //   await saveToDatabase(combinedData);
+  // };
 
   return (
     <div
@@ -280,240 +418,265 @@ export const DebtsBM = () => {
         width: "100%",
       }}
     >
-      <Form onSubmit={saveData} className="my-2 pb-0">
-        <div className="d-flex justify-content-between mb-3">
-          <div>
-            <h3 style={{ fontSize: "2.1rem" }}>Set Your Debts</h3>
-            <p className="mb-1" style={{ fontSize: ".95rem" }}>
-              How much do you owe?
-            </p>
-          </div>
-          <div className="d-flex align-items-end ml-3 pb-2">
-            <Link
-              to="#"
-              className="btn rounded-pill"
-              onClick={addDebt}
-              style={{
-                fontSize: ".9rem",
-                fontWeight: "bold",
-                color: "Black",
-                backgroundColor: "#eee",
-                border: "1px solid gray",
-                padding: ".6rem",
-              }}
-            >
-              {debts.length === 0 ? "+ Create a Debt" : "+ Add More Debts"}
-            </Link>
-          </div>
+      <div className="d-flex justify-content-between mt-2 mb-3">
+        <div>
+          <h3 style={{ fontSize: "2.1rem" }}>Set Your Debts</h3>
+          <p className="mb-1" style={{ fontSize: ".95rem" }}>
+            How much do you owe?
+          </p>
         </div>
-        <Container className="mx-0 px-0">
-          <div className="d-flex px-0 row">
-            {debts.map((debt, index) => (
-              <Card
-                key={index}
-                className={`p-3 m-2 col card-bm ${
-                  editableDebtId === debt.id ? "editable" : null
-                }`}
-                style={{ minHeight: "auto", maxWidth: "50%" }}
-              >
+        <div className="d-flex align-items-end ml-3 pb-2">
+          <Link
+            to="#"
+            className="btn rounded-pill"
+            onClick={addDebt}
+            style={{
+              fontSize: ".9rem",
+              fontWeight: "bold",
+              color: "Black",
+              backgroundColor: "#eee",
+              border: "1px solid gray",
+              padding: ".6rem",
+            }}
+          >
+            {debts.length === 0 ? "+ Create a Debt" : "+ Add More Debts"}
+          </Link>
+        </div>
+      </div>
+      <div className="container-bm">
+        {debts.map((debt, index) => (
+          <div
+            key={index}
+            className={`p-3 m-0 card-bm ${
+              editableDebtId === debt.debt_id ? "editable" : null
+            }`}
+            style={{ minHeight: "auto" }}
+          >
+            <div
+              key={debt.debt_id}
+              className={`mb-0 ${
+                editableDebtId === debt.debt_id ? "editable" : "non-editable"
+              }`}
+            >
+              <div className="mt-1">
                 <div
-                  key={debt.id}
-                  className={`mb-0 ${
-                    editableDebtId === debt.id ? "editable" : "non-editable"
-                  }`}
+                  className="mb-3"
+                  style={{
+                    padding: ".3rem 0",
+                  }}
                 >
-                  <div className="mt-1">
-                    <div
-                      className="mb-3"
+                  <div className="d-flex justify-content-between align-items-center">
+                    <h5
                       style={{
-                        padding: ".3rem 0",
+                        margin: debt.debt_name ? ".2rem 0" : "1.75rem 0 .2rem",
                       }}
                     >
-                      <div className="d-flex justify-content-between align-items-center">
-                        <h5 style={{ margin: ".2rem 0" }}>
-                          <strong>Debt {index + 1}</strong>{" "}
-                          <span style={{ fontSize: "1rem" }}>
-                            {debt.debt_name ? " - " + debt.debt_name : ""}
-                          </span>
-                        </h5>
-                        <div></div>
-                      </div>
+                      <span style={{ fontSize: "1.3rem" }}>
+                        <strong>{debt.debt_name ? debt.debt_name : ""}</strong>
+                      </span>
+                    </h5>
+                    <div></div>
+                  </div>
+                </div>
+                <div>
+                  <div className="form-row">
+                    <div className="col-md-6 mb-0">
+                      <Field label="Debt name" className="mb-0">
+                        <>
+                          <Input
+                            type="text"
+                            value={debt.debt_name || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                debt.debt_id,
+                                "debt_name",
+                                e.target.value
+                              )
+                            }
+                            placeholder="e.g. RBC credit card"
+                            disabled={editableDebtId !== debt.debt_id}
+                            style={{ fontSize: ".8rem" }}
+                            required
+                          />
+                          {debtErrors[index]?.debt_name && (
+                            <div className="text-danger">
+                              {debtErrors[index].debt_name}
+                            </div>
+                          )}
+                        </>
+                      </Field>
                     </div>
-                    <div>
-                      <div className="form-row">
-                        <div className="col-md-6 mb-0">
-                          <Field label="Debt name" className="mb-0">
-                            <>
-                              <Input
-                                type="text"
-                                value={debt.debt_name || ""}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    debt.id,
-                                    "debt_name",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="e.g. RBC credit card"
-                                disabled={editableDebtId !== debt.id}
-                                style={{ fontSize: ".8rem" }}
-                                required
-                              />
-                              {debtErrors[index]?.debt_name && (
-                                <div className="text-danger">
-                                  {debtErrors[index].debt_name}
-                                </div>
-                              )}
-                            </>
-                          </Field>
-                        </div>
-                        <div className="col-md-6 mb-0">
-                          <Field label="Debt category">
-                            <>
-                              <select
-                                className="form-select w-100 p-2 border border-secondary-subtle rounded rounded-2"
-                                value={debt.debt_types_id || 0}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    debt.id,
-                                    "debt_types_id",
-                                    Number(e.target.value)
-                                  )
-                                }
-                                disabled={editableDebtId !== debt.id}
-                                style={{ fontSize: ".8rem" }}
-                                required
+                    <div className="col-md-6 mb-0">
+                      <Field label="Debt category">
+                        <>
+                          <select
+                            className="form-select w-100 p-2 border border-secondary-subtle rounded"
+                            value={debt.debt_types_id || 0}
+                            onChange={(e) =>
+                              handleInputChange(
+                                debt.debt_id,
+                                "debt_types_id",
+                                Number(e.target.value)
+                              )
+                            }
+                            disabled={editableDebtId !== debt.debt_id}
+                            style={{ fontSize: ".8rem" }}
+                            required
+                          >
+                            {debtCategoryOptions.map((option) => (
+                              <option
+                                key={option.id}
+                                value={option.id}
+                                disabled={option.disabled}
                               >
-                                {debtCategoryOptions.map((option) => (
-                                  <option
-                                    key={option.id}
-                                    value={option.id}
-                                    disabled={option.disabled}
-                                  >
-                                    {option.name}
-                                  </option>
-                                ))}
-                              </select>
-                              {debtErrors[index]?.debt_types_id && (
-                                <div className="text-danger">
-                                  {debtErrors[index].debt_types_id}
-                                </div>
-                              )}
-                            </>
-                          </Field>
-                        </div>
-                      </div>
-                      <div className="form-row">
-                        <div className="col-md-6 mb-0">
-                          <Field label="Debt amount">
-                            <>
-                              <div className="input-group">
-                                <span
-                                  className="input-group-text bg-white"
-                                  style={{ fontSize: ".8rem" }}
-                                >
-                                  $
-                                </span>
-                                <Input
-                                  type="number"
-                                  value={debt.amount || ""}
-                                  onChange={(e) =>
-                                    handleNumberInputChange(
-                                      debt.id,
-                                      "amount",
-                                      e.target.value
-                                    )
-                                  }
-                                  onKeyDown={(e) => {
-                                    if (e.key === "e") {
-                                      e.preventDefault();
-                                    }
-                                  }}
-                                  placeholder="e.g. 1500"
-                                  className="form-control"
-                                  step="100"
-                                  min="0"
-                                  disabled={editableDebtId !== debt.id}
-                                  style={{ fontSize: ".8rem" }}
-                                  required
-                                />
-                              </div>
-                              {debt.amount_error && (
-                                <div className="text-danger">
-                                  {debt.amount_error}
-                                </div>
-                              )}
-                              {debtErrors[index]?.amount && (
-                                <div className="text-danger">
-                                  {debtErrors[index]?.amount}
-                                </div>
-                              )}
-                            </>
-                          </Field>
-                        </div>
-                        <div className="col-md-6 mb-0">
-                          <Field label="Due date">
-                            <>
-                              <Input
-                                type="date"
-                                value={debt.due_date || ""}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    debt.id,
-                                    "due_date",
-                                    e.target.value
-                                  )
+                                {option.name}
+                              </option>
+                            ))}
+                          </select>
+                          {debtErrors[index]?.debt_types_id && (
+                            <div className="text-danger">
+                              {debtErrors[index].debt_types_id}
+                            </div>
+                          )}
+                        </>
+                      </Field>
+                    </div>
+                  </div>
+                  <div className="form-row">
+                    <div className="col-md-6 mb-0">
+                      <Field label="Debt amount">
+                        <>
+                          <div className="input-group">
+                            <span
+                              className="input-group-text bg-white"
+                              style={{ fontSize: ".8rem" }}
+                            >
+                              $
+                            </span>
+                            <Input
+                              type="number"
+                              value={debt.amount || ""}
+                              onChange={(e) =>
+                                handleNumberInputChange(
+                                  debt.debt_id,
+                                  "amount",
+                                  e.target.value
+                                )
+                              }
+                              onKeyDown={(e) => {
+                                if (e.key === "e") {
+                                  e.preventDefault();
                                 }
-                                min={new Date().toISOString().split("T")[0]}
-                                disabled={editableDebtId !== debt.id}
-                                style={{ fontSize: ".8rem" }}
-                                required
-                              />
-                              {debtErrors[index]?.due_date && (
-                                <div className="text-danger">
-                                  {debtErrors[index].due_date}
-                                </div>
-                              )}
-                            </>
-                          </Field>
-                        </div>
-                      </div>
+                              }}
+                              placeholder="e.g. 1500"
+                              className="form-control"
+                              step="100"
+                              min="0"
+                              disabled={editableDebtId !== debt.debt_id}
+                              style={{ fontSize: ".8rem" }}
+                              required
+                            />
+                          </div>
+                          {debt.amount_error && (
+                            <div className="text-danger">
+                              {debt.amount_error}
+                            </div>
+                          )}
+                          {debtErrors[index]?.amount && (
+                            <div className="text-danger">
+                              {debtErrors[index]?.amount}
+                            </div>
+                          )}
+                        </>
+                      </Field>
+                    </div>
+                    <div className="col-md-6 mb-0">
+                      <Field label="Due date">
+                        <>
+                          <Input
+                            type="date"
+                            value={debt.due_date || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                debt.debt_id,
+                                "due_date",
+                                e.target.value
+                              )
+                            }
+                            min={new Date().toISOString().split("T")[0]}
+                            disabled={editableDebtId !== debt.debt_id}
+                            style={{ fontSize: ".8rem" }}
+                            required
+                          />
+                          {debtErrors[index]?.due_date && (
+                            <div className="text-danger">
+                              {debtErrors[index].due_date}
+                            </div>
+                          )}
+                        </>
+                      </Field>
                     </div>
                   </div>
                 </div>
-                <div className="d-flex justify-content-end">
-                  <button
-                    className="btn btn-secondary btn-sm px-3 mr-2 mt-1"
-                    type="button"
-                    onClick={() => setEditableDebt(debt.id)}
+              </div>
+            </div>
+            <div className="d-flex justify-content-end">
+              {editableDebtId !== debt.debt_id ? (
+                <a href="#/" onClick={() => setEditableDebt(debt.debt_id)}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    className="bi bi-pencil-square mr-3 hover"
+                    viewBox="0 0 16 16"
                   >
-                    Edit
-                  </button>
-                  {debt.deletable === 1 || index > 0 ? (
-                    <button
-                      className="btn btn-danger btn-sm mt-1"
-                      type="button"
-                      onClick={() => deleteDebt(debt.id)}
-                    >
-                      Delete
-                    </button>
-                  ) : (
-                    ""
-                  )}
-                </div>
-              </Card>
-            ))}
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                    <path
+                      fill-rule="evenodd"
+                      d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"
+                    />
+                  </svg>
+                </a>
+              ) : (
+                <a
+                  href="#/"
+                  onClick={
+                    isNewDebt == true
+                      ? () => handleSaveAddedData(debt)
+                      : () => handleUpdateData(debt)
+                  }
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    class="bi bi-floppy mr-3"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M11 2H9v3h2z" />
+                    <path d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5 1.5 0 0 1 1.5 0M1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5m3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4zM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5z" />
+                  </svg>
+                </a>
+              )}
+              {debt.deletable === 1 || index > 0 ? (
+                <a href="#/" onClick={() => deleteDebt(debt.debt_id)}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    className="bi bi-trash3"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+                  </svg>
+                </a>
+              ) : (
+                ""
+              )}
+            </div>
           </div>
-        </Container>
-        <div className="d-flex justify-content-end">
-          <BootstrapButton
-            type="submit"
-            className="btn btn-primary w-25 rounded-pill mt-3"
-          >
-            Save
-          </BootstrapButton>
-        </div>
-      </Form>
+        ))}
+      </div>
     </div>
   );
 };
