@@ -155,7 +155,7 @@ export const ExpenseTableLatest = () => {
         </StyledNoDataWrapper>
       ) : (
         <div className="scrollable-table-dashboard shadow">
-          <table className="responsive-table">
+          <table className="responsive-table responsive-table-latest">
             <thead>
               <tr>
                 <th
