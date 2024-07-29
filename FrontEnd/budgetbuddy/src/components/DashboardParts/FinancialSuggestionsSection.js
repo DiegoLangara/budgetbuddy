@@ -42,7 +42,7 @@ const StyledFinancialSuggestionsSection = styled.div`
 
 const StyledText = styled.p`
   margin: 0;
-  font-size: 0.8rem;
+  font-size: 14px;
 `;
 
 const StyledReactApexChart = styled(ReactApexChart)`
