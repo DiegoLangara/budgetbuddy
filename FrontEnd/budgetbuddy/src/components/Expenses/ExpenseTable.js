@@ -23,9 +23,9 @@ const decodeByteArray = (byteArray) => {
 // Fetch all transactions from API
 async function fetchAllTransactions(token, user_id, start_date, end_date) {
   try {
-    console.log(
-      `Fetching transactions with user_id=${user_id}, token=${token}, start_date=${start_date}, end_date=${end_date}`
-    );
+    // console.log(
+    //   `Fetching transactions with user_id=${user_id}, token=${token}, start_date=${start_date}, end_date=${end_date}`
+    // );
     const response = await fetch(
       `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/transactions/`,
       {
@@ -43,7 +43,7 @@ async function fetchAllTransactions(token, user_id, start_date, end_date) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    console.log("Fetched data:", data);
+    // console.log("Fetched data:", data);
     return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error("Failed to fetch transactions:", error);
@@ -54,9 +54,9 @@ async function fetchAllTransactions(token, user_id, start_date, end_date) {
 // Delete transaction by ID
 async function deleteTransactionById(user_id, token, id) {
   try {
-    console.log(
-      `Fetching transactions with user_id=${user_id}, token=${token}, transaction_id=${id}`
-    );
+    // console.log(
+    //   `Fetching transactions with user_id=${user_id}, token=${token}, transaction_id=${id}`
+    // );
     const response = await fetch(
       `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/transaction/`,
       {

@@ -6,6 +6,7 @@ import { Input } from "../OnboardingParts/Input";
 import "../../css/Budgets.css";
 import { useAuth } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
+import { Modal, Form as BootstrapForm } from "react-bootstrap";
 
 // Utility function to format the date
 const formatDate = (isoDate) => {
@@ -56,16 +57,22 @@ export const BudgetsBM = () => {
   const [editableBudgetId, setEditableBudgetId] = useState(null);
   const [budgetErrors, setBudgetErrors] = useState([]);
   const [savingBudgetId, setSavingBudgetId] = useState(null);
-  const [isNewBudget, setIsNewBudget] = useState(false);
   const [addedBudget, setAddedBudget] = useState([]);
+
+  const [showModal, setShowModal] = useState(false);
+  const [newBudget, setNewBudget] = useState({
+    budget_name: "",
+    amount: 0,
+    end_date: "",
+  });
 
   useEffect(() => {
     async function loadBudgetItems() {
       const fetchedBudgets = await fetchBudgetItems(user_id, token);
-      const formattedBudgets = fetchedBudgets.map((budget, index) => ({
-        budget_id: budget.budget_id || index + 1,
+      const formattedBudgets = fetchedBudgets.map((budget) => ({
+        budget_id: budget.budget_id,
         budget_name: budget.budget_name || "",
-        amount: budget.amount || "",
+        amount: budget.amount || 0,
         deletable: budget.deletable || "",
         end_date: budget.end_date ? formatDate(budget.end_date) : "",
       }));
@@ -81,9 +88,15 @@ export const BudgetsBM = () => {
       setBudgetErrors([]);
     }
     loadBudgetItems();
-  }, [user_id, token, setState]);
+  }, [user_id, token, setState, addedBudget]);
 
   const handleInputChange = (budget_id, field, value) => {
+    if (editableBudgetId !== budget_id) {
+      setNewBudget((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    }
     setBudgets((prevBudgets) =>
       prevBudgets.map((budget) =>
         budget.budget_id === budget_id ? { ...budget, [field]: value } : budget
@@ -98,6 +111,13 @@ export const BudgetsBM = () => {
       errorMessage = "Please enter a valid number.";
     } else if (parseFloat(value) < 0) {
       errorMessage = "Please enter a positive number.";
+    }
+
+    if (editableBudgetId !== budget_id) {
+      setNewBudget((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
     }
     setBudgets((prevBudgets) =>
       prevBudgets.map((budget) =>
@@ -118,20 +138,8 @@ export const BudgetsBM = () => {
     return errors.every((error) => Object.keys(error).length === 0);
   };
 
-  const addBudget = () => {
-    const newId =
-      budgets.length > 0 ? Math.max(...budgets.map((g) => g.budget_id)) + 1 : 1;
-    const newBudget = {
-      budget_id: newId,
-      budget_name: "",
-      amount: "",
-      end_date: "",
-    };
-    const updatedBudgets = [...budgets, newBudget];
-    updatedBudgets.sort((a, b) => a.budget_id - b.budget_id); // Ensure order is maintained
-    setBudgets(updatedBudgets);
-    setIsNewBudget(true);
-  };
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
 
   const setEditableBudget = (budget_id) => {
     setEditableBudgetId(budget_id);
@@ -249,24 +257,23 @@ export const BudgetsBM = () => {
     }
   };
 
-  const handleSave = async (budget) => {
+  const handleUpdateData = async (budget) => {
     const validationErrors = validateBudgets(budget);
     if (Object.keys(validationErrors).length === 0) {
       setSavingBudgetId(budget.budget_id);
       await updateData(budget);
       setEditableBudgetId(null);
       setSavingBudgetId(null);
-      setIsNewBudget(false);
     } else {
       setBudgetErrors(validationErrors);
     }
   };
 
   // save new item
-  const saveToDatabase = async (budget) => {
+  const saveAddedData = async (budget) => {
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/`,
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budget/`,
         {
           method: "POST",
           headers: {
@@ -315,18 +322,18 @@ export const BudgetsBM = () => {
     }
   };
 
-  const saveData = async (budget) => {
+  const handleSaveAddedData = async (budget) => {
     if (!validateBudgets()) return;
     // Transform data to the required schema
     const transformedBudget = {
-      budget_id: budget.budget_id,
+      // budget_id: budget.budget_id,
       budget_name: budget.budget_name || null,
       amount: budget.amount,
       end_date: budget.end_date || null,
     };
+    await saveAddedData(transformedBudget);
     setAddedBudget(transformedBudget);
-    await saveToDatabase(addedBudget);
-    setIsNewBudget(false);
+    handleCloseModal();
   };
 
   return (
@@ -348,7 +355,7 @@ export const BudgetsBM = () => {
           <Link
             to="#"
             className="btn rounded-pill"
-            onClick={addBudget}
+            onClick={handleShowModal}
             style={{
               fontSize: ".9rem",
               fontWeight: "bold",
@@ -371,14 +378,7 @@ export const BudgetsBM = () => {
             }`}
             style={{ minHeight: "auto" }}
           >
-            <div
-              key={budget.budget_id}
-              className={`mb-0 ${
-                editableBudgetId === budget.budget_id
-                  ? "editable"
-                  : "non-editable"
-              }`}
-            >
+            <div key={budget.budget_id}>
               <div className="mt-1">
                 <div
                   className="mb-3"
@@ -403,7 +403,13 @@ export const BudgetsBM = () => {
                     <div></div>
                   </div>
                 </div>
-                <div>
+                <div
+                  className={`mb-0 ${
+                    editableBudgetId === budget.budget_id
+                      ? "editable"
+                      : "non-editable"
+                  }`}
+                >
                   <div className="form-row">
                     <div className="col-md-6 mb-0">
                       <Field label="Budget Name" className="mb-0">
@@ -531,14 +537,7 @@ export const BudgetsBM = () => {
                   </svg>
                 </a>
               ) : (
-                <a
-                  href="#/"
-                  onClick={
-                    isNewBudget == true
-                      ? () => saveData(budget)
-                      : () => handleSave(budget)
-                  }
-                >
+                <a href="#/" onClick={() => handleUpdateData(budget)}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
@@ -551,25 +550,159 @@ export const BudgetsBM = () => {
                   </svg>
                 </a>
               )}
-              {budget.deletable === 1 || index > 0 ? (
-                <a href="#/" onClick={() => deleteBudget(budget.budget_id)}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    className="bi bi-trash3"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
-                  </svg>
-                </a>
-              ) : (
-                ""
-              )}
+              <a href="#/" onClick={() => deleteBudget(budget.budget_id)}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  className="bi bi-trash3"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+                </svg>
+              </a>
             </div>
           </div>
         ))}
       </div>
+      <Modal show={showModal} onHide={handleCloseModal} className="mt-5">
+        <Modal.Header closeButton>
+          <Modal.Title>Add New Budget</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <BootstrapForm>
+            <BootstrapForm.Group controlId="budgetName">
+              <BootstrapForm.Label className="mt-2">
+                Budget name
+              </BootstrapForm.Label>
+              <BootstrapForm.Control
+                type="text"
+                name="budget_name"
+                value={newBudget.budget_name}
+                onChange={(e) =>
+                  handleInputChange(
+                    newBudget.budget_id,
+                    "budget_name",
+                    e.target.value
+                  )
+                }
+                placeholder="ex. Groceries"
+                style={{ fontSize: "1rem" }}
+                required
+              />
+            </BootstrapForm.Group>
+            <BootstrapForm.Group controlId="budgetAmount">
+              <BootstrapForm.Label>Budget amount</BootstrapForm.Label>
+              <div className="input-group">
+                <span
+                  className="input-group-text bg-white"
+                  style={{ fontSize: "1rem" }}
+                >
+                  $
+                </span>
+                <input
+                  type="number"
+                  name="amount"
+                  value={newBudget.amount}
+                  onChange={(e) =>
+                    handleNumberInputChange(
+                      newBudget.budget_id,
+                      "amount",
+                      e.target.value
+                    )
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "e") {
+                      e.preventDefault();
+                    }
+                  }}
+                  placeholder="ex. 1200"
+                  className="form-control"
+                  step="100"
+                  min="100"
+                  style={{ fontSize: "1rem" }}
+                  required
+                />
+              </div>
+            </BootstrapForm.Group>
+            <BootstrapForm.Group controlId="endDate">
+              <BootstrapForm.Label>End date</BootstrapForm.Label>
+              <BootstrapForm.Control
+                type="date"
+                name="end_date"
+                value={newBudget.end_date}
+                onChange={(e) =>
+                  handleInputChange(
+                    newBudget.budget_id,
+                    "end_date",
+                    e.target.value
+                  )
+                }
+                min={new Date().toISOString().split("T")[0]}
+                style={{ fontSize: "1rem" }}
+                required
+              />
+            </BootstrapForm.Group>
+          </BootstrapForm>
+        </Modal.Body>
+        <Modal.Footer>
+          <a href="#/" onClick={() => handleSaveAddedData(newBudget)}>
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16L21 8V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21Z"
+                stroke="black"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M17 21V13H7V21"
+                stroke="black"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M7 3V8H15"
+                stroke="black"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+          <a href="#/" onClick={handleCloseModal} className="mx-3">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M18 6L6 18"
+                stroke="black"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M6 6L18 18"
+                stroke="black"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
