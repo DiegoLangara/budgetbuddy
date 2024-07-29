@@ -1,17 +1,32 @@
 import React from "react";
 import { FinancialSuggestionsSection } from "../DashboardParts/FinancialSuggestionsSection";
 import styled from "styled-components";
+import { useAuth } from "../../contexts/AuthContext";
 
 export const FinancialSuggestions = () => {
-  const jsonData = [
+  const { currentUser } = useAuth();
+  const user_id = currentUser?.id;
+
+  const jsonDataForFirstUser = [
     [
       {
-        suggestion: "As of June 5, 2024, you have successfully logged into Budget Buddy. Please keep your password secure and do not share it with anyone.",
+        suggestion: "As of August 3rd, 2024, welcome to Budget Buddy! You have successfully logged into Budget Buddy. Please keep your password secure and do not share it with anyone.",
+      },
+      {
+        suggestion: "As of August 3rd, 2024, please register your financial goals, income sources, budgets, and debts to get started.",
+      },
+    ],
+  ];
+
+  const jsonDataForSecondUser = [
+    [
+      {
+        suggestion: "As of August 3rd, 2024, you have successfully logged into Budget Buddy. Please keep your password secure and do not share it with anyone.",
       },
     ],
     [
       {
-        suggestion: "As of May 30, 2024, your debts has significantly decreased. Please continue making your payments to further benefit your financial health. Keep up the good work! Here’s the actual summary of your expenses for the month of May 2024.",
+        suggestion: "As of August 1st, 2024, your debts has significantly decreased. Please continue making your payments to further benefit your financial health. Keep up the good work! Here’s the actual summary of your expenses for the month of May 2024.",
       },
       {
         financialData: [
@@ -44,10 +59,12 @@ export const FinancialSuggestions = () => {
     ],
   ];
 
+  const jsonData = user_id === 85 ? jsonDataForFirstUser : jsonDataForSecondUser;
+
   return (
     <StyledFinancialSuggestions>
-      <StyledTitle>Insight</StyledTitle>
       <StyledContentWrapper>
+        <StyledTitle>Insight</StyledTitle>
         {jsonData.map((data, index) => (
           <FinancialSuggestionsSection
             key={index}
@@ -76,6 +93,7 @@ const StyledFinancialSuggestions = styled.div`
 
 const StyledTitle = styled.h4`
   font-weight: bold;
+  margin-bottom: 2rem;
 `;
 
 const StyledContentWrapper = styled.div`
