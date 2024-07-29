@@ -130,6 +130,7 @@ export const MonthlyTotalExpenses = () => {
 
 const StyledTitle = styled.h4`
   font-weight: bold;
+  margin-bottom: 1rem;
 `;
 
 const StyledMonthlyTotalExpenses = styled.div`

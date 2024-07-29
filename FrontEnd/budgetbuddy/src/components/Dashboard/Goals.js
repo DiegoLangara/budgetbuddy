@@ -107,6 +107,7 @@ const StyledGoalWrapper = styled.div`
 
 const StyledTitle = styled.h4`
   font-weight: bold;
+  margin-bottom: 1rem;
 `;
 
 const StyledGoalBarChart = styled(GoalBarChart)`

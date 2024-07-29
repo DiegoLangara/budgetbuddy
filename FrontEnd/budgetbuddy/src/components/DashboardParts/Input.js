@@ -15,6 +15,6 @@ export const Input = React.forwardRef(({ error, ...props }, ref) => {
 });
 
 const StyledInput = styled.input`
-font-size: 11px;
+font-size: 14px;
 padding: 0.25rem;
 `;

@@ -22,6 +22,6 @@ const getChildId = (children) => {
 
 
 const StyledLabel = styled.label`
-  font-size: 11px;
+  font-size: 14px;
   margin-bottom: 0.25rem;
 `;
