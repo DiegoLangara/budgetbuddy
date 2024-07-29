@@ -148,6 +148,7 @@ export const BalanceOfBudgetAndExpenses = () => {
 
 const StyledTitle = styled.h4`
   font-weight: bold;
+  margin-bottom: 1rem;
 `;
 
 const StyledWrapper = styled.div`

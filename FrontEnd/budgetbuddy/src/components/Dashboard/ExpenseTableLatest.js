@@ -452,6 +452,7 @@ const StyledHeader = styled.div`
 
 const StyledTitle = styled.h4`
   font-weight: bold;
+  margin-bottom: 1rem;
 `;
 
 const StyledNoDataWrapper = styled.div`
