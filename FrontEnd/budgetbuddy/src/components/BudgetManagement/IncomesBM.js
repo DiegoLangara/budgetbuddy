@@ -6,6 +6,7 @@ import { Input } from "../OnboardingParts/Input";
 import "../../css/Incomes.css";
 import { useAuth } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
+import { Modal, Form as BootstrapForm } from "react-bootstrap";
 
 // Fetch incomes from the backend
 async function fetchIncomes(user_id, token) {
@@ -94,19 +95,27 @@ export const IncomesBM = () => {
   const [editableIncomeId, setEditableIncomeId] = useState(null);
   const [incomeErrors, setIncomeErrors] = useState([]);
   const [savingIncomeId, setSavingIncomeId] = useState(null);
-  const [isNewIncome, setIsNewIncome] = useState(false);
   const [addedIncome, setAddedIncome] = useState([]);
+
+  const [showModal, setShowModal] = useState(false);
+  const [newIncome, setNewIncome] = useState({
+    income_name: "",
+    income_type_id: 0,
+    amount: 0,
+    period: "",
+    // create_transaction: "",
+  });
 
   // Fetch incomes on component mount
   useEffect(() => {
     async function loadIncomes() {
       const fetchedIncomes = await fetchIncomes(user_id, token);
-      const formattedIncomes = fetchedIncomes.map((income, index) => ({
-        income_id: income.income_id || index + 1,
+      const formattedIncomes = fetchedIncomes.map((income) => ({
+        income_id: income.income_id,
         income_name: income.income_name || "",
-        income_type_id: income.income_type_id ?? 0,
-        amount: income.amount || "",
-        period: periodNameToId[income.period] ?? 0,
+        income_type_id: income.income_type_id || 0,
+        amount: income.amount || 0,
+        period: periodNameToId[income.period] || 0,
         deletable: income.deletable || "",
       }));
       // Sort incomes by id in ascending order
@@ -121,9 +130,15 @@ export const IncomesBM = () => {
       setIncomeErrors([]);
     }
     loadIncomes();
-  }, [user_id, token, setState]);
+  }, [user_id, token, setState, addedIncome]);
 
   const handleInputChange = (income_id, field, value) => {
+    if (editableIncomeId !== income_id) {
+      setNewIncome((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    }
     setIncomes((prevIncomes) =>
       prevIncomes.map((income) =>
         income.income_id === income_id ? { ...income, [field]: value } : income
@@ -138,6 +153,13 @@ export const IncomesBM = () => {
       errorMessage = "Please enter a valid number.";
     } else if (parseFloat(value) < 0) {
       errorMessage = "Please enter a positive number.";
+    }
+
+    if (editableIncomeId !== income_id) {
+      setNewIncome((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
     }
     setIncomes((prevIncomes) =>
       prevIncomes.map((income) =>
@@ -159,15 +181,8 @@ export const IncomesBM = () => {
     return errors.every((error) => Object.keys(error).length === 0);
   };
 
-  const addIncome = () => {
-    const newId =
-      incomes.length > 0 ? Math.max(...incomes.map((g) => g.income_id)) + 1 : 1;
-    const newIncome = { income_id: newId, income_type_id: 0 };
-    const updatedIncomes = [...incomes, newIncome];
-    updatedIncomes.sort((a, b) => a.income_id - b.income_id); // Ensure order is maintained
-    setIncomes(updatedIncomes);
-    setIsNewIncome(true);
-  };
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
 
   const setEditableIncome = (income_id) => {
     setEditableIncomeId(income_id);
@@ -283,21 +298,21 @@ export const IncomesBM = () => {
     }
   };
 
-  const handleSave = async (income) => {
+  const handleUpdateData = async (income) => {
     const validationErrors = validateIncomes(income);
     if (Object.keys(validationErrors).length === 0) {
       setSavingIncomeId(income.income_id);
       await updateData(income);
       setEditableIncomeId(null);
       setSavingIncomeId(null);
-      setIsNewIncome(false);
     } else {
       setIncomeErrors(validationErrors);
     }
   };
 
   // save new item
-  const saveToDatabase = async (income) => {
+  const saveAddedData = async (income) => {
+    console.log(income);
     try {
       const response = await fetch(
         `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/income/`,
@@ -349,23 +364,20 @@ export const IncomesBM = () => {
     }
   };
 
-  const saveData = async (income) => {
+  const handleSaveAddedData = async (income) => {
     if (!validateIncomes()) return;
     // Transform data to the required schema
     const transformedIncome = {
-      income_id: income.income_id,
+      // income_id: income.income_id,
       income_name: income.income_name || null,
       income_type_id: income.income_type_id,
       amount: income.amount,
       period: periodIdToName[income.period],
-      income_type_name:
-        incomeCategoryOptions.find(
-          (category) => category.id === income.income_type_id
-        )?.name || "",
+      // create_transaction: "",
     };
+    await saveAddedData(transformedIncome);
     setAddedIncome(transformedIncome);
-    await saveToDatabase(addedIncome);
-    setIsNewIncome(false);
+    handleCloseModal();
   };
 
   return (
@@ -387,7 +399,7 @@ export const IncomesBM = () => {
           <Link
             to="#"
             className="btn rounded-pill"
-            onClick={addIncome}
+            onClick={handleShowModal}
             style={{
               fontSize: ".9rem",
               fontWeight: "bold",
@@ -410,14 +422,7 @@ export const IncomesBM = () => {
             }`}
             style={{ minHeight: "auto" }}
           >
-            <div
-              key={income.income_id}
-              className={`card-content-bm mb-0 ${
-                editableIncomeId === income.income_id
-                  ? "editable"
-                  : "non-editable"
-              }`}
-            >
+            <div key={income.income_id}>
               <div className="mt-1">
                 <div
                   className="mb-3"
@@ -442,7 +447,13 @@ export const IncomesBM = () => {
                     <div></div>
                   </div>
                 </div>
-                <div>
+                <div
+                  className={`card-content-bm mb-0 ${
+                    editableIncomeId === income.income_id
+                      ? "editable"
+                      : "non-editable"
+                  }`}
+                >
                   <div className="form-row">
                     <div className="col-md-6 mb-0">
                       <Field label="Income name" className="mb-0">
@@ -620,14 +631,7 @@ export const IncomesBM = () => {
                   </svg>
                 </a>
               ) : (
-                <a
-                  href="#/"
-                  onClick={
-                    isNewIncome == true
-                      ? () => saveData(income)
-                      : () => handleSave(income)
-                  }
-                >
+                <a href="#/" onClick={() => handleUpdateData(income)}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
@@ -640,25 +644,196 @@ export const IncomesBM = () => {
                   </svg>
                 </a>
               )}
-              {income.deletable === 1 || index > 0 ? (
-                <a href="#/" onClick={() => deleteIncome(income.income_id)}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    className="bi bi-trash3"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
-                  </svg>
-                </a>
-              ) : (
-                ""
-              )}
+              <a href="#/" onClick={() => deleteIncome(income.income_id)}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  className="bi bi-trash3"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+                </svg>
+              </a>
             </div>
           </div>
         ))}
       </div>
+      <Modal show={showModal} onHide={handleCloseModal} className="mt-5">
+        <Modal.Header closeButton>
+          <Modal.Title>Add New Income</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <BootstrapForm>
+            <BootstrapForm.Group controlId="incomeName">
+              <BootstrapForm.Label className="mt-2">
+                Income name
+              </BootstrapForm.Label>
+              <BootstrapForm.Control
+                type="text"
+                name="income_name"
+                value={newIncome.income_name}
+                onChange={(e) =>
+                  handleInputChange(
+                    newIncome.income_id,
+                    "income_name",
+                    e.target.value
+                  )
+                }
+                placeholder="ex. House rental"
+                style={{ fontSize: "1rem" }}
+                required
+              />
+            </BootstrapForm.Group>
+            <BootstrapForm.Group controlId="incomeCategory">
+              <BootstrapForm.Label>Income category</BootstrapForm.Label>
+              <select
+                className="form-select w-100 py-3 px-2 border border-secondary-subtle rounded"
+                name="income_type_id"
+                value={newIncome.income_type_id}
+                onChange={(e) =>
+                  handleInputChange(
+                    newIncome.income_id,
+                    "income_type_id",
+                    Number(e.target.value)
+                  )
+                }
+                style={{ fontSize: "1rem" }}
+                required
+              >
+                {incomeCategoryOptions.map((option) => (
+                  <option
+                    key={option.id}
+                    value={option.id}
+                    disabled={option.disabled}
+                  >
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+            </BootstrapForm.Group>
+            <BootstrapForm.Group controlId="incomeAmount">
+              <BootstrapForm.Label>Income amount</BootstrapForm.Label>
+              <div className="input-group">
+                <span
+                  className="input-group-text bg-white"
+                  style={{ fontSize: "1rem" }}
+                >
+                  $
+                </span>
+                <input
+                  type="number"
+                  name="amount"
+                  value={newIncome.amount}
+                  onChange={(e) =>
+                    handleNumberInputChange(
+                      newIncome.income_id,
+                      "amount",
+                      e.target.value
+                    )
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "e") {
+                      e.preventDefault();
+                    }
+                  }}
+                  placeholder="ex. 2500"
+                  className="form-control"
+                  step="100"
+                  min="100"
+                  style={{ fontSize: "1rem" }}
+                  required
+                />
+              </div>
+            </BootstrapForm.Group>
+
+            <BootstrapForm.Group controlId="incomePeriod">
+              <BootstrapForm.Label>Income period</BootstrapForm.Label>
+              <select
+                className="form-select w-100 py-3 px-2 border border-secondary-subtle rounded"
+                name="period"
+                value={newIncome.period}
+                onChange={(e) =>
+                  handleInputChange(
+                    newIncome.income_id,
+                    "period",
+                    Number(e.target.value)
+                  )
+                }
+                style={{ fontSize: "1rem" }}
+                required
+              >
+                {incomePeriodOptions.map((option) => (
+                  <option
+                    key={option.id}
+                    value={option.id}
+                    disabled={option.disabled}
+                  >
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+            </BootstrapForm.Group>
+          </BootstrapForm>
+        </Modal.Body>
+        <Modal.Footer>
+          <a href="#/" onClick={() => handleSaveAddedData(newIncome)}>
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16L21 8V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21Z"
+                stroke="black"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M17 21V13H7V21"
+                stroke="black"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M7 3V8H15"
+                stroke="black"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+          <a href="#/" onClick={handleCloseModal} className="mx-3">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M18 6L6 18"
+                stroke="black"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M6 6L18 18"
+                stroke="black"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

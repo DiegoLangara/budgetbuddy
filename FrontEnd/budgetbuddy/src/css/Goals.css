@@ -69,6 +69,7 @@ select:disabled {
 input:not(:disabled),
 select:not(:disabled) {
   background-color: #ffffff;
+  color: #363535 !important;
 }
 
 .img-black {
@@ -119,6 +120,30 @@ select:not(:disabled) {
 .card-content-bm {
   display: flex;
   flex-direction: column;
+}
+
+.close {
+  font-size: 1.9rem;
+  border-radius: 0.5rem;
+  display: none;
+}
+
+.border {
+  border: 1px solid #d4d5d6 !important;
+}
+
+/* Removing the default arrow */
+select {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Custom arrow */
+select {
+  background-image: url("../Assets/chevron-down.svg");
+  background-size: 12px;
+  background-repeat: no-repeat;
+  background-position: calc(100% - 14px) center;
 }
 
 @media (max-width: 1000px) {

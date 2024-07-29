@@ -6,6 +6,7 @@ import { Input } from "../OnboardingParts/Input";
 import "../../css/Debts.css";
 import { useAuth } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
+import { Modal, Form as BootstrapForm } from "react-bootstrap";
 
 // Utility function to format the date
 const formatDate = (isoDate) => {
@@ -63,17 +64,24 @@ export const DebtsBM = () => {
   const [editableDebtId, setEditableDebtId] = useState(null);
   const [debtErrors, setDebtErrors] = useState([]);
   const [savingDebtId, setSavingDebtId] = useState(null);
-  const [isNewDebt, setIsNewDebt] = useState(false);
   const [addedDebt, setAddedDebt] = useState([]);
+
+  const [showModal, setShowModal] = useState(false);
+  const [newDebt, setNewDebt] = useState({
+    debt_name: "",
+    debt_types_id: 0,
+    amount: 0,
+    due_date: "",
+  });
 
   useEffect(() => {
     async function loadDebts() {
       const fetchedDebts = await fetchDebts(user_id, token);
-      const formattedDebts = fetchedDebts.map((debt, index) => ({
-        debt_id: debt.debt_id || index + 1,
+      const formattedDebts = fetchedDebts.map((debt) => ({
+        debt_id: debt.debt_id,
         debt_name: debt.debt_name || "",
-        debt_types_id: debt.debt_types_id ?? 0,
-        amount: debt.amount || "",
+        debt_types_id: debt.debt_types_id || 0,
+        amount: debt.amount || 0,
         due_date: debt.due_date ? formatDate(debt.due_date) : "",
         deletable: debt.deletable || "",
       }));
@@ -89,9 +97,15 @@ export const DebtsBM = () => {
       setDebtErrors([]);
     }
     loadDebts();
-  }, [user_id, token, setState]);
+  }, [user_id, token, setState, addedDebt]);
 
   const handleInputChange = (debt_id, field, value) => {
+    if (editableDebtId !== debt_id) {
+      setNewDebt((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    }
     setDebts((prevDebts) =>
       prevDebts.map((debt) =>
         debt.debt_id === debt_id ? { ...debt, [field]: value } : debt
@@ -106,6 +120,12 @@ export const DebtsBM = () => {
       errorMessage = "Please enter a valid number.";
     } else if (parseFloat(value) < 0) {
       errorMessage = "Please enter a positive number.";
+    }
+    if (editableDebtId !== debt_id) {
+      setNewDebt((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
     }
     setDebts((prevDebts) =>
       prevDebts.map((debt) =>
@@ -127,15 +147,8 @@ export const DebtsBM = () => {
     return errors.every((error) => Object.keys(error).length === 0);
   };
 
-  const addDebt = () => {
-    const newId =
-      debts.length > 0 ? Math.max(...debts.map((g) => g.debt_id)) + 1 : 1;
-    const newDebt = { debt_id: newId, debt_types_id: 0 };
-    const updatedDebts = [...debts, newDebt];
-    updatedDebts.sort((a, b) => a.debt_id - b.debt_id); // Ensure order is maintained
-    setDebts(updatedDebts);
-    setIsNewDebt(true);
-  };
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
 
   const setEditableDebt = (debt_id) => {
     setEditableDebtId(debt_id);
@@ -257,7 +270,6 @@ export const DebtsBM = () => {
       console.log(debt);
       setEditableDebtId(null);
       setSavingDebtId(null);
-      setIsNewDebt(false);
     } else {
       setDebtErrors(validationErrors);
     }
@@ -320,95 +332,16 @@ export const DebtsBM = () => {
     if (!validateDebts()) return;
     // Transform data to the required schema
     const transformedDebt = {
-      debt_id: debt.id,
+      // debt_id: debt.id,
       debt_name: debt.debt_name || null,
       debt_types_id: debt.debt_types_id,
       amount: debt.amount,
       due_date: formatDate(debt.due_date) || null,
     };
+    await saveAddedData(transformedDebt);
     setAddedDebt(transformedDebt);
-    console.log(transformedDebt);
-    console.log(addedDebt);
-    await saveAddedData(addedDebt);
-    setIsNewDebt(false);
+    handleCloseModal();
   };
-
-  // save new item (sync save method)
-  // const saveToDatabase = async (data) => {
-  //   try {
-  //     const response = await fetch(
-  //       `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debts/`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           token: token,
-  //           user_id: user_id,
-  //         },
-  //         body: JSON.stringify({ debts: data.debts }),
-  //       }
-  //     );
-  //     console.log(JSON.stringify({ debts: data.debts }));
-  //     if (!response.ok) {
-  //       throw new Error("Network response was not ok");
-  //     }
-  //     const responseData = await response.json();
-  //     console.log("Data saved successfully:", responseData);
-
-  //     if (responseData.success) {
-  //       Swal.fire({
-  //         position: "center",
-  //         icon: "success",
-  //         title: responseData.message,
-  //         showConfirmButton: false,
-  //         timer: 1200,
-  //         width: "300px",
-  //       });
-  //     } else {
-  //       Swal.fire({
-  //         position: "center",
-  //         icon: "error",
-  //         title: responseData.message,
-  //         showConfirmButton: false,
-  //         timer: 1200,
-  //         width: "300px",
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to save data:", error);
-  //     Swal.fire({
-  //       position: "center",
-  //       icon: "error",
-  //       title: "Failed to save data",
-  //       showConfirmButton: false,
-  //       timer: 1200,
-  //       width: "300px",
-  //     });
-  //   }
-  // };
-
-  // const saveData = async (event) => {
-  //   event.preventDefault();
-  //   if (!validateDebts()) return;
-  //   // Transform data to the required schema
-  //   const transformedDebts = debts.map((debt) => ({
-  //     debt_id: debt.id,
-  //     debt_name: debt.debt_name || null,
-  //     debt_types_id: debt.debt_types_id,
-  //     amount: debt.amount,
-  //     due_date: formatDate(debt.due_date) || null,
-  //     debt_type_name:
-  //       debtCategoryOptions.find(
-  //         (category) => category.id === debt.debt_type_id
-  //       )?.name || "",
-  //   }));
-  //   const combinedData = {
-  //     ...state,
-  //     debts: transformedDebts,
-  //   };
-  //   setState(combinedData);
-  //   await saveToDatabase(combinedData);
-  // };
 
   return (
     <div
@@ -429,7 +362,7 @@ export const DebtsBM = () => {
           <Link
             to="#"
             className="btn rounded-pill"
-            onClick={addDebt}
+            onClick={handleShowModal}
             style={{
               fontSize: ".9rem",
               fontWeight: "bold",
@@ -452,12 +385,7 @@ export const DebtsBM = () => {
             }`}
             style={{ minHeight: "auto" }}
           >
-            <div
-              key={debt.debt_id}
-              className={`mb-0 ${
-                editableDebtId === debt.debt_id ? "editable" : "non-editable"
-              }`}
-            >
+            <div key={debt.debt_id}>
               <div className="mt-1">
                 <div
                   className="mb-3"
@@ -478,7 +406,13 @@ export const DebtsBM = () => {
                     <div></div>
                   </div>
                 </div>
-                <div>
+                <div
+                  className={`mb-0 ${
+                    editableDebtId === debt.debt_id
+                      ? "editable"
+                      : "non-editable"
+                  }`}
+                >
                   <div className="form-row">
                     <div className="col-md-6 mb-0">
                       <Field label="Debt name" className="mb-0">
@@ -638,14 +572,7 @@ export const DebtsBM = () => {
                   </svg>
                 </a>
               ) : (
-                <a
-                  href="#/"
-                  onClick={
-                    isNewDebt == true
-                      ? () => handleSaveAddedData(debt)
-                      : () => handleUpdateData(debt)
-                  }
-                >
+                <a href="#/" onClick={() => handleUpdateData(debt)}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
@@ -658,25 +585,182 @@ export const DebtsBM = () => {
                   </svg>
                 </a>
               )}
-              {debt.deletable === 1 || index > 0 ? (
-                <a href="#/" onClick={() => deleteDebt(debt.debt_id)}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    className="bi bi-trash3"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
-                  </svg>
-                </a>
-              ) : (
-                ""
-              )}
+              <a href="#/" onClick={() => deleteDebt(debt.debt_id)}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  className="bi bi-trash3"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+                </svg>
+              </a>
             </div>
           </div>
         ))}
       </div>
+      <Modal show={showModal} onHide={handleCloseModal} className="mt-5">
+        <Modal.Header closeButton>
+          <Modal.Title>Add New Debt</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <BootstrapForm>
+            <BootstrapForm.Group controlId="debtName">
+              <BootstrapForm.Label className="mt-2">
+                Debt name
+              </BootstrapForm.Label>
+              <BootstrapForm.Control
+                type="text"
+                name="debt_name"
+                value={newDebt.debt_name}
+                onChange={(e) =>
+                  handleInputChange(
+                    newDebt.debt_id,
+                    "debt_name",
+                    e.target.value
+                  )
+                }
+                placeholder="ex. RBC credit card"
+                style={{ fontSize: "1rem" }}
+                required
+              />
+            </BootstrapForm.Group>
+            <BootstrapForm.Group controlId="debtCategory">
+              <BootstrapForm.Label>Debt category</BootstrapForm.Label>
+              <select
+                className="form-select w-100 py-3 px-2 border border-secondary-subtle rounded"
+                name="debt_types_id"
+                value={newDebt.debt_types_id}
+                onChange={(e) =>
+                  handleInputChange(
+                    newDebt.debt_id,
+                    "debt_types_id",
+                    Number(e.target.value)
+                  )
+                }
+                style={{ fontSize: "1rem" }}
+                required
+              >
+                {debtCategoryOptions.map((option) => (
+                  <option
+                    key={option.id}
+                    value={option.id}
+                    disabled={option.disabled}
+                  >
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+            </BootstrapForm.Group>
+            <BootstrapForm.Group controlId="debtAmount">
+              <BootstrapForm.Label>Debt amount</BootstrapForm.Label>
+              <div className="input-group">
+                <span
+                  className="input-group-text bg-white"
+                  style={{ fontSize: "1rem" }}
+                >
+                  $
+                </span>
+                <input
+                  type="number"
+                  name="amount"
+                  value={newDebt.amount}
+                  onChange={(e) =>
+                    handleNumberInputChange(
+                      newDebt.debt_id,
+                      "amount",
+                      e.target.value
+                    )
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "e") {
+                      e.preventDefault();
+                    }
+                  }}
+                  placeholder="ex. 1500"
+                  className="form-control"
+                  step="100"
+                  min="100"
+                  style={{ fontSize: "1rem" }}
+                  required
+                />
+              </div>
+            </BootstrapForm.Group>
+            <BootstrapForm.Group controlId="dueDate">
+              <BootstrapForm.Label>Due date</BootstrapForm.Label>
+              <BootstrapForm.Control
+                type="date"
+                name="due_date"
+                value={newDebt.due_date}
+                onChange={(e) =>
+                  handleInputChange(newDebt.debt_id, "due_date", e.target.value)
+                }
+                min={new Date().toISOString().split("T")[0]}
+                style={{ fontSize: "1rem" }}
+                required
+              />
+            </BootstrapForm.Group>
+          </BootstrapForm>
+        </Modal.Body>
+        <Modal.Footer>
+          <a href="#/" onClick={() => handleSaveAddedData(newDebt)}>
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16L21 8V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21Z"
+                stroke="black"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M17 21V13H7V21"
+                stroke="black"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M7 3V8H15"
+                stroke="black"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+          <a href="#/" onClick={handleCloseModal} className="mx-3">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M18 6L6 18"
+                stroke="black"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M6 6L18 18"
+                stroke="black"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

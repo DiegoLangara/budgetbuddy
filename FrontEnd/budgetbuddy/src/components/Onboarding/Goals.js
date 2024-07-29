@@ -80,7 +80,7 @@ export const Goals = () => {
         id: goal.goal_id || index + 1,
         goal_name: goal.goal_name || "",
         goal_type_id: goal.goal_type_id ?? 0,
-        target_amount: goal.target_amount || '',
+        target_amount: goal.target_amount || "",
         current_amount: goal.current_amount ?? 0,
         deletable: goal.deletable || "",
         target_date: goal.target_date ? formatDate(goal.target_date) : "",
@@ -128,14 +128,27 @@ export const Goals = () => {
   const validateGoals = () => {
     const errors = goals.map((goal) => {
       const error = {};
-      if (!goal.goal_name) error.goal_name = "Please enter a name for your goal";
-      if (goal.goal_type_id === 0) error.goal_type_id = "Please select a category";
-      if (!goal.target_date) error.target_date = "Please enter a target date for your goal";
-      if (goal.current_amount === null || goal.current_amount === undefined || goal.current_amount === '') {
+      if (!goal.goal_name)
+        error.goal_name = "Please enter a name for your goal";
+      if (goal.goal_type_id === 0)
+        error.goal_type_id = "Please select a category";
+      if (!goal.target_date)
+        error.target_date = "Please enter a target date for your goal";
+      if (
+        goal.current_amount === null ||
+        goal.current_amount === undefined ||
+        goal.current_amount === ""
+      ) {
         error.current_amount = "Saved amount is required (enter 0 if none)";
       }
-      if (goal.target_amount === null || goal.target_amount === undefined || goal.target_amount === '' || goal.target_amount <= 0) {
-        error.target_amount = "Target amount is required and must be greater than 0";
+      if (
+        goal.target_amount === null ||
+        goal.target_amount === undefined ||
+        goal.target_amount === "" ||
+        goal.target_amount <= 0
+      ) {
+        error.target_amount =
+          "Target amount is required and must be greater than 0";
       }
       return error;
     });
@@ -297,13 +310,33 @@ export const Goals = () => {
                                   onClick={() => deleteGoal(goal.id)}
                                 >
                                   <svg
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
                                     xmlns="http://www.w3.org/2000/svg"
-                                    width="20"
-                                    height="20"
-                                    className="bi bi-trash3"
-                                    viewBox="0 0 16 16"
                                   >
-                                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+                                    <path
+                                      d="M3 6H21"
+                                      stroke="black"
+                                      stroke-width="2"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                    />
+                                    <path
+                                      d="M19 6V20C19 21 18 22 17 22H7C6 22 5 21 5 20V6"
+                                      stroke="black"
+                                      stroke-width="2"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                    />
+                                    <path
+                                      d="M8 6V4C8 3 9 2 10 2H14C15 2 16 3 16 4V6"
+                                      stroke="black"
+                                      stroke-width="2"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                    />
                                   </svg>
                                 </a>
                               ) : (
