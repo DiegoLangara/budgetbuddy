@@ -105,13 +105,13 @@ export const Products = () => {
                             <li><b>22.99%</b> Interest: Cash Advances</li>
                         </ul>
                         <div className="product_footer">
-                            <a className="btn-white" href="https://www.td.com/ca/en/personal-banking/products/credit-cards/travel-rewards/first-class-travel-visa-infinite-card">View Details</a>
-                            <a className="btn-black" href="https://www.tdcanadatrust.com/products-services/banking/credit-cards/byb.jsp?card=FCtravel">Apply Now</a>
+                            <a className="btn-white" target="_blank" href="https://www.td.com/ca/en/personal-banking/products/credit-cards/travel-rewards/first-class-travel-visa-infinite-card">View Details</a>
+                            <a className="btn-black" target="_blank" href="https://www.tdcanadatrust.com/products-services/banking/credit-cards/byb.jsp?card=FCtravel">Apply Now</a>
                         </div>
                     </div>
                     <div className="product_container">
-                        <h2>TD Cash Back Visa* Card</h2>
-                        <img src="https://www.td.com/content/dam/tdct/images/personal-banking/cash-back-infinite-visa-card-large-1-en.jpeg" alt="TD Cash Back Visa Infinite* Card" />
+                        <h2>TD Cash Back Visa* Card</h2>
+                        <img src="https://www.td.com/content/dam/tdct/images/personal-banking/cash-back-entry-en.jpeg" alt="TD Cash Back Visa Infinite* Card" />
                         <p>Earn up to <b>$500 </b>in value, including 10% in Cash Back Dollars in the first 3 months on Bonus Eligible Purchases up to a total spend of $3,5001. Conditions apply. Account must be approved by January 6, 2025.</p>
                         <ul>
                             <li><b>$139 </b>Annual Fee</li>
@@ -119,8 +119,8 @@ export const Products = () => {
                             <li><b>22.99%</b> Interest: Cash Advances</li>
                         </ul>
                         <div className="product_footer">
-                            <a className="btn-white" href="https://www.td.com/ca/en/personal-banking/products/credit-cards/cash-back/cash-back-visa-infinite-card">View Details</a>
-                            <a className="btn-black" href="https://www.tdcanadatrust.com/products-services/banking/credit-cards/byb.jsp?card=CBinfinite">Apply Now</a>
+                            <a className="btn-white" target="_blank" href="https://www.td.com/ca/en/personal-banking/products/credit-cards/cash-back/cash-back-visa-card">View Details</a>
+                            <a className="btn-black" target="_blank" href="https://www.tdcanadatrust.com/products-services/banking/credit-cards/byb.jsp?card=CBvisa">Apply Now</a>
                         </div>
                     </div>
                     <div className="product_container">
@@ -133,8 +133,8 @@ export const Products = () => {
                             <li><b>22.99%</b> Interest: Cash Advances</li>
                         </ul>
                         <div className="product_footer">
-                            <a className="btn-white" href="https://www.td.com/ca/en/personal-banking/products/credit-cards/aeroplan/aeroplan-visa-infinite-card">View Details</a>
-                            <a className="btn-black" href="https://www.td.com/ca/en/personal-banking/byb/credit-cards?card=AVinfinite">Apply Now</a>
+                            <a className="btn-white" target="_blank" href="https://www.td.com/ca/en/personal-banking/products/credit-cards/aeroplan/aeroplan-visa-infinite-card">View Details</a>
+                            <a className="btn-black" target="_blank" href="https://www.td.com/ca/en/personal-banking/byb/credit-cards?card=AVinfinite">Apply Now</a>
                         </div>
                     </div>
                     <div className="product_container">
@@ -148,8 +148,8 @@ export const Products = () => {
                             <li><b>12.99%</b> Interest: Cash Advances</li>
                         </ul>
                         <div className="product_footer">
-                            <a className="btn-white" href="https://www.td.com/ca/en/personal-banking/products/credit-cards/aeroplan/aeroplan-visa-infinite-card">View Details</a>
-                            <a className="btn-black" href="https://www.td.com/ca/en/personal-banking/byb/credit-cards?card=AVinfinite">Apply Now</a>
+                            <a className="btn-white" target="_blank" href="https://www.rbcroyalbank.com/credit-cards/low-interest/rbc-visa-classic-low-rate.html">View Details</a>
+                            <a className="btn-black" target="_blank" href="https://apps.royalbank.com/uaw0/IAO/apply/cardapp?pid1=classic_lr&ASC=IAP014&_gl=1*1f4z693*_gcl_aw*R0NMLjE3MjIyODA0NDAuQ2owS0NRanctNXkxQmhDLUFSSXNBQU1fb0tsdWtCQXZoRE94SjQwQnhLRFVJOGswcWRsNTRLN1docU91LU1QbFFJYldKb2IzbWxuUS1QRWFBbEhQRUFMd193Y0I.*_gcl_au*MTA3NTE1MTk0MS4xNzIyMjgwNDM3*_ga*MTUzMjgwNzc1Ny4xNzIyMjgwNDM4*_ga_89NPCTDXQR*MTcyMjI4MDQzOS4xLjEuMTcyMjI4MDQ2MC4zOS4wLjA.">Apply Now</a>
                         </div>
                     </div>
                     <div className="product_container">
@@ -162,8 +162,8 @@ export const Products = () => {
                             <li><b>22.99%</b> Interest: Cash Advances</li>
                         </ul>
                         <div className="product_footer">
-                            <a className="btn-white" href="https://www.td.com/ca/en/personal-banking/products/credit-cards/aeroplan/aeroplan-visa-infinite-card">View Details</a>
-                            <a className="btn-black" href="https://www.td.com/ca/en/personal-banking/byb/credit-cards?card=AVinfinite">Apply Now</a>
+                            <a className="btn-white" target="_blank" href="https://www.rbcroyalbank.com/credit-cards/cash-back/rbc-cashback-mastercard.html">View Details</a>
+                            <a className="btn-black" target="_blank" href="https://apps.royalbank.com/uaw0/IAO/apply/cardapp?pid1=cashback_mc&ASC=MC1024&_gl=1*6uj9n2*_gcl_aw*R0NMLjE3MjIyODA0NDAuQ2owS0NRanctNXkxQmhDLUFSSXNBQU1fb0tsdWtCQXZoRE94SjQwQnhLRFVJOGswcWRsNTRLN1docU91LU1QbFFJYldKb2IzbWxuUS1QRWFBbEhQRUFMd193Y0I.*_gcl_au*MTA3NTE1MTk0MS4xNzIyMjgwNDM3*_ga*MTUzMjgwNzc1Ny4xNzIyMjgwNDM4*_ga_89NPCTDXQR*MTcyMjI4MDQzOS4xLjEuMTcyMjI4MDUxNS41NC4wLjA.">Apply Now</a>
                         </div>
                     </div>
                     <div className="product_container">
@@ -176,8 +176,8 @@ export const Products = () => {
                             <li><b>19.95%</b> Interest: Cash Advances</li>
                         </ul>
                         <div className="product_footer">
-                            <a className="btn-white" href="https://www.td.com/ca/en/personal-banking/products/credit-cards/aeroplan/aeroplan-visa-infinite-card">View Details</a>
-                            <a className="btn-black" href="https://www.td.com/ca/en/personal-banking/byb/credit-cards?card=AVinfinite">Apply Now</a>
+                            <a className="btn-white" target="_blank" href="https://www.tangerine.ca/en/personal/spend/credit-cards/world-credit-card">View Details</a>
+                            <a className="btn-black" target="_blank" href="https://www.tangerine.ca/en/personal/spend/credit-cards/world-credit-card#openAccountModal">Apply Now</a>
                         </div>
                     </div>
                 </div>
