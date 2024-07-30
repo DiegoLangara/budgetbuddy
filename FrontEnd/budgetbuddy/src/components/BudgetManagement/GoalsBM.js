@@ -366,9 +366,9 @@ export const GoalsBM = () => {
         width: "100%",
       }}
     >
-      <div className="d-flex justify-content-between mt-2 mb-3">
+      <div className="d-flex justify-content-between mt-0 mb-3">
         <div>
-          <h3 style={{ fontSize: "2.1rem" }}>Set Your Goals</h3>
+          <h4 style={{ fontSize: "2.1rem" }}>Set Your Goals</h4>
           <p className="mb-1" style={{ fontSize: ".95rem" }}>
             What would you like to achieve?
           </p>

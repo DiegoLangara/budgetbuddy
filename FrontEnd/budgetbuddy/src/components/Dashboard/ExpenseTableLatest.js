@@ -92,7 +92,16 @@ export const ExpenseTableLatest = () => {
               : "",
           })
         );
-        setTransactions(formattedTransactions);
+        // Sort by date & id in descending order
+        const sortedFormattedTransactions = formattedTransactions.sort(
+          (a, b) => {
+            if (b.transaction_date === a.transaction_date) {
+              return b.id - a.id;
+            }
+            return b.transaction_date - a.transaction_date;
+          }
+        );
+        setTransactions(sortedFormattedTransactions);
       }
       loadTransactions();
     }
@@ -142,8 +151,8 @@ export const ExpenseTableLatest = () => {
         <button
           type="button"
           onClick={handleNavigate}
-          className="btn btn-secondary"
-          style={{ padding: "0 1rem" }}
+          className="btn"
+          style={{ padding: "0 1.5rem", backgroundColor: "#C9EEA7" }}
         >
           {"+ "}Create
         </button>
@@ -151,7 +160,9 @@ export const ExpenseTableLatest = () => {
       {noDataCheckFlag ? (
         <StyledNoDataWrapper>
           <StyledNoDataMessage>No transactions.</StyledNoDataMessage>
-          <StyledNoDataMessage>Let's create new transaction.</StyledNoDataMessage>
+          <StyledNoDataMessage>
+            Let's create new transaction.
+          </StyledNoDataMessage>
         </StyledNoDataWrapper>
       ) : (
         <div className="scrollable-table-dashboard shadow">
@@ -452,7 +463,7 @@ const StyledHeader = styled.div`
 
 const StyledTitle = styled.h4`
   font-weight: bold;
-  margin-bottom: 1rem;
+  margin-bottom: 0rem;
 `;
 
 const StyledNoDataWrapper = styled.div`
