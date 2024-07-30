@@ -124,7 +124,17 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
               : "",
           })
         );
-        setTransactions(formattedTransactions);
+        // Sort by date & id in descending order
+        const sortedFormattedTransactions = formattedTransactions.sort(
+          (a, b) => {
+            if (b.transaction_date === a.transaction_date) {
+              return b.id - a.id;
+            }
+            return b.transaction_date - a.transaction_date;
+          }
+        );
+
+        setTransactions(sortedFormattedTransactions);
       }
       loadTransactions();
     }
