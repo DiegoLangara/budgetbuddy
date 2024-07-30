@@ -29,7 +29,7 @@ export const ExpensesPage = () => {
   const [endDate, setEndDate] = useState("");
   const [appliedStartDate, setAppliedStartDate] = useState("");
   const [appliedEndDate, setAppliedEndDate] = useState("");
-  const [category, setCategory] = useState("All types");
+  const [category, setCategory] = useState("All categories");
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
