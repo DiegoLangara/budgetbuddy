@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Geologica:wght@700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Geologica:wght@700&display=swap");
 
 .team-section {
   padding: 50px 0;
@@ -6,20 +6,22 @@
 
 .team-section h1 {
   position: relative;
-  font-size: 72px;
+  font-size: 4vw;
+  font-weight: bold;
   letter-spacing: -0.02em;
   line-height: 108px;
   font-family: Geologica;
   color: #001e30;
+  margin-bottom: 2rem;
 }
 
 .team-section h2 {
-  font-size: 60px;
+  font-size: 2.3vw;
   line-height: 70px;
   font-weight: 500;
-  color: #001E30;
+  color: #001e30;
   text-align: center;
-  padding: 0 0 2rem 0;
+  padding: 0 0 1rem 0;
 }
 
 .team-section h3 {
@@ -48,9 +50,7 @@
 
 .team-title {
   display: flex;
-  /* align-items: center; */
   justify-content: center; /* Center the content horizontally */
-  margin-bottom: 2rem;
 }
 
 .team-title img {
@@ -90,16 +90,16 @@
   }
 
   .team-title {
-    flex-direction: row; 
+    flex-direction: row;
     text-align: center;
     align-items: center;
     justify-content: center;
   }
 
   .team-title img {
-    height: 50px; 
+    height: 50px;
     width: auto;
-    margin: 0 10px 0 0; 
+    margin: 0 10px 0 0;
   }
 
   .team-title h2 {
