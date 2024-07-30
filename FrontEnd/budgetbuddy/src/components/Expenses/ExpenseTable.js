@@ -142,7 +142,7 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
 
   // Filter transactions based on the selected category
   const filteredTransactions =
-    category === "All types" || category === ""
+    category === "All categories" || category === ""
       ? transactions
       : transactions.filter(
           (transaction) => transaction.transaction_category === category
