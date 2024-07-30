@@ -346,8 +346,8 @@ export const BudgetsBM = () => {
     >
       <div className="d-flex justify-content-between mt-0 mb-3">
         <div>
-          <h3 style={{ fontSize: "2.1rem" }}>Set Your Budgets</h3>
-          <p className="mb-1" style={{ fontSize: ".95rem" }}>
+        <h2 style={{ fontSize: "2.7rem" }}>Set Your Budgets</h2>
+          <p className="mb-1" style={{ fontSize: "1.2rem" }}>
             How much is your expense limit?
           </p>
         </div>
