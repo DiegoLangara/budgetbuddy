@@ -19,6 +19,7 @@ import { useParams } from "react-router-dom";
 import { useTheme, useMediaQuery } from "@mui/material";
 import styled from "styled-components";
 import Swal from "sweetalert2";
+import "../css/ExpensePage.css";
 
 export const AddTransaction = () => {
   const money_format = (value) => {
@@ -367,7 +368,9 @@ export const AddTransaction = () => {
   return (
     <div className="addTransactions">
       <div className="transaction_header">
-        <h1>Create a transaction</h1>
+        <h2 style={{ fontSize: "2.7rem", alignSelf: "start" }}>
+          Create a transaction
+        </h2>
         <h2>
           Available Funds: <br /> ${money_format(balance)}
         </h2>

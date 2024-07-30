@@ -7,6 +7,7 @@ import { ExpenseTable } from "../components/Expenses/ExpenseTable";
 import { useNavigate } from "react-router-dom";
 import { useTheme, useMediaQuery } from "@mui/material";
 import styled from "styled-components";
+import "../css/ExpensePage.css";
 
 const transactionCategories = [
   "All categories",
@@ -62,13 +63,19 @@ export const ExpensesPage = () => {
 
   return (
     <Container isMobile={isMobile}>
-      <Box display="flex" justifyContent="space-between" mb={4}>
-        <h2 className="mb-0">Transaction List</h2>
+      <Box display="flex" justifyContent="space-between" mb={3}>
+        <h2 style={{ fontSize: "2.7rem", marginBottom: "0" }}>
+          Transaction List
+        </h2>
         <button
           type="button"
           onClick={handleNavigate}
           className="btn"
-          style={{ padding: "0 1.5rem", backgroundColor: "#C9EEA7" }}
+          style={{
+            padding: "0 1.5rem",
+            backgroundColor: "#C9EEA7",
+            fontWeight: "bold",
+          }}
         >
           {"+ "}Create
         </button>
@@ -79,7 +86,7 @@ export const ExpensesPage = () => {
         display="flex"
         flexDirection={{ xs: "column", md: "row" }}
         gap={2}
-        mb={1}
+        mb={0}
       >
         <Box
           display="flex"

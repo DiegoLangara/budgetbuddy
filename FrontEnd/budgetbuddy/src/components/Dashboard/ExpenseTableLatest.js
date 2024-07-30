@@ -152,7 +152,11 @@ export const ExpenseTableLatest = () => {
           type="button"
           onClick={handleNavigate}
           className="btn"
-          style={{ padding: "0 1.5rem", backgroundColor: "#C9EEA7" }}
+          style={{
+            padding: ".1rem 1.5rem",
+            backgroundColor: "#C9EEA7",
+            fontWeight: "bold",
+          }}
         >
           {"+ "}Create
         </button>
