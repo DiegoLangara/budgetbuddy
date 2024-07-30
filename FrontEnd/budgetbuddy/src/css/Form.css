@@ -1,4 +1,3 @@
-
 .form-container-unique {
   width: 25%;
   /* background-color: #444; */
@@ -7,11 +6,20 @@
   /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
 }
 
+.form-group-unique {
+  margin-bottom: 1rem;
+  width: 20rem;
+}
 
 .label-unique {
   color: white;
   margin-bottom: 5px;
   display: block;
+  font-size: 0.8vw;
+}
+
+.input-unique {
+  height: 2.5rem;
 }
 
 .input-unique,
@@ -37,7 +45,7 @@
 }
 
 .submit-btn-unique {
-  background-color: #AED18D;
+  background-color: #aed18d;
   color: black;
   padding: 3% 25%;
   border: none;
