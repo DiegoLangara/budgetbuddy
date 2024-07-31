@@ -83,10 +83,13 @@ const handleLogout = () =>{
 
   const headerTitle = getHeaderTitle();
   const money_format2 = (value) => {
+    //if value is 0 or not defined, recturn 0
+    if (!value){ return 0; }else{;
     return value.toLocaleString("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
+  }
   };
 const edited_balance = money_format2(balance);
   return (
