@@ -1,24 +1,10 @@
 import React from "react";
 import { FinancialSuggestionsSection } from "../DashboardParts/FinancialSuggestionsSection";
 import styled from "styled-components";
-import { useAuth } from "../../contexts/AuthContext";
 
 export const FinancialSuggestions = () => {
-  const { currentUser } = useAuth();
-  const user_id = currentUser?.id;
 
-  const jsonDataForFirstUser = [
-    [
-      {
-        suggestion: "As of August 3rd, 2024, welcome to Budget Buddy! You have successfully logged into Budget Buddy. Please keep your password secure and do not share it with anyone.",
-      },
-      {
-        suggestion: "As of August 3rd, 2024, please register your financial goals, income sources, budgets, and debts to get started.",
-      },
-    ],
-  ];
-
-  const jsonDataForSecondUser = [
+  const jsonData = [
     [
       {
         suggestion: "As of August 3rd, 2024, you have successfully logged into Budget Buddy. Please keep your password secure and do not share it with anyone.",
@@ -59,7 +45,6 @@ export const FinancialSuggestions = () => {
     ],
   ];
 
-  const jsonData = user_id === 85 ? jsonDataForFirstUser : jsonDataForSecondUser;
 
   return (
     <StyledFinancialSuggestions>

@@ -11,24 +11,33 @@ import {
   faUpload,
   faCamera,
   faCalendar,
-  faDollarSign
+  faDollarSign,
 } from "@fortawesome/free-solid-svg-icons";
 import Webcam from "react-webcam";
-import "../css/AddTransaction.css"; // Ensure you have corresponding CSS for styling
+import "../css/AddTransaction.css";
 import { useParams } from "react-router-dom";
 import { useTheme, useMediaQuery } from "@mui/material";
 import styled from "styled-components";
 import Swal from "sweetalert2";
+import "../css/ExpensePage.css";
+import { useBalanceContext } from '../components/Common/Balance';
 
 export const AddTransaction = () => {
   const money_format = (value) => {
-    return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-  }
+
+    return value.toLocaleString("en-US", {
+
+      minimumFractionDigits: 2,
+
+      maximumFractionDigits: 2,
+
+    });
+
+  };
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const token = currentUser.token;
   const user_id = currentUser.id;
-
   const [showModal, setShowModal] = useState(false);
   const [transactionType, setTransactionType] = useState("budgets");
   const [pocket, setPocket] = useState("");
@@ -44,8 +53,8 @@ export const AddTransaction = () => {
   const [showUpload, setShowUpload] = useState(false);
   const [devices, setDevices] = useState([]);
   const [selectedDevice, setSelectedDevice] = useState("");
-  const [balance, setBalance] = useState(0);
-  const [date, setDate] = useState(new Date().toISOString().substr(0, 10)); // Current date set by default
+  const [balance, fetchBalance] = useBalanceContext();
+  const [date, setDate] = useState(new Date().toISOString().substr(0, 10));
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -55,9 +64,7 @@ export const AddTransaction = () => {
       props.isMobile ? "1vh" : "1vh 10vw 3vh calc(10vw + 63px)"};
     margin: 0 auto;
   `;
-  
 
-  // transaction id passed from ExpenseTable.js to edit data
   const { id } = useParams();
   console.log("Transaction ID:", id);
 
@@ -77,22 +84,7 @@ export const AddTransaction = () => {
     });
   }, []);
 
-  const fetchBalance = async () => {
-    const response = await fetch(
-      "https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/balance/",
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          token: token,
-          user_id: user_id,
-          type: "income",
-        },
-      }
-    );
-    const data = await response.json();
-    setBalance(data.balance);
-  };
+ 
 
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => {
@@ -100,7 +92,6 @@ export const AddTransaction = () => {
     setShowCamera(false);
     setShowUpload(false);
   };
- 
 
   const handleSaveImage = (url, base64) => {
     setImageUrl(url);
@@ -114,19 +105,19 @@ export const AddTransaction = () => {
         Swal.fire({
           position: "center",
           icon: "error",
-          title:  "Amount exceeds available balance, please add some income to increase available funds, or revise the amount you would like to pay in your " +
-          transactionType,
+          title:
+            "Not enough funds, please add some income, or revise the amount",
           showConfirmButton: false,
           timer: 3000,
           width: "600px",
         });
-        
+
         return;
       }
     }
 
     const transactionData = {
-      transaction_date: date, // Add date to transaction data
+      transaction_date: date,
       transaction_payee:
         transactionType === "debts" || transactionType === "goals" ? "" : payee,
       transaction_note: note,
@@ -156,20 +147,20 @@ export const AddTransaction = () => {
       const responseData = await response.json();
 
       if (response.ok) {
-        // Transaction saved successfully
         console.log("Transaction saved successfully");
-   
+
         Swal.fire({
           position: "center",
           icon: "success",
-          title:  `${responseData.message}`,
+          title: `${responseData.message}`,
           showConfirmButton: false,
           timer: 3000,
           width: "600px",
         });
 
+         // Update balance
+
         if (createNew) {
-          // Reset all fields and update balance
           handleTransactionTypeChange("budgets");
           setPocket("");
           setPayee("");
@@ -179,17 +170,16 @@ export const AddTransaction = () => {
           setImageBase64("");
           fetchBalance();
         } else {
-          // Navigate away to home/expenses
           navigate("/home/expenses");
+          fetchBalance();
         }
       } else {
-        // Handle error
         console.log("Error saving transaction");
-   
+        fetchBalance();
         Swal.fire({
           position: "center",
           icon: "error",
-          title:  `${responseData.message}`,
+          title: `${responseData.message}`,
           showConfirmButton: false,
           timer: 3000,
           width: "600px",
@@ -197,11 +187,11 @@ export const AddTransaction = () => {
       }
     } catch (error) {
       console.log("Error:", error);
-     
+
       Swal.fire({
         position: "center",
         icon: "error",
-        title:  `An unexpected error occurred. Please try again.`,
+        title: `An unexpected error occurred. Please try again.`,
         showConfirmButton: false,
         timer: 3000,
         width: "600px",
@@ -219,7 +209,6 @@ export const AddTransaction = () => {
     setImageBase64("");
     setCreateNew(false);
 
-    // Navigate away to home/expenses
     navigate("/home/expenses");
   };
 
@@ -357,245 +346,249 @@ export const AddTransaction = () => {
     };
     reader.readAsDataURL(file);
   };
-  const ShowBtns = (camera,upload) => {
+  
+  const ShowBtns = (camera, upload) => {
     setShowCamera(camera);
     setShowUpload(upload);
-  } 
-
+  };
 
   return (
-    
-      <div className="addTransactions">
-        <div className="transaction_header">
-          <h1>Create a transaction</h1>
-          <h2>Available Funds: <br /> ${money_format(balance)}</h2>
-        </div>
-        <Form>
-          <Form.Group controlId="transactionType">
-            <Form.Label>What kind of transaction do you want to make?</Form.Label>
-            <div className="transaction-options">
-              <Form.Check
-                type="radio"
-                id="trackExpense"
-                name="transactionType"
-                label={
-                  <>
-                    <FontAwesomeIcon icon={faBagShopping} />
-                    Track Expense
-                  </>
-                }
-                value="budgets"
-                checked={transactionType === "budgets"}
-                onChange={(e) => handleTransactionTypeChange(e.target.value)}
-                className="transaction-option"
-              />
-              <Form.Check
-                type="radio"
-                id="payDebt"
-                name="transactionType"
-                label={
-                  <>
-                    <FontAwesomeIcon icon={faCreditCard} />
-                    Pay a Debt
-                  </>
-                }
-                value="debts"
-                checked={transactionType === "debts"}
-                onChange={(e) => handleTransactionTypeChange(e.target.value)}
-                className="transaction-option"
-              />
-              <Form.Check
-                type="radio"
-                id="contributeGoal"
-                name="transactionType"
-                label={
-                  <>
-                    <FontAwesomeIcon icon={faBullseye} />
-                    Contribute to a Goal
-                  </>
-                }
-                value="goals"
-                checked={transactionType === "goals"}
-                onChange={(e) => handleTransactionTypeChange(e.target.value)}
-                className="transaction-option"
-              />
-              <Form.Check
-                type="radio"
-                id="addIncome"
-                name="transactionType"
-                label={
-                  <>
-                    <FontAwesomeIcon icon={faMoneyBill} />
-                    Add Income
-                  </>
-                }
-                value="income"
-                checked={transactionType === "income"}
-                onChange={(e) => handleTransactionTypeChange(e.target.value)}
-                className="transaction-option"
-              />
-            </div>
-          </Form.Group>
-
-          <Form.Group controlId="pocket">
-            <Form.Label>Please select a category:</Form.Label>
-            <Form.Control
-              as="select"
-              value={pocket}
-              onChange={(e) => setPocket(e.target.value)}
-              required
-            >
-              <option value="" disabled>
-                Select
-              </option>
-              {pocketOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-
-          {transactionType !== "debts" && transactionType !== "goals" && (
-            <Form.Group controlId="payee">
-              <Form.Label>
-                {transactionType === "income" ? "Payer" : "Payee"}
-              </Form.Label>
-              <Form.Control
-                type="text"
-                value={payee}
-                onChange={(e) => setPayee(e.target.value)}
-                required
-              />
-            </Form.Group>
-          )}
-
-          <Form.Group controlId="note">
-            <Form.Label>Note</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-            />
-          </Form.Group>
-
-          <Form.Group controlId="amount">
-            <Form.Label>Amount</Form.Label>
-            <div className="amount-field">
-              <Form.Control
-                type="number"
-                value={amount}
-                onChange={(e) => validateAmount(e.target.value)}
-                required
-              />
-              <FontAwesomeIcon icon={faDollarSign} className="icon-dollar" />
-            </div>
-          </Form.Group>
-
-          <Form.Group controlId="date">
-            <Form.Label>Select the date</Form.Label>
-            <div className="date-field">
-              <Form.Control
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                required
-              />
-              <FontAwesomeIcon icon={faCalendar} className="icon-calendar" />
-            </div>
-          </Form.Group>
-
-          <Form.Group controlId="image">
-            <Form.Label>Upload your receipt or take a picture</Form.Label>
-            <Button variant="secondary" onClick={handleShowModal} className="upload-btn">
-              <FontAwesomeIcon icon={faUpload} /> click to upload your receipt
-            </Button>
-          </Form.Group>
-
-          <Form.Group controlId="createNew">
+    <div className="addTransactions">
+      <div className="transaction_header">
+ 
+        {/* <h2>
+          Available Funds: <br /> ${money_format(balance)}
+        </h2> */}
+      </div>
+      <Form>
+        <Form.Group controlId="transactionType">
+          <Form.Label>What kind of transaction do you want to make?</Form.Label>
+          <div className="transaction-options">
             <Form.Check
-              type="checkbox"
-              label="Create a new transaction after this"
-              checked={createNew}
-              onChange={(e) => setCreateNew(e.target.checked)}
+              type="radio"
+              id="trackExpense"
+              name="transactionType"
+              label={
+                <>
+                  <FontAwesomeIcon icon={faBagShopping} />
+                  Track Expense
+                </>
+              }
+              value="budgets"
+              checked={transactionType === "budgets"}
+              onChange={(e) => handleTransactionTypeChange(e.target.value)}
+              className="transaction-option"
+            />
+            <Form.Check
+              type="radio"
+              id="payDebt"
+              name="transactionType"
+              label={
+                <>
+                  <FontAwesomeIcon icon={faCreditCard} />
+                  Pay a Debt
+                </>
+              }
+              value="debts"
+              checked={transactionType === "debts"}
+              onChange={(e) => handleTransactionTypeChange(e.target.value)}
+              className="transaction-option"
+            />
+            <Form.Check
+              type="radio"
+              id="contributeGoal"
+              name="transactionType"
+              label={
+                <>
+                  <FontAwesomeIcon icon={faBullseye} />
+                  Contribute to a Goal
+                </>
+              }
+              value="goals"
+              checked={transactionType === "goals"}
+              onChange={(e) => handleTransactionTypeChange(e.target.value)}
+              className="transaction-option"
+            />
+            <Form.Check
+              type="radio"
+              id="addIncome"
+              name="transactionType"
+              label={
+                <>
+                  <FontAwesomeIcon icon={faMoneyBill} />
+                  Add Income
+                </>
+              }
+              value="income"
+              checked={transactionType === "income"}
+              onChange={(e) => handleTransactionTypeChange(e.target.value)}
+              className="transaction-option"
+            />
+          </div>
+        </Form.Group>
+
+        <Form.Group controlId="pocket">
+          <Form.Label>Please select a category:</Form.Label>
+          <Form.Control
+            as="select"
+            value={pocket}
+            onChange={(e) => setPocket(e.target.value)}
+            required
+          >
+            <option value="" disabled>
+              Select
+            </option>
+            {pocketOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </Form.Control>
+        </Form.Group>
+
+        {transactionType !== "debts" && transactionType !== "goals" && (
+          <Form.Group controlId="payee">
+            <Form.Label>
+              {transactionType === "income" ? "Payer" : "Payee"}
+            </Form.Label>
+            <Form.Control
+              type="text"
+              value={payee}
+              onChange={(e) => setPayee(e.target.value)}
+              required
             />
           </Form.Group>
-          <div className="buttons_footer">
-            <Button variant="secondary" onClick={handleCancel}>
-              Cancel
-            </Button>
+        )}
 
-            <Button variant="primary" onClick={handleSaveTransaction}>
-              Add
+        <Form.Group controlId="note">
+          <Form.Label>Note</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={3}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+          />
+        </Form.Group>
+
+        <Form.Group controlId="amount">
+          <Form.Label>Amount</Form.Label>
+          <div className="amount-field">
+            <Form.Control
+              type="number"
+              value={amount}
+              onChange={(e) => validateAmount(e.target.value)}
+              required
+            />
+            <FontAwesomeIcon icon={faDollarSign} className="icon-dollar" />
+          </div>
+        </Form.Group>
+
+        <Form.Group controlId="date">
+          <Form.Label>Select the date</Form.Label>
+          <div className="date-field">
+            <Form.Control
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
+            <FontAwesomeIcon icon={faCalendar} className="icon-calendar" />
+          </div>
+        </Form.Group>
+
+        <Form.Group controlId="image">
+          <Form.Label>Upload your receipt or take a picture</Form.Label>
+          <Button
+            variant="secondary"
+            onClick={handleShowModal}
+            className="upload-btn"
+          >
+            <FontAwesomeIcon icon={faUpload} /> click to upload your receipt
+          </Button>
+        </Form.Group>
+
+        <Form.Group controlId="createNew">
+          <Form.Check
+            type="checkbox"
+            label="Create a new transaction after this"
+            checked={createNew}
+            onChange={(e) => setCreateNew(e.target.checked)}
+          />
+        </Form.Group>
+        <div className="buttons_footer">
+          <Button variant="secondary" onClick={handleCancel}>
+            Cancel
+          </Button>
+
+          <Button variant="primary" onClick={handleSaveTransaction}>
+            Add
+          </Button>
+        </div>
+      </Form>
+
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Image</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="image-options">
+            <Button
+              className="internal-btn"
+              onClick={() => ShowBtns(false, true)}
+            >
+              <FontAwesomeIcon icon={faUpload} /> <span>Upload a Picture</span>
+            </Button>
+            <Button
+              className="internal-btn"
+              onClick={() => ShowBtns(true, false)}
+            >
+              <FontAwesomeIcon icon={faCamera} /> Take a Picture
             </Button>
           </div>
-        </Form>
-
-        <Modal show={showModal} onHide={handleCloseModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>Add Image</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="image-options">
-              <Button className="internal-btn"
-               
-                onClick={() => ShowBtns(false, true)}
-              >
-                <FontAwesomeIcon icon={faUpload} /> <span>Upload a Picture</span>
-              </Button>
-              <Button className="internal-btn"
-                
-                onClick={() => ShowBtns(true, false)}
-              >
-                <FontAwesomeIcon icon={faCamera} /> Take a Picture
-              </Button>
-            </div>
-            {showUpload && (
-              <Form.File
-                id="custom-file"
-                label="Choose file"
-                custom
-                accept="image/*"
-                onChange={handleFileUpload}
+          {showUpload && (
+            <Form.File
+              id="custom-file"
+              label="Choose file"
+              custom
+              accept="image/*"
+              onChange={handleFileUpload}
+            />
+          )}
+          {showCamera && (
+            <div className="webcam-container">
+              <Webcam
+                audio={false}
+                ref={webcamRef}
+                screenshotFormat="image/jpeg"
+                videoConstraints={{ deviceId: selectedDevice }}
+                className="webcam"
               />
-            )}
-            {showCamera && (
-              <div className="webcam-container">
-                <Webcam
-                  audio={false}
-                  ref={webcamRef}
-                  screenshotFormat="image/jpeg"
-                  videoConstraints={{ deviceId: selectedDevice }}
-                  className="webcam"
-                />
-                {devices.length > 1 && (
-                  <Form.Group controlId="cameraSelect">
-                    <Form.Label>Choose Camera</Form.Label>
-                    <Form.Control
-                      as="select"
-                      value={selectedDevice}
-                      onChange={handleDeviceChange}
-                    >
-                      {devices.map((device, idx) => (
-                        <option key={device.deviceId} value={device.deviceId}>
-                          {device.label || `Camera ${idx + 1}`}
-                        </option>
-                      ))}
-                    </Form.Control>
-                  </Form.Group>
-                )}
-                <Button onClick={capture}>Capture Image</Button>
-              </div>
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      </div>
-
+              {devices.length > 1 && (
+                <Form.Group controlId="cameraSelect">
+                  <Form.Label>Choose Camera</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={selectedDevice}
+                    onChange={handleDeviceChange}
+                  >
+                    {devices.map((device, idx) => (
+                      <option key={device.deviceId} value={device.deviceId}>
+                        {device.label || `Camera ${idx + 1}`}
+                      </option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+              )}
+              <Button onClick={capture}>Capture Image</Button>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </div>
   );
 };

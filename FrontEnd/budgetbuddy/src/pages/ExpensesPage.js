@@ -7,6 +7,7 @@ import { ExpenseTable } from "../components/Expenses/ExpenseTable";
 import { useNavigate } from "react-router-dom";
 import { useTheme, useMediaQuery } from "@mui/material";
 import styled from "styled-components";
+import "../css/ExpensePage.css";
 
 const transactionCategories = [
   "All categories",
@@ -28,7 +29,7 @@ export const ExpensesPage = () => {
   const [endDate, setEndDate] = useState("");
   const [appliedStartDate, setAppliedStartDate] = useState("");
   const [appliedEndDate, setAppliedEndDate] = useState("");
-  const [category, setCategory] = useState("All types");
+  const [category, setCategory] = useState("All categories");
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -62,24 +63,14 @@ export const ExpensesPage = () => {
 
   return (
     <Container isMobile={isMobile}>
-      <Box display="flex" justifyContent="space-between" mb={4}>
-        <h2 className="mb-0">Transaction List</h2>
-        <button
-          type="button"
-          onClick={handleNavigate}
-          className="btn"
-          style={{ padding: "0 1.5rem", backgroundColor: "#C9EEA7" }}
-        >
-          {"+ "}Create
-        </button>
-      </Box>
+
 
       <Box
         className="filter-container justify-content-between"
         display="flex"
         flexDirection={{ xs: "column", md: "row" }}
         gap={2}
-        mb={1}
+        mb={0}
       >
         <Box
           display="flex"
@@ -130,6 +121,20 @@ export const ExpensesPage = () => {
             </select>
           </Field>
         </Box>
+        <Box display="flex" mb={3}>
+        <button
+          type="button"
+          onClick={handleNavigate}
+          className="btn"
+          style={{
+            padding: "0 1.5rem",
+            backgroundColor: "#C9EEA7",
+            fontWeight: "bold",
+          }}
+        >
+          {"+ "}Create
+        </button>
+      </Box>
       </Box>
 
       <Box style={{ height: "40vh", width: "100%" }}>

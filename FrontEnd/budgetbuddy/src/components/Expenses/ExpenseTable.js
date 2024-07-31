@@ -95,8 +95,8 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
   const [viewableTransaction, setViewableTransaction] = useState(null);
   // state for table sorting based on selected table header column
   const [sortConfig, setSortConfig] = useState({
-    key: null,
-    direction: "ascending",
+    key: "date",
+    direction: "descending",
   });
 
   useEffect(() => {
@@ -124,7 +124,17 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
               : "",
           })
         );
-        setTransactions(formattedTransactions);
+        // Sort by date & id in descending order
+        const sortedFormattedTransactions = formattedTransactions.sort(
+          (a, b) => {
+            if (b.transaction_date === a.transaction_date) {
+              return b.id - a.id;
+            }
+            return b.transaction_date - a.transaction_date;
+          }
+        );
+
+        setTransactions(sortedFormattedTransactions);
       }
       loadTransactions();
     }
@@ -132,7 +142,7 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
 
   // Filter transactions based on the selected category
   const filteredTransactions =
-    category === "All types" || category === ""
+    category === "All categories" || category === ""
       ? transactions
       : transactions.filter(
           (transaction) => transaction.transaction_category === category
@@ -151,13 +161,14 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
   }
   // Changing sort directions
   const handleSort = (key) => {
-    let direction = "ascending";
-    if (sortConfig.key === key && sortConfig.direction === "ascending") {
-      direction = "descending";
+    let direction = "descending";
+    if (sortConfig.key === key && sortConfig.direction === "descending") {
+      direction = "ascending";
     }
     setSortConfig({ key, direction });
   };
-
+ 
+  
   const handleViewClick = (transaction) => {
     setViewableTransaction(transaction);
     setShowModal(true);
@@ -200,7 +211,7 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
       }
     });
   };
-
+  
   return (
     <>
       <div className="scrollable-table">

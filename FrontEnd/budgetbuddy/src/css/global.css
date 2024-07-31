@@ -6,3 +6,6 @@
   font-optical-sizing: auto;
   font-weight: normal; */
 }
+#root{
+  width: fit-content;
+}

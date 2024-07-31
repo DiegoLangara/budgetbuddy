@@ -33,14 +33,14 @@ const Features = () => {
           </div>
         </div>
         <div className="feature-item">
-            <div className="feature-content feature-content-3">
-              <h3>Goal Management</h3>
-              <p>Easily set up, manage and achieve your financial goals.</p>
-            </div>
-            <div className="feature-image">
-              <img src={Goal} alt="Goal Management" />
-            </div>
+          <div className="feature-content feature-content-3">
+            <h3>Goal Management</h3>
+            <p>Easily set up, manage and achieve your financial goals.</p>
           </div>
+          <div className="feature-image">
+            <img src={Goal} alt="Goal Management" />
+          </div>
+        </div>
       </div>
     </section>
   );

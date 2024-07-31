@@ -20,6 +20,7 @@ import { HomePage } from "./pages/HomePage";
 import { useMediaQuery, CssBaseline, Box } from "@mui/material";
 import { Header } from "./components/Common/Header";
 import { Sidebar } from "./components/Common/Sidebar";
+import { BalanceProvider } from "./components/Common/Balance";
 
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -32,6 +33,7 @@ function App() {
   return (
     <Router>
       <AuthProvider>
+      <BalanceProvider>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -71,6 +73,7 @@ function App() {
               </PrivateRoute>
             }
           />
+          
           <Route
             path="/home/*"
             element={
@@ -98,7 +101,9 @@ function App() {
               </PrivateRoute>
             }
           />
+        
         </Routes>
+        </BalanceProvider>
       </AuthProvider>
     </Router>
   );

@@ -541,13 +541,13 @@ export const Incomes = () => {
                       </div>
                     ))}
 
-                    {/* <div className="d-flex justify-content-center">
+                    <div className="d-flex justify-content-center">
                       <Link to="#" className="mt-2" onClick={addIncome}>
                         {incomes.length === 0
                           ? "Create an income"
                           : "Add more incomes"}
                       </Link>
-                    </div> */}
+                    </div>
                   </div>
                 </div>
 

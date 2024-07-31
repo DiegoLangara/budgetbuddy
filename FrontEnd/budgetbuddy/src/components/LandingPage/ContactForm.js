@@ -48,7 +48,7 @@ const ContactForm = () => {
     <div className="form-container-unique">
       <form className="contact-form-unique" onSubmit={handleSubmit}>
         <div className="form-group-unique">
-          <label htmlFor="email" className="label-unique">Email:</label>
+          <label htmlFor="email" className="label-unique">Email</label>
           <input
             type="email"
             id="email"
@@ -74,7 +74,7 @@ const ContactForm = () => {
           />
         </div>
         <div className="form-group-unique">
-          <label htmlFor="comments" className="label-unique">Your comments</label>
+          <label htmlFor="comments" className="label-unique">Comments</label>
           <textarea
             id="comments"
             name="comments"
