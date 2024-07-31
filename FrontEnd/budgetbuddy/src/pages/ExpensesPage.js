@@ -63,23 +63,7 @@ export const ExpensesPage = () => {
 
   return (
     <Container isMobile={isMobile}>
-      <Box display="flex" justifyContent="space-between" mb={3}>
-        <h2 style={{ fontSize: "2.7rem", marginBottom: "0" }}>
-          Transaction List
-        </h2>
-        <button
-          type="button"
-          onClick={handleNavigate}
-          className="btn"
-          style={{
-            padding: "0 1.5rem",
-            backgroundColor: "#C9EEA7",
-            fontWeight: "bold",
-          }}
-        >
-          {"+ "}Create
-        </button>
-      </Box>
+
 
       <Box
         className="filter-container justify-content-between"
@@ -137,6 +121,20 @@ export const ExpensesPage = () => {
             </select>
           </Field>
         </Box>
+        <Box display="flex" mb={3}>
+        <button
+          type="button"
+          onClick={handleNavigate}
+          className="btn"
+          style={{
+            padding: "0 1.5rem",
+            backgroundColor: "#C9EEA7",
+            fontWeight: "bold",
+          }}
+        >
+          {"+ "}Create
+        </button>
+      </Box>
       </Box>
 
       <Box style={{ height: "40vh", width: "100%" }}>

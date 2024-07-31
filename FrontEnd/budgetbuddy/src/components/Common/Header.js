@@ -1,47 +1,50 @@
 import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, IconButton, Typography, Avatar, Button, Menu, MenuItem, Divider, useMediaQuery, useTheme } from '@mui/material';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
-import PrintIcon from '@mui/icons-material/Print';
 import styled from 'styled-components';
 import { useAuth } from "../../contexts/AuthContext";
 import { Profile } from '../Profile/Profile';
+import { useBalanceContext } from './Balance'; // Update the path accordingly
 
 export const Header = ({ toggleDrawer }) => {
   const { currentUser } = useAuth();
   const token = currentUser.token;
   const user_id = currentUser.id;
+  const navigate = useNavigate();
   const [user, setUser] = useState({});
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [showProfile, setShowProfile] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const location = useLocation();
+  const [balance] = useBalanceContext();
+  
+  const fetchUser = async () => {
+    try {
+      const response = await fetch(
+        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/user/`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+            user_id: user_id,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setUser(data);
+      console.log("User data:", data);
+    } catch (error) {
+      console.error("Failed to fetch user:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch(
-          `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/user/`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              token: token,
-              user_id: user_id,
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setUser(data);
-      } catch (error) {
-        console.error("Failed to fetch user:", error);
-      }
-    };
-
     fetchUser();
   }, [token, user_id]);
 
@@ -58,23 +61,34 @@ export const Header = ({ toggleDrawer }) => {
     handleMenuClose();
   };
 
+const handleLogout = () =>{
+  navigate(`/login`);
+}
   const getHeaderTitle = () => {
     switch (true) {
       case /^\/home\/budget/.test(location.pathname):
         return 'Budget management';
       case /^\/home\/expenses/.test(location.pathname):
-        return 'Transactions';
-      case /^\/home\/expenses/.test(location.pathname):
-        return 'Transactions';
+        return 'List of Transactions';
+        case /^\/home\/transactions/.test(location.pathname):
+        return 'Create a Transaction';
+        case /^\/home\/products/.test(location.pathname):
+        return 'Financial Products';
       case /^\/home\/dashboard/.test(location.pathname):
-        return 'Welcome back buddy!';
+        return 'Welcome buddy!';
       default:
         return '';
     }
   };
 
   const headerTitle = getHeaderTitle();
-
+  const money_format2 = (value) => {
+    return value.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+const edited_balance = money_format2(balance);
   return (
     <HeaderContainer isMobile={isMobile}>
       <StyledAppBar position="static">
@@ -84,30 +98,31 @@ export const Header = ({ toggleDrawer }) => {
               <MenuIcon style={{ fontSize: '2.5vh' }} />
             </IconButton>
           )}
-          {headerTitle === 'Welcome back buddy!' ? (
+          {headerTitle === 'Welcome buddy!' ? (
             <WelcomeMessage>
               <Typography variant="body1" component="div">
-                Welcome back buddy!
+                Welcome buddy!
               </Typography>
-              <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', fontSize: '3vh' }}>
+              <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', fontSize: 'clamp(14px, 2.5vw, 40px)' }}>
                 {user.firstname}
               </Typography>
             </WelcomeMessage>
           ) : (
-            <Typography variant="h2" component="div" sx={{ fontWeight: 'bold', fontSize: '3vh' }}>
+            <Typography variant="h2" component="div" sx={{ fontWeight: 'bold', fontSize: 'clamp(18px, 2.5vw, 50px)' }}>
               {headerTitle}
             </Typography>
           )}
           <Spacer />
-          {/* {!isMobile && (
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: 'black', color: 'white', marginRight: '2vw' }}
-              startIcon={<PrintIcon style={{ fontSize: '2.5vh' }} />}
-            >
-              Print
-            </Button>
-          )} */}
+         
+          <WelcomeMessage style={{ paddingRight: '20px' }}>
+              <Typography variant="body1" component="div" textAlign={'right'}>
+              Available Funds:
+              </Typography>
+              <Typography variant="h4" component="div" textAlign={'right'} sx={{ fontWeight: 'bold', fontSize: 'clamp(14px, 2.5vw, 40px)' }}>
+              ${edited_balance}
+              </Typography>
+            </WelcomeMessage>
+         
           <IconButton edge="end" color="inherit" onClick={handleMenuOpen}>
             <Avatar src="/path-to-avatar-image.jpg" alt="User Avatar" style={{ width: '5vh', height: '5vh' }} />
           </IconButton>
@@ -319,7 +334,7 @@ export const Header = ({ toggleDrawer }) => {
               </StyledIcon>
               Notifications</MenuItem>
             <Divider sx={{ my: 1 }} />
-            <MenuItem>
+            <MenuItem onClick={handleLogout}>
               <StyledIcon width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/StyledIcon">
                 <path d="M10.6667 11.3333L14 8M14 8L10.6667 4.66667M14 8H6M6 2H5.2C4.0799 2 3.51984 2 
                   3.09202 2.21799C2.7157 2.40973 2.40973 2.71569 2.21799 3.09202C2 3.51984 2 4.07989 2 

@@ -95,8 +95,8 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
   const [viewableTransaction, setViewableTransaction] = useState(null);
   // state for table sorting based on selected table header column
   const [sortConfig, setSortConfig] = useState({
-    key: null,
-    direction: "ascending",
+    key: "date",
+    direction: "descending",
   });
 
   useEffect(() => {
@@ -161,13 +161,14 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
   }
   // Changing sort directions
   const handleSort = (key) => {
-    let direction = "ascending";
-    if (sortConfig.key === key && sortConfig.direction === "ascending") {
-      direction = "descending";
+    let direction = "descending";
+    if (sortConfig.key === key && sortConfig.direction === "descending") {
+      direction = "ascending";
     }
     setSortConfig({ key, direction });
   };
-
+ 
+  
   const handleViewClick = (transaction) => {
     setViewableTransaction(transaction);
     setShowModal(true);
@@ -210,7 +211,7 @@ export const ExpenseTable = ({ startDate, endDate, category }) => {
       }
     });
   };
-
+  
   return (
     <>
       <div className="scrollable-table">

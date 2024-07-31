@@ -25,15 +25,53 @@ export const Products = () => {
   return (
     <div className="products">
       <div className="products_header">
-        <h2 style={{ fontSize: "2.7rem" }}>Financial Products</h2>
+      
       </div>
 
       <div className="product_layout">
         <aside>
           <nav className="products_sidebar">
             <ul>
-              <li>
+            <li>
                 <a href="#" className="active">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                  >
+                    <path
+                      d="M4 10.6663C4 12.1391 5.19391 13.333 6.66667 13.333H9.33333C10.8061 13.333 12 12.1391 12 10.6663C12 9.19358 10.8061 7.99967 9.33333 7.99967H6.66667C5.19391 7.99967 4 6.80577 4 5.33301C4 3.86025 5.19391 2.66634 6.66667 2.66634H9.33333C10.8061 2.66634 12 3.86025 12 5.33301M8 1.33301V14.6663"
+                      stroke="black"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>Bank Accounts</span>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <g id="secondary icon">
+                      <path
+                        id="Vector"
+                        d="M6 12L10 8L6 4"
+                        stroke="#334155"
+                        strokeWidth="1.33333"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </g>
+                  </svg>
+                </a>
+              </li>
+              <li>
+                <a href="#" >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -77,44 +115,7 @@ export const Products = () => {
                   </svg>
                 </a>
               </li>
-              <li>
-                <a href="#">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                  >
-                    <path
-                      d="M4 10.6663C4 12.1391 5.19391 13.333 6.66667 13.333H9.33333C10.8061 13.333 12 12.1391 12 10.6663C12 9.19358 10.8061 7.99967 9.33333 7.99967H6.66667C5.19391 7.99967 4 6.80577 4 5.33301C4 3.86025 5.19391 2.66634 6.66667 2.66634H9.33333C10.8061 2.66634 12 3.86025 12 5.33301M8 1.33301V14.6663"
-                      stroke="black"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                  <span>Loans</span>
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g id="secondary icon">
-                      <path
-                        id="Vector"
-                        d="M6 12L10 8L6 4"
-                        stroke="#334155"
-                        strokeWidth="1.33333"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </g>
-                  </svg>
-                </a>
-              </li>
+
               <li>
                 <a href="#">
                   <svg
@@ -236,8 +237,172 @@ export const Products = () => {
             </ul>
           </nav>
         </aside>
+        <div className="products_main bank_accounts">
+        <div className="product_container">
+  <h2>EQ Bank Personal Account</h2>
+  <img src="https://www.eqbank.ca/docs/default-source/webp/eq_spa_img_phoneandcard_personalaccount_550x550_en_v1.webp" alt="EQ Bank Personal Account" />
+  <p>
+    High interest with unlimited transactions and no monthly fees. Earn up to 4% interest on your deposits, no ATM fees (refunded by EQ Bank), 0.5% cash back on debit card purchases, and no foreign exchange fees.
+  </p>
+  <ul>
+    <li>
+      <b>$0</b> Monthly Fee
+    </li>
+    <li>
+      <b>$0</b> Transaction Fee
+    </li>
+    <li>
+      <b>$0</b> E-Transfer Fee
+    </li>
+  </ul>
+  <div className="product_footer">
+    <a className="btn-white" target="_blank" href="https://www.eqbank.ca/personal-banking/personal-account?icid=pa-hpbanner-learnmore">
+      View Details
+    </a>
+    <a className="btn-black" target="_blank" href="https://join.eqbank.ca/?icid=spa-banner-joinnow&_gl=1*1isr1t2*_gcl_au*OTc4Mzk3ODYxLjE3MjI0MjAzMjk.*_ga*MTM4MzY5NjQ0OC4xNzIyNDIwMzMw*_ga_M1FM37GN6F*MTcyMjQyMDMyOS4xLjEuMTcyMjQyMDM2MS4yOC4wLjA.">
+      Apply Now
+    </a>
+  </div>
+</div>
 
-        <div className="products_main">
+<div className="product_container">
+  <h2>Simplii No Fee Chequing Account</h2>
+  <img src="https://www.simplii.com/content/dam/simplii-assets/global/card-art/debit-card/mastercard-debit/simplii-debit-card-two-mastercard-debit-static-front-tilted-en.png/_jcr_content/renditions/cq5dam.web.1280.1280.png" alt="Simplii No Fee Chequing Account" />
+  <p>
+    No monthly fees, free transactions, and a generous sign-up bonus. Earn up to $400 welcome bonus, unlimited free transactions and e-Transfers, and access to over 3,400 CIBC ATMs across Canada.
+  </p>
+  <ul>
+    <li>
+      <b>$0</b> Monthly Fee
+    </li>
+    <li>
+      <b>$0</b> Transaction Fee
+    </li>
+    <li>
+      <b>$0</b> E-Transfer Fee
+    </li>
+  </ul>
+  <div className="product_footer">
+    <a className="btn-white" target="_blank" href="https://www.simplii.com/en/bank-accounts/no-fee-chequing.html">
+      View Details
+    </a>
+    <a className="btn-black" target="_blank" href="https://www.simplii.com/content/experience-fragments/simpliipublic/default-content/modal/simplii-online-banking-client/no-fee-chequing.html">
+      Apply Now
+    </a>
+  </div>
+</div>
+
+<div className="product_container">
+  <h2>BMO Performance Chequing Account</h2>
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSthTwQ_pD4_aY7R9_aT7CYM__JYkjKXvHprA&s" alt="BMO Performance Chequing Account" />
+  <p>
+    Popular chequing account with unlimited free transactions and e-Transfers. Earn up to a $600 cash bonus, fee rebate on the BMO Mastercard annual fee, and part of the BMO Family Bundle for up to 20 accounts.
+  </p>
+  <ul>
+    <li>
+      <b>$17.95</b> Monthly Fee
+    </li>
+    <li>
+      <b>$0</b> Transaction Fee
+    </li>
+    <li>
+      <b>$0</b> E-Transfer Fee
+    </li>
+  </ul>
+  <div className="product_footer">
+    <a className="btn-white" target="_blank" href="https://www.bmo.com/en-ca/main/personal/bank-accounts/chequing-accounts/performance/">
+      View Details
+    </a>
+    <a className="btn-black" target="_blank" href="https://www.bmo.com/open-account/?rg=BMO&spc=6109010&ofid=EQPCOPCMP00&spc2=0724PRI&ofid2=SAAPRI0724&lang=en&ab=true">
+      Apply Now
+    </a>
+  </div>
+</div>
+
+<div className="product_container">
+  <h2>National Bank of Canada Chequing Account for Newcomers</h2>
+  <img src="https://www.nbc.ca/personal/accounts/services/online/features/mobile-deposit/_jcr_content/root/responsivegrid/landmarks/responsivegrid_1416824118/responsivegrid_copy_/responsivegrid_566700220/image.bncimg.100.991.xs.png/1700588336058/img-mobileapp-767x400-fr.png" alt="National Bank of Canada Chequing Account for Newcomers" />
+  <p>
+    Tailored for newcomers with zero account fees for up to three years. Assistance to Newcomers line, eligibility for a National Bank Mastercard without Canadian credit history, and $100 cash back welcome offer.
+  </p>
+  <ul>
+    <li>
+      <b>$0 for up to three years ($15.95 thereafter)</b> Monthly Fee
+    </li>
+    <li>
+      <b>$1.50 for in-branch transactions</b> Transaction Fee
+    </li>
+    <li>
+      <b>$0</b> E-Transfer Fee
+    </li>
+  </ul>
+  <div className="product_footer">
+    <a className="btn-white" target="_blank" href="https://www.nbc.ca/personal/accounts/newcomers.html">
+      View Details
+    </a>
+    <a className="btn-black" target="_blank" href="https://open-personal-account.nbc.ca/start/?questionId_appt_ch=14&questionId_canal=NBC.CA&productId=CE-CHEQUE&packageId=NOUV-ARRIV&conditionId=DFLT&language=EN&exitUrl=personal/accounts.html">
+      Apply Now
+    </a>
+  </div>
+</div>
+
+<div className="product_container">
+  <h2>PC Financial PC Money Account</h2>
+  <img src="https://www.pcfinancial.ca/static/58c482597e7076a61d84acb8240cbfe6/fe864/PCMA_Award_English.webp" alt="PC Financial PC Money Account" />
+  <p>
+    No monthly fees with the ability to earn PC Optimum points. Unlimited everyday and e-Transfer transactions, and in-person support at PC Financial pavilions.
+  </p>
+  <ul>
+    <li>
+      <b>$0</b> Monthly Fee
+    </li>
+    <li>
+      <b>$0</b> Transaction Fee
+    </li>
+    <li>
+      <b>$0</b> E-Transfer Fee
+    </li>
+  </ul>
+  <div className="product_footer">
+    <a className="btn-white" target="_blank" href="https://www.pcfinancial.ca/en/pc-money-account/">
+      View Details
+    </a>
+    <a className="btn-black" target="_blank" href="https://secure.pcfinancial.ca/en/applications/individual/?sourceCode=INT&promoCode=90891&_gl=1*y5h8vw*_gcl_au*MTE2MTQ0NDExMy4xNzIyNDIwMjg0*_ga*ODYyNDE0MTQ2LjE3MjI0MjAyODQ.*_ga_JDEZPSSYQC*MTcyMjQyMDI4My4xLjEuMTcyMjQyMDMwNi4zNy4wLjA.">
+      Apply Now
+    </a>
+  </div>
+</div>
+
+<div className="product_container">
+  <h2>Alterna Bank No Fee eChequing Account</h2>
+  <img src="https://pbs.twimg.com/media/GG4waeFXQAA_1QB.jpg" alt="Alterna Bank No Fee eChequing Account" />
+  <p>
+    No monthly fees or minimum balance requirements. Free and unlimited daily transactions and e-Transfers, access to over 3,300 ATMs in THE EXCHANGE® Network, and interest on your balance (0.05%).
+  </p>
+  <ul>
+    <li>
+      <b>$0</b> Monthly Fee
+    </li>
+    <li>
+      <b>$0</b> Transaction Fee
+    </li>
+    <li>
+      <b>$0</b> E-Transfer Fee
+    </li>
+  </ul>
+  <div className="product_footer">
+    <a className="btn-white" target="_blank" href="https://www.alternabank.ca/en/personal/accounts/no-fee-echequing">
+      View Details
+    </a>
+    <a className="btn-black" target="_blank" href="https://apply.alternabank.ca/?prod=140">
+      Apply Now
+    </a>
+  </div>
+</div>
+
+        </div>
+       
+        <div className="products_main credit_cards" style={{ display: "none" }}>
           <div className="product_container">
             <h2>TD First Class Travel® Visa Infinite* Card</h2>
             <img

@@ -14,25 +14,30 @@ import {
   faDollarSign,
 } from "@fortawesome/free-solid-svg-icons";
 import Webcam from "react-webcam";
-import "../css/AddTransaction.css"; // Ensure you have corresponding CSS for styling
+import "../css/AddTransaction.css";
 import { useParams } from "react-router-dom";
 import { useTheme, useMediaQuery } from "@mui/material";
 import styled from "styled-components";
 import Swal from "sweetalert2";
 import "../css/ExpensePage.css";
+import { useBalanceContext } from '../components/Common/Balance';
 
 export const AddTransaction = () => {
   const money_format = (value) => {
+
     return value.toLocaleString("en-US", {
+
       minimumFractionDigits: 2,
+
       maximumFractionDigits: 2,
+
     });
+
   };
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const token = currentUser.token;
   const user_id = currentUser.id;
-
   const [showModal, setShowModal] = useState(false);
   const [transactionType, setTransactionType] = useState("budgets");
   const [pocket, setPocket] = useState("");
@@ -48,8 +53,8 @@ export const AddTransaction = () => {
   const [showUpload, setShowUpload] = useState(false);
   const [devices, setDevices] = useState([]);
   const [selectedDevice, setSelectedDevice] = useState("");
-  const [balance, setBalance] = useState(0);
-  const [date, setDate] = useState(new Date().toISOString().substr(0, 10)); // Current date set by default
+  const [balance, fetchBalance] = useBalanceContext();
+  const [date, setDate] = useState(new Date().toISOString().substr(0, 10));
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -60,7 +65,6 @@ export const AddTransaction = () => {
     margin: 0 auto;
   `;
 
-  // transaction id passed from ExpenseTable.js to edit data
   const { id } = useParams();
   console.log("Transaction ID:", id);
 
@@ -80,22 +84,7 @@ export const AddTransaction = () => {
     });
   }, []);
 
-  const fetchBalance = async () => {
-    const response = await fetch(
-      "https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/balance/",
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          token: token,
-          user_id: user_id,
-          type: "income",
-        },
-      }
-    );
-    const data = await response.json();
-    setBalance(data.balance);
-  };
+ 
 
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => {
@@ -117,8 +106,7 @@ export const AddTransaction = () => {
           position: "center",
           icon: "error",
           title:
-            "Amount exceeds available balance, please add some income to increase available funds, or revise the amount you would like to pay in your " +
-            transactionType,
+            "Not enough funds, please add some income, or revise the amount",
           showConfirmButton: false,
           timer: 3000,
           width: "600px",
@@ -129,7 +117,7 @@ export const AddTransaction = () => {
     }
 
     const transactionData = {
-      transaction_date: date, // Add date to transaction data
+      transaction_date: date,
       transaction_payee:
         transactionType === "debts" || transactionType === "goals" ? "" : payee,
       transaction_note: note,
@@ -159,7 +147,6 @@ export const AddTransaction = () => {
       const responseData = await response.json();
 
       if (response.ok) {
-        // Transaction saved successfully
         console.log("Transaction saved successfully");
 
         Swal.fire({
@@ -171,8 +158,9 @@ export const AddTransaction = () => {
           width: "600px",
         });
 
+         // Update balance
+
         if (createNew) {
-          // Reset all fields and update balance
           handleTransactionTypeChange("budgets");
           setPocket("");
           setPayee("");
@@ -182,13 +170,12 @@ export const AddTransaction = () => {
           setImageBase64("");
           fetchBalance();
         } else {
-          // Navigate away to home/expenses
           navigate("/home/expenses");
+          fetchBalance();
         }
       } else {
-        // Handle error
         console.log("Error saving transaction");
-
+        fetchBalance();
         Swal.fire({
           position: "center",
           icon: "error",
@@ -222,7 +209,6 @@ export const AddTransaction = () => {
     setImageBase64("");
     setCreateNew(false);
 
-    // Navigate away to home/expenses
     navigate("/home/expenses");
   };
 
@@ -360,6 +346,7 @@ export const AddTransaction = () => {
     };
     reader.readAsDataURL(file);
   };
+  
   const ShowBtns = (camera, upload) => {
     setShowCamera(camera);
     setShowUpload(upload);
@@ -368,12 +355,10 @@ export const AddTransaction = () => {
   return (
     <div className="addTransactions">
       <div className="transaction_header">
-        <h2 style={{ fontSize: "2.7rem", alignSelf: "start" }}>
-          Create a transaction
-        </h2>
-        <h2>
+ 
+        {/* <h2>
           Available Funds: <br /> ${money_format(balance)}
-        </h2>
+        </h2> */}
       </div>
       <Form>
         <Form.Group controlId="transactionType">
