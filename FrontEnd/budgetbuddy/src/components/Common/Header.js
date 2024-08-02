@@ -3,6 +3,8 @@ import { AppBar, Toolbar, IconButton, Typography, Avatar, Button, Menu, MenuItem
 import { useLocation, useNavigate } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import styled from 'styled-components';
+
+import '../../css/Profile.css';
 import { useAuth } from "../../contexts/AuthContext";
 import { Profile } from '../Profile/Profile';
 import { useBalanceContext } from './Balance'; // Update the path accordingly
@@ -23,7 +25,7 @@ export const Header = ({ toggleDrawer }) => {
   const fetchUser = async () => {
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/user/`,
+        process.env.REACT_APP_API_HOST+`/api/user/`,
         {
           method: "GET",
           headers: {
@@ -133,11 +135,12 @@ const edited_balance = money_format2(balance);
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
+            className="profile-menu"
           >
             <p style={{ margin: '2vh', color: 'black' }}>My Account</p>
             <Divider sx={{ my: 1 }} />
             <MenuItem onClick={handleToggleProfile}>
-              <StyledIcon width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/StyledIcon">
+              <StyledIcon width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/StyledIcon" className="fill-to-white">
                 <g clip-path="url(#clip0_3917_7585)">
                   <path d="M14.9547 15.9125L14.9547 15.9125C15.0549 15.9595 15.1639 15.9826 15.2726
                    15.9826C15.4023 15.9826 15.5321 15.9494 15.6463 15.8835C15.8557 15.7625 15.9826
@@ -357,8 +360,8 @@ const edited_balance = money_format2(balance);
 export default Header;
 
 const HeaderContainer = styled.div`
-  width: 97%;
-  padding: ${(props) => (props.isMobile ? "1vh" : "2vh 10vw 3vh calc(10vw + 5.3vw)")};
+  width: 100%;
+  padding: 0;
   margin: 0 auto;
 `;
 

@@ -18,9 +18,8 @@ const transactionCategories = [
 ];
 
 const Container = styled.div`
-  width: 97%;
-  padding: ${(props) =>
-    props.isMobile ? "1vh" : "1vh 9vw 3vh calc(10vw + 60px)"};
+  width: 100%;
+  padding: 0;
   margin: 0 auto;
 `;
 
@@ -36,9 +35,18 @@ export const ExpensesPage = () => {
 
   useEffect(() => {
     const today = new Date();
-    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+   // alert(today);
 
+
+
+// Create a new Date object for the first day of the previous month
+const firstDay = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+
+// Set lastDay to today
+const lastDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+ 
+console.log('First day of previous month:', firstDay);
+console.log('Last day (today):', lastDay);
     const formattedFirstDay = firstDay.toISOString().split("T")[0];
     const formattedLastDay = lastDay.toISOString().split("T")[0];
 
@@ -65,18 +73,12 @@ export const ExpensesPage = () => {
     <Container isMobile={isMobile}>
 
 
-      <Box
-        className="filter-container justify-content-between"
-        display="flex"
-        flexDirection={{ xs: "column", md: "row" }}
-        gap={2}
-        mb={0}
+      <div
+        className="filter-container"
+        
+
       >
-        <Box
-          display="flex"
-          flexDirection={{ xs: "column", md: "row" }}
-          gap={1}
-          mb={1}
+        <div className="date-wrapper"
         >
           <Field label="Start date">
             <Input
@@ -97,7 +99,7 @@ export const ExpensesPage = () => {
               onClick={handleApply}
               className="apply-button"
               style={{
-                marginTop: isMobile ? "1rem" : "2rem",
+                
                 paddingLeft: "1.2rem",
                 paddingRight: "1.2rem",
               }}
@@ -105,8 +107,8 @@ export const ExpensesPage = () => {
               Apply
             </Button>
           </Field>
-        </Box>
-        <Box className="type-wrapper">
+        </div>
+        <div className="type-wrapper">
           <Field label="Category">
             <select
               onChange={handleSelectChange}
@@ -120,30 +122,28 @@ export const ExpensesPage = () => {
               ))}
             </select>
           </Field>
-        </Box>
-        <Box display="flex" mb={3}>
+        </div>
+        <div className="action-wrapper">
+        <Field>
         <button
           type="button"
           onClick={handleNavigate}
-          className="btn"
-          style={{
-            padding: "0 1.5rem",
-            backgroundColor: "#C9EEA7",
-            fontWeight: "bold",
-          }}
+          className="btn btn-green"
+    
         >
           {"+ "}Create
         </button>
-      </Box>
-      </Box>
+        </Field>
+      </div>
+      </div>
 
-      <Box style={{ height: "40vh", width: "100%" }}>
+      <div style={{ height: "40vh", width: "100%" }}>
         <ExpenseTable
           startDate={appliedStartDate}
           endDate={appliedEndDate}
           category={category}
         />
-      </Box>
+      </div>
     </Container>
   );
 };

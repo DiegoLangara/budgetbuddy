@@ -12,7 +12,7 @@ import { Modal, Form as BootstrapForm } from "react-bootstrap";
 async function fetchIncomes(user_id, token) {
   try {
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/incomes/`,
+      process.env.REACT_APP_API_HOST+`/api/incomes/`,
       {
         method: "GET",
         headers: {
@@ -191,7 +191,7 @@ export const IncomesBM = () => {
   const deleteIncomeFromDatabase = async (user_id, token, income_id) => {
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/income/`,
+        process.env.REACT_APP_API_HOST+`/api/income/`,
         {
           method: "DELETE",
           headers: {
@@ -247,7 +247,7 @@ export const IncomesBM = () => {
   const updateData = async (income) => {
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/income/`,
+        process.env.REACT_APP_API_HOST+`/api/income/`,
         {
           method: "PUT",
           headers: {
@@ -315,7 +315,7 @@ export const IncomesBM = () => {
     console.log(income);
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/income/`,
+        process.env.REACT_APP_API_HOST+`/api/income/`,
         {
           method: "POST",
           headers: {
@@ -398,18 +398,11 @@ export const IncomesBM = () => {
         <div className="d-flex align-items-end ml-3 pb-2">
           <Link
             to="#"
-            className="btn rounded-pill"
+            className="btn btn-green"
             onClick={handleShowModal}
-            style={{
-              fontSize: ".9rem",
-              fontWeight: "bold",
-              color: "Black",
-              backgroundColor: "#eee",
-              border: "1px solid gray",
-              padding: ".6rem",
-            }}
+            
           >
-            {incomes.length === 0 ? "+ Create an Income" : "+ Add More Incomes"}
+            + Add an Income
           </Link>
         </div>
       </div>

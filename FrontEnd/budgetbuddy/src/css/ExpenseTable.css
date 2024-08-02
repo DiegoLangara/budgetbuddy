@@ -1,6 +1,21 @@
 .scrollable-table {
   max-height: 63.2vh;
   overflow-y: auto;
+  border: 1px solid #3a608f;
+ &::-webkit-scrollbar {
+  width: 12px;
+}
+&::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+&::-webkit-scrollbar-thumb {
+  background: #3a608f;
+}
+&::-webkit-scrollbar-thumb:hover {
+  background: #3A608F;
+}
+scrollbar-width: thin;
+      scrollbar-color: #3a608f #f1f1f1;
 }
 
 .scrollable-table-dashboard {
@@ -10,7 +25,8 @@
 .responsive-table {
   width: 100%;
   border-collapse: collapse;
-  border: 1;
+  border: 0px;
+  
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
@@ -31,8 +47,29 @@ thead {
   background-color: #3a608f;
   color: white;
   padding: 0.5rem;
-  border: 1px solid #3a608f;
+  border: 1px solid white;
   border-top: 0;
+display:table-cell;
+div{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-flow: row nowrap;
+}
+}
+.responsive-table tbody {
+  tr.negative {
+ 
+  td{
+    background-color: #faf2f2 !important;
+  }
+}
+tr.positive {
+ 
+  td{
+    background-color: #f6f9ff !important;
+  }
+}
 }
 
 .responsive-table th {
@@ -132,7 +169,7 @@ thead {
   }
 
   .responsive-table tbody {
-    border: 1px solid #3a608f;
+    
   }
 
   .responsive-table td {
@@ -161,8 +198,9 @@ thead {
 
   .icons {
     display: flex;
-    justify-content: end;
+    justify-content: center;
     gap: 1rem;
+    align-items: center;
     padding-right: 0.5rem;
   }
 

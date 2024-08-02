@@ -9,3 +9,35 @@
 #root{
   /* width: fit-content; */
 }
+div.MuiBox-root{
+ 
+  flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    margin-left: auto;
+    margin-right:auto;
+width: 100%;
+max-width: 1500px;
+padding-left:20px;
+padding-right:20px;
+@media (min-width: 600px) {
+ 
+  padding-left:100px !important;
+  padding-right:20px;
+}
+main.MuiBox-root{
+  padding: 30px 0 !important;
+  margin: 0!important;
+  width: 100%;
+
+}
+}
+.btn-green{
+  font-size: .9rem;
+  font-weight: bold;
+  color: Black;
+  background-color: rgb(201, 238, 167);
+  border: 1px solid gray;
+  padding: .5rem 1.5rem;
+ 
+}

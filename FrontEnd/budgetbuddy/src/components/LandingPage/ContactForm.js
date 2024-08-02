@@ -20,7 +20,7 @@ const ContactForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await fetch('https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/contact/', {
+    const response = await fetch(process.env.REACT_APP_API_HOST+'/api/contact/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

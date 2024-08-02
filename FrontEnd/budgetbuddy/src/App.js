@@ -24,7 +24,7 @@ import { BalanceProvider } from "./components/Common/Balance";
 
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const isMobile = useMediaQuery("(max-width:600px)");
+  const isMobile = useMediaQuery("(max-width:599px)"); 
 
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
@@ -33,7 +33,7 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-      <BalanceProvider>
+        <BalanceProvider>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -79,8 +79,9 @@ function App() {
             element={
               <PrivateRoute>
                 <CssBaseline />
-                <Header toggleDrawer={toggleDrawer} />
+              
                 <Box display="flex">
+                <Header toggleDrawer={toggleDrawer} />
                   <Sidebar
                     variant={isMobile ? "temporary" : "persistent"}
                     open={isMobile ? drawerOpen : true}

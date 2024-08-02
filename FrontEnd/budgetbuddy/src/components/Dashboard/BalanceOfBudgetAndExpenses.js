@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 const fetchBudgetExpenses = async (user_id, token, start_date, end_date) => {
   try {
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/dashboard/budgetexpenses/`,
+      process.env.REACT_APP_API_HOST+`/api/dashboard/budgetexpenses/`,
       {
         method: 'GET',
         headers: {

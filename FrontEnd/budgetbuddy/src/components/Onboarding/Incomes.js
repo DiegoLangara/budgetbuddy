@@ -15,7 +15,7 @@ import { Progress } from "./Progress";
 async function fetchIncomes(user_id, token) {
   try {
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/incomes/`,
+      process.env.REACT_APP_API_HOST+`/api/incomes/`,
       {
         method: "GET",
         headers: {
@@ -208,7 +208,7 @@ export const Incomes = () => {
   const saveToDatabase = async (data) => {
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/incomes/`,
+        process.env.REACT_APP_API_HOST+`/api/incomes/`,
         {
           method: "POST",
           headers: {

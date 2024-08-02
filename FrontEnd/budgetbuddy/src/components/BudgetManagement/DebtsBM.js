@@ -11,9 +11,9 @@ import { Modal, Form as BootstrapForm } from "react-bootstrap";
 // Utility function to format the date
 const formatDate = (isoDate) => {
   const date = new Date(isoDate);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 };
 
@@ -21,7 +21,7 @@ const formatDate = (isoDate) => {
 async function fetchDebts(user_id, token) {
   try {
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debts/`,
+      process.env.REACT_APP_API_HOST+`/api/debts/`,
       {
         method: "GET",
         headers: {
@@ -158,7 +158,7 @@ export const DebtsBM = () => {
     try {
       console.log(user_id, token, debt_id);
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debt/`,
+        process.env.REACT_APP_API_HOST+`/api/debt/`,
         {
           method: "DELETE",
           headers: {
@@ -212,7 +212,7 @@ export const DebtsBM = () => {
   const updateData = async (debt) => {
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debt/`,
+        process.env.REACT_APP_API_HOST+`/api/debt/`,
         {
           method: "PUT",
           headers: {
@@ -279,7 +279,7 @@ export const DebtsBM = () => {
   const saveAddedData = async (debt) => {
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debt/`,
+        process.env.REACT_APP_API_HOST+`/api/debt/`,
         {
           method: "POST",
           headers: {
@@ -361,18 +361,11 @@ export const DebtsBM = () => {
         <div className="d-flex align-items-end ml-3 pb-2">
           <Link
             to="#"
-            className="btn rounded-pill"
+            className="btn btn-green"
             onClick={handleShowModal}
-            style={{
-              fontSize: ".9rem",
-              fontWeight: "bold",
-              color: "Black",
-              backgroundColor: "#eee",
-              border: "1px solid gray",
-              padding: ".6rem",
-            }}
+            
           >
-            {debts.length === 0 ? "+ Create a Debt" : "+ Add More Debts"}
+            + Add a Debt
           </Link>
         </div>
       </div>

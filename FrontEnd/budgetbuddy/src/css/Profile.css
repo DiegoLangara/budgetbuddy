@@ -1,0 +1,50 @@
+.profile-menu {
+    .MuiMenuItem-root {
+border-radius: 5px;
+        padding: 8px 16px;
+        margin-left: 8px;
+        margin-right: 8px;
+            &:hover {
+            background-color: #001E30;
+            color: #fff;
+            svg{
+                &.fill-to-white{
+                    path{
+                        fill: #fff;
+                    }
+                }
+                path{
+                   
+                    stroke: #fff;
+                }
+            }
+        }
+    }
+}
+
+.profile-expanded{
+.MuiPaper-root{
+    max-width: 400px;
+    width: 100%;
+}
+.MuiBox-root{
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+}
+.profile-header{
+    display:flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    padding: 0!important;
+}
+.profile-buttons{
+   
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top:10px;
+   padding: 0!important;
+}
+
+}

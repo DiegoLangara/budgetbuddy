@@ -6,12 +6,25 @@ import { useOnboardingState } from "../../Hooks/useOnboardingState";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
+
+const money_format = (value) => {
+
+  return value.toLocaleString("en-US", {
+
+    minimumFractionDigits: 2,
+
+    maximumFractionDigits: 2,
+
+  });
+
+};
+
 // Utility function to format the date
 const formatDate = (isoDate) => {
   const date = new Date(isoDate);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 };
 
@@ -27,7 +40,7 @@ async function fetchLatestTransaction(token, user_id) {
       `Fetching transactions with user_id=${user_id}, token=${token}`
     );
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/dashboard/transactions/`,
+      process.env.REACT_APP_API_HOST+`/api/dashboard/transactions/`,
       {
         method: "GET",
         headers: {
@@ -177,163 +190,173 @@ export const ExpenseTableLatest = () => {
                   onClick={() => handleSort("transaction_date")}
                   style={{ cursor: "pointer" }}
                 >
-                  Date
-                  {sortConfig.key === "transaction_date" ? (
-                    sortConfig.direction === "ascending" ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        class="bi bi-caret-up-fill"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        class="bi bi-caret-down-fill"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-                      </svg>
-                    )
-                  ) : null}
+                  <div>
+                    Date
+                    {sortConfig.key === "transaction_date" ? (
+                      sortConfig.direction === "ascending" ? (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          class="bi bi-caret-up-fill"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
+                        </svg>
+                      ) : (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          class="bi bi-caret-down-fill"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                        </svg>
+                      )
+                    ) : null}
+                  </div>
                 </th>
                 <th
                   onClick={() => handleSort("transaction_category")}
                   style={{ cursor: "pointer" }}
                 >
-                  Category
-                  {sortConfig.key === "transaction_category" ? (
-                    sortConfig.direction === "ascending" ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        class="bi bi-caret-up-fill"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        class="bi bi-caret-down-fill"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-                      </svg>
-                    )
-                  ) : null}
+                  <div>
+                    Category
+                    {sortConfig.key === "transaction_category" ? (
+                      sortConfig.direction === "ascending" ? (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          class="bi bi-caret-up-fill"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
+                        </svg>
+                      ) : (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          class="bi bi-caret-down-fill"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                        </svg>
+                      )
+                    ) : null}
+                  </div>
                 </th>
                 <th
                   onClick={() => handleSort("transaction_name")}
                   style={{ cursor: "pointer" }}
                 >
-                  Name
-                  {sortConfig.key === "transaction_name" ? (
-                    sortConfig.direction === "ascending" ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        class="bi bi-caret-up-fill"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        class="bi bi-caret-down-fill"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-                      </svg>
-                    )
-                  ) : null}
+                  <div>
+                    Name
+                    {sortConfig.key === "transaction_name" ? (
+                      sortConfig.direction === "ascending" ? (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          class="bi bi-caret-up-fill"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
+                        </svg>
+                      ) : (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          class="bi bi-caret-down-fill"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                        </svg>
+                      )
+                    ) : null}
+                  </div>
                 </th>
                 <th
                   onClick={() => handleSort("transaction_note")}
                   style={{ cursor: "pointer" }}
                 >
-                  Note
-                  {sortConfig.key === "transaction_note" ? (
-                    sortConfig.direction === "ascending" ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        class="bi bi-caret-up-fill"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        class="bi bi-caret-down-fill"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-                      </svg>
-                    )
-                  ) : null}
+                  <div>
+                    Note
+                    {sortConfig.key === "transaction_note" ? (
+                      sortConfig.direction === "ascending" ? (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          class="bi bi-caret-up-fill"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
+                        </svg>
+                      ) : (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          class="bi bi-caret-down-fill"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                        </svg>
+                      )
+                    ) : null}
+                  </div>
                 </th>
                 <th
                   onClick={() => handleSort("transaction_amount")}
                   style={{ cursor: "pointer" }}
                 >
-                  Amount
-                  {sortConfig.key === "transaction_amount" ? (
-                    sortConfig.direction === "ascending" ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        class="bi bi-caret-up-fill"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        class="bi bi-caret-down-fill"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-                      </svg>
-                    )
-                  ) : null}
+                  <div>
+                    Amount
+                    {sortConfig.key === "transaction_amount" ? (
+                      sortConfig.direction === "ascending" ? (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          class="bi bi-caret-up-fill"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
+                        </svg>
+                      ) : (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          class="bi bi-caret-down-fill"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                        </svg>
+                      )
+                    ) : null}
+                  </div>
                 </th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               {sortedTransactions.map((data) => (
-                <tr key={data.id}>
+                <tr key={data.id} className={data.transaction_amount < 0 ? "negative" : "positive"}>
                   <td data-label="Date">{data.transaction_date}</td>
                   <td data-label="Category">{data.transaction_category}</td>
                   <td data-label="Name">{data.transaction_name}</td>
@@ -342,7 +365,7 @@ export const ExpenseTableLatest = () => {
                     data-label="Amount"
                     className={data.transaction_amount > 0 ? "plus" : "minus"}
                   >
-                    {data.transaction_amount}
+                   ${money_format(parseFloat(data.transaction_amount))}
                   </td>
 
                   <td data-label="">

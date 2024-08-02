@@ -101,6 +101,7 @@ select:not(:disabled) {
 
 .container-bm {
   display: flex;
+justify-content: space-between;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 1rem;
@@ -108,7 +109,7 @@ select:not(:disabled) {
 
 .card-bm {
   min-width: 400px;
-  max-width: 48% !important;
+  max-width: calc(50% - .5rem)!important;
   box-sizing: border-box;
   padding: 1rem;
   border: 1px solid #ccc;

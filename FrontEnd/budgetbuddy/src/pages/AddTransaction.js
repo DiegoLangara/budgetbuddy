@@ -59,9 +59,8 @@ export const AddTransaction = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const Container_home = styled.div`
-    width: 97%;
-    padding: ${(props) =>
-      props.isMobile ? "1vh" : "1vh 10vw 3vh calc(10vw + 63px)"};
+    width: 100%;
+    padding: 0;
     margin: 0 auto;
   `;
 
@@ -132,7 +131,7 @@ export const AddTransaction = () => {
 
     try {
       const response = await fetch(
-        "https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/transaction",
+        process.env.REACT_APP_API_HOST+"/api/transaction",
         {
           method: "POST",
           headers: {
@@ -214,7 +213,7 @@ export const AddTransaction = () => {
 
   const fetchGoals = useCallback(async () => {
     const response = await fetch(
-      "https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/goals/",
+      process.env.REACT_APP_API_HOST+"/api/goals/",
       {
         method: "GET",
         headers: {
@@ -234,7 +233,7 @@ export const AddTransaction = () => {
 
   const fetchDebts = useCallback(async () => {
     const response = await fetch(
-      "https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/debts/",
+      process.env.REACT_APP_API_HOST+"/api/debts/",
       {
         method: "GET",
         headers: {
@@ -254,7 +253,7 @@ export const AddTransaction = () => {
 
   const fetchBudgets = useCallback(async () => {
     const response = await fetch(
-      "https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/",
+      process.env.REACT_APP_API_HOST+"/api/budgets/",
       {
         method: "GET",
         headers: {
@@ -274,7 +273,7 @@ export const AddTransaction = () => {
 
   const fetchIncomes = useCallback(async () => {
     const response = await fetch(
-      "https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/incomes/",
+      process.env.REACT_APP_API_HOST+"/api/incomes/",
       {
         method: "GET",
         headers: {
