@@ -4,7 +4,9 @@
   text-align: center;
   overflow: hidden;
 }
-
+header{
+  margin-top:15px;
+}
 .header-content {
   background-image: url("../Assets/BB-HEADER-GFX-Desktop.png"),
     linear-gradient(to left, rgba(13, 32, 0, 0), #0d2000 55%);

@@ -6,6 +6,7 @@ import { Box } from '@mui/system';
 import { Field } from '../DashboardParts/Field';
 import { Input } from '../DashboardParts/Input';
 import { useNavigate } from 'react-router-dom';
+import "../../css/DatePickers.css";
 
 // Fetch expenditures from the backend
 const fetchExpenditures = async (user_id, token, start_date, end_date) => {
@@ -135,7 +136,7 @@ export const ExpendituresByCategory = () => {
         </StyledNoDataWrapper>
       ) : (
         <>
-          <StyledBox sx={{ width: '100%' }} display="flex" alignItems="stretch" gap={1}>
+          <StyledBox className="date-pickers">
             <Field label="Start date">
               <StyledInput type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
             </Field>
