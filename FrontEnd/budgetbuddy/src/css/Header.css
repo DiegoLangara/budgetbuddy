@@ -4,7 +4,7 @@
   text-align: center;
   overflow: hidden;
 }
-header{
+.header-container{
   margin-top:15px;
 }
 .header-content {

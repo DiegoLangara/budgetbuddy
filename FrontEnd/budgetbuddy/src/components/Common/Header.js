@@ -95,7 +95,7 @@ const handleLogout = () =>{
   };
 const edited_balance = money_format2(balance);
   return (
-    <HeaderContainer isMobile={isMobile}>
+    <HeaderContainer isMobile={isMobile} className="header-container">
       <StyledAppBar position="static">
         <StyledToolbar>
           {isMobile && (

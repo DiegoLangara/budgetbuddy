@@ -3,10 +3,7 @@
     padding: 0;
     margin: 0 auto;
 
-    @media only screen and (min-width: 600px) {
-
-       
-    }
+  
 
 
     .products_header {
@@ -105,16 +102,29 @@ box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.09);
                 }
             }
         }
+        @media only screen and (max-width: 600px) {
 
-        .products_main {
+                flex-flow: column nowrap;
+                aside {
+                    width: 100%!important;
+                    flex-grow: 1;
+                }
+
+        }        .products_main {
             flex-grow: 1;
             flex-shrink: 1;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(1, 1fr);
 
-            grid-auto-rows: auto 1fr auto auto auto auto;
+            grid-auto-rows: auto auto auto auto auto auto;
+            @media only screen and (min-width: 1200px) {
 
-            
+                grid-template-columns: repeat(3, 1fr);
+            }
+            @media only screen and (min-width: 600px) {
+
+                grid-template-columns: repeat(2, 1fr);
+            }
             gap: 20px;
 
             .product_container {
