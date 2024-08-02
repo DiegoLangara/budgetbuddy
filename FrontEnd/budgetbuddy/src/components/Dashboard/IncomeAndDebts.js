@@ -93,7 +93,7 @@ export const IncomeAndDebts = () => {
     },
     {
       name: 'Debts',
-      data: [-debts]
+      data: [debts]
     }
   ];
 
