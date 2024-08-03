@@ -1,5 +1,43 @@
  .team-section {
-    padding: 50px 0;
+    padding: 20px 0;
+    .container{
+      padding-left: 0!important;
+      padding-right: 0!important;
+    }
+    
+    h3{
+      text-overflow: ellipsis;
+    }
+    .team-member{
+      
+      min-width: 170px;
+      img{
+
+      }
+      .member-details{
+        width: 100%;
+        display: flex;
+        flex-flow: column nowrap;
+        gap:0px;
+        justify-content: flex-start;
+      }
+      .member-name{
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: flex-start;
+        width: 100%;
+        gap:10px;
+      }
+    }
+    @media screen and (max-width: 991px) {
+      svg{
+        width: 22px;
+        height: 25px;
+      }
+      
+    }
+   
   }
   
   
@@ -11,4 +49,10 @@
     font-size: 2rem;
     margin-bottom: 20px;
   }
-
+.features-section{
+  margin-top: 30px;
+  .container{
+    padding-left: 0!important;
+    padding-right: 0!important;
+  }
+}

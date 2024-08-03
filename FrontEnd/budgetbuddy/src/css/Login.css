@@ -76,7 +76,15 @@
 
 /* Estilos específicos para móviles */
 @media only screen and (max-width: 768px) {
+  .login-background {
+   .login-background-container{
+    margin-left: auto !important;
+    margin-right: auto !important;
+   }
+  }
   .login-background-container {
+    margin-left: auto !important;
+    margin-right: auto !important;
     flex-direction: column;
     justify-content: flex-end; /* Alinear elementos en la parte inferior */
     align-items: center;

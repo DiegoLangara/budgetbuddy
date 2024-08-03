@@ -116,18 +116,9 @@
     box-sizing: border-box; /* Ensure padding is included in the element's total width and height */
   }
 
-  .team-member img {
-    width: 80%;
-    margin-bottom: 1rem;
-  }
+  
 
-  .team-member h3 {
-    text-align: left;
-  }
-
-  .team-member p {
-    text-align: left;
-  }
+ 
 
   .row {
     display: flex;

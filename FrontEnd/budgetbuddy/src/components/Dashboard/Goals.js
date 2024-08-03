@@ -3,6 +3,7 @@ import { GoalBarChart } from "../DashboardParts/GoalBarChart";
 import styled from "styled-components";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import "../../css/DashboardGoals.css";
 
 // Fetch goals from the backend
 async function fetchGoals(user_id, token) {
@@ -67,7 +68,7 @@ export const Goals = () => {
   };
 
   return (
-    <StyledGoalWrapper>
+    <StyledGoalWrapper className="goal_wrapper">
       <StyledTitle>Goals</StyledTitle>
       {noDataCheckFlag
         ? <StyledNoDataWrapper>
@@ -83,7 +84,7 @@ export const Goals = () => {
           </StyledButton>
         </StyledNoDataWrapper>
         : goals.map((goal) => (
-          <StyledGoalBarChart
+          <StyledGoalBarChart 
             key={goal.id}
             description={goal.goal_name}
             goal={goal.target_amount}

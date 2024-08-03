@@ -10,10 +10,11 @@ const TeamMember = ({ photo, stream, name, linkedin, position }) => {
     <div className="col-md-3">
       <div className="team-member">
         <img src={photo} alt="Team Member" />
-        <div className="justify-content-between align-items-center">
+        <div className="member-details">
           <p className="mb-0">{stream}</p>
-          <div className="d-flex justify-content-between align-items-center">
-            <h3>{name}</h3>
+          <h3>{name}</h3>
+          <div className="member-name">
+          <p className="mb-0">{position}</p>
             <a
               href={linkedin}
               target="_blank"
@@ -22,7 +23,7 @@ const TeamMember = ({ photo, stream, name, linkedin, position }) => {
               <FontAwesomeIcon icon={faLinkedin} size="2x" />
             </a>
           </div>
-          <p className="mb-0">{position}</p>
+          
         </div>
       </div>
     </div>

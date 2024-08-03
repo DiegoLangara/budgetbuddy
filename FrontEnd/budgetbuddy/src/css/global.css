@@ -5,6 +5,7 @@
     /* font-family: "Geologica", sans-serif;
   font-optical-sizing: auto;
   font-weight: normal; */
+  scroll-behavior: smooth;
 }
 #root{
   /* width: fit-content; */

@@ -55,6 +55,7 @@
 .img-black {
   filter: invert(100%);
   width: 2vw;
+  height: auto;
   margin-right: 0.5rem;
 
 }
@@ -83,6 +84,8 @@
 }
 @media only screen and (max-width: 768px) {
   .signup-background-container {
+    margin-left: auto !important;
+margin-right: auto !important;
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
