@@ -2,3 +2,59 @@
 .form-label {
   font-size: 1rem !important;
 }
+.filter-container{
+  display: flex;
+  flex-flow: row wrap ;
+  justify-content: space-between;
+  padding-left: 0px;
+        padding-right: 0px;
+        gap:20px;
+
+        .date-wrapper{
+          display: flex;
+          flex-flow: row wrap;
+          flex-grow: 1;
+
+          justify-content: flex-start;
+          align-items: flex-end;
+          gap: 20px;
+          @media screen and (max-width: 787px){
+            justify-content: center;
+            
+          }
+          
+        }
+        .type-wrapper{
+          display: flex;
+          flex-flow: row wrap;
+          flex-grow: 1;
+          justify-content: flex-start;
+          align-items: flex-end;
+          gap: 20px;
+          
+          @media screen and (max-width: 787px){
+            justify-content: flex-end;            
+          }
+          @media screen and (max-width: 360px){
+            justify-content: center;            
+          }
+
+        }
+        .action-wrapper{
+          flex-grow: 1;
+          display: flex;
+          flex-flow: row wrap;
+          gap: 20px;
+          justify-content: flex-end;
+          align-items: flex-end;
+          
+          @media screen and (max-width: 787px){
+            justify-content: flex-start;
+            
+          }
+          @media screen and (max-width: 360px){
+            justify-content: center;            
+          }
+      
+        }
+}

@@ -9,10 +9,9 @@ import styled from "styled-components";
 import "../css/BudgetPage.css";
 
 const Container = styled.div`
-  width: 97%;
-  padding: ${(props) =>
-    props.isMobile ? "1vh" : "1vh 9vw 3vh calc(10vw + 63px)"};
-  margin: 0 auto;
+  width: 100%;
+  padding: 0;
+  margin: 0;
 `;
 
 const ShrinkedNav = styled.nav`

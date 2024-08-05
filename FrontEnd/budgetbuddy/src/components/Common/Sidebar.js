@@ -11,7 +11,7 @@ export const Sidebar = ({ variant, open, toggleDrawer, drawerWidth }) => {
       open={open}
       onClose={toggleDrawer}
       className="styled-drawer"
-      style={{ '--drawer-width': '13vw' }}
+     
     >
       <div className="styled-title">
         <img src={logo} alt="Budget Buddy Logo" />
@@ -21,8 +21,7 @@ export const Sidebar = ({ variant, open, toggleDrawer, drawerWidth }) => {
           <ListItem component={Link} to="dashboard" onClick={toggleDrawer} className="styled-list-item">
             <ListItemIcon>
               <svg
-                width="16"
-                height="16"
+                
                 viewBox="0 0 16 16"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -61,8 +60,7 @@ export const Sidebar = ({ variant, open, toggleDrawer, drawerWidth }) => {
           <ListItem component={Link} to="budget" onClick={toggleDrawer} className="styled-list-item">
             <ListItemIcon>
               <svg
-                width="16"
-                height="16"
+               
                 viewBox="0 0 16 16"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -84,8 +82,7 @@ export const Sidebar = ({ variant, open, toggleDrawer, drawerWidth }) => {
           <ListItem component={Link} to="expenses" onClick={toggleDrawer} className="styled-list-item">
             <ListItemIcon>
               <svg
-                width="16"
-                height="16"
+               
                 viewBox="0 0 16 16"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -128,8 +125,7 @@ export const Sidebar = ({ variant, open, toggleDrawer, drawerWidth }) => {
           <ListItem component={Link} to="products" onClick={toggleDrawer} className="styled-list-item">
             <ListItemIcon>
               <svg
-                width="16"
-                height="16"
+                
                 viewBox="0 0 16 16"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -167,9 +163,8 @@ export const Sidebar = ({ variant, open, toggleDrawer, drawerWidth }) => {
         </List>
       </div>
       <div className="footerSidebar">
-        &copy; 2024
-        <br />
-        BudgetBuddy
+       <span>&copy; 2024</span>
+        <span>BudgetBuddy</span>
       </div>
     </Drawer>
   );

@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 async function fetchSavings(user_id, token) {
   try {
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/dashboard/monthlysavings/`,
+      process.env.REACT_APP_API_HOST+`/api/dashboard/monthlysavings/`,
       {
         method: "GET",
         headers: {

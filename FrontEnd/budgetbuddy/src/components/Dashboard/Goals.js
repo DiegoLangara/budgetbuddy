@@ -3,12 +3,13 @@ import { GoalBarChart } from "../DashboardParts/GoalBarChart";
 import styled from "styled-components";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import "../../css/DashboardGoals.css";
 
 // Fetch goals from the backend
 async function fetchGoals(user_id, token) {
   try {
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/dashboard/goals/`,
+      process.env.REACT_APP_API_HOST+`/api/dashboard/goals/`,
       {
         method: "GET",
         headers: {
@@ -67,7 +68,7 @@ export const Goals = () => {
   };
 
   return (
-    <StyledGoalWrapper>
+    <StyledGoalWrapper className="goal_wrapper">
       <StyledTitle>Goals</StyledTitle>
       {noDataCheckFlag
         ? <StyledNoDataWrapper>
@@ -83,7 +84,7 @@ export const Goals = () => {
           </StyledButton>
         </StyledNoDataWrapper>
         : goals.map((goal) => (
-          <StyledGoalBarChart
+          <StyledGoalBarChart 
             key={goal.id}
             description={goal.goal_name}
             goal={goal.target_amount}

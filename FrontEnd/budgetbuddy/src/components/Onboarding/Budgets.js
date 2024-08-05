@@ -14,9 +14,9 @@ import { Progress } from "./Progress"; // Assume similar to Goals.js
 // Utility function to format the date
 const formatDate = (isoDate) => {
   const date = new Date(isoDate);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 };
 
@@ -24,7 +24,7 @@ const formatDate = (isoDate) => {
 async function fetchBudgetItems(user_id, token) {
   try {
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/`,
+      process.env.REACT_APP_API_HOST+`/api/budgets/`,
       {
         method: "GET",
         headers: {
@@ -165,7 +165,7 @@ export const Budgets = () => {
   const saveToDatabase = async (data) => {
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/budgets/`,
+        process.env.REACT_APP_API_HOST+`/api/budgets/`,
         {
           method: "POST",
           headers: {

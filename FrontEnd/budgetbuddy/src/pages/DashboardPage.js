@@ -97,7 +97,7 @@ const StyledToggleButton = styled.button`
 `;
 
 const DashboardContainer = styled.div`
-  padding: 3vh 10vw 0 calc(10vw + 5vw);
+  padding: 0;
   display: grid;
   grid-template-columns: 35% 35% 27%;
   grid-auto-rows: auto;
@@ -108,13 +108,13 @@ const DashboardContainer = styled.div`
   }
 
   @media (max-width: 850px) {
-    padding: 3vh 10vw 0 calc(10vw + 5vw);
+    padding: 0;
     display: flex;
     flex-flow: column nowrap;
     grid-template-columns: 1fr;
   }
 
   @media (max-width: 600px) {
-    padding: 3vh 0 0 0;
+    padding: 0;
   }
 `;

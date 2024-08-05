@@ -1,179 +1,297 @@
 /* Header for the landing page */
+.landing-page{
+  .container{
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+}
 .landing-header {
   position: relative;
   text-align: center;
   overflow: hidden;
 }
+.btn{
+  &:hover{
+    text-decoration: none;
+    filter: contrast(1.2);
+  }
+}
+.header-container {
+  header {
+    margin-top: 15px !important;
+  }
+
+}
 
 .header-content {
-  background-image: url("../Assets/BB-HEADER-GFX-Desktop.png"),
-    linear-gradient(to left, rgba(13, 32, 0, 0), #0d2000 55%);
-  background-position: right, left;
-  background-size: contain, cover;
-  background-repeat: no-repeat, no-repeat;
+  background: rgb(13, 32, 0);
   text-align: left;
   justify-content: center;
   position: relative;
-  height: fit-content;
-  padding: 10% 0 10% 18%;
-}
+  height: calc(100vh - 96px);
+  height: calc(100dvh - 96px);
+min-height: fit-content;
+  width: 100%;
 
-.header-content {
+padding: 0;
+
   color: white;
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  &::after {
+    content: "";
+    background-image: url("../Assets/BB-HEADER-GFX-Desktop.png"),
+    linear-gradient(to left, rgba(13, 32, 0, 0), #0d2000 20%);
+  background-position: right, center;
+  background-size: contain, fill;
+  background-repeat: no-repeat, no-repeat;
+    
+    height: 100%;
+    width: 100%;
+    position: relative;
+    bottom: 0;
+    right: 0;
+    left: 0;
+  }
+  @media screen and (max-width: 1930px) {
+    &::after {
+    background-position: left, center;
+    }
+    
+  }
+  background-position: left, center;
+  .signup-container {
+    width: 100%;
+    max-width: 700px;
+    position: relative;
+    right: 0;
+    padding-left: 50px;
+   justify-self: end;
+   align-self: center;
+   display: grid;
+   grid-template-columns: repeat(1, 1fr);
+   grid-auto-rows: auto;
+   gap:20px;
+
+    p {
+      
+      padding-bottom: 1%;
+    }
+
+    h1 {
+   
+      font-size: clamp(40px, 4vw, 68px);
+      padding-bottom: 1%;
+    }
+
+    .download-btn {
+      background-color: #aed18d;
+      border-radius: 6px;
+      padding: 12px 22px;
+      font-size: 16px;
+      color: #0d2000;
+      font-family: "DM Sans";
+      width: fit-content;
+      &:hover{
+        text-decoration: none;
+        filter: contrast(1.2);
+      }
+    }
+
+    .mobile-buttons {
+      display: none;
+    }
+  }
+
 }
 
-.header-content p {
-  width: 45%;
-  padding-bottom: 1%;
-}
 
-.header-content h1 {
-  width: 40%;
-  font-size: 4.5vw;
-  padding-bottom: 1%;
-}
-
-.download-btn {
-  background-color: #aed18d;
-  border-radius: 6px;
-  padding: 12px 22px;
-  font-size: 16px;
-  color: #0d2000;
-  font-family: "DM Sans";
-}
-
-/* Botones móviles ocultos por defecto */
-.mobile-buttons {
-  display: none;
-}
 
 /* Estilos específicos para la versión móvil */
-@media (max-width: 750px) {
+@media (max-width: 991px) {
+  .landing-page{
+    .container{
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding-left: 25px!important;
+      padding-right: 25px!important;
+    }
+  }
+  .navbar {
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+  }
+
   .landing-header {
     position: relative;
+    height: 120dvh;
     height: 120vh;
     text-align: center;
     padding: 0;
     display: flex;
     flex-direction: column;
-    background: none; /* Quitar cualquier imagen de fondo */
-    margin-top: 56px; /* Ajustar para que el header inicie justo después del navbar */
+    background: none;
+    /* Quitar cualquier imagen de fondo */
+    margin-top: 0px;
+
+    /* Ajustar para que el header inicie justo después del navbar */
   }
 
-  .landing-header::before {
-    content: "";
-    background: linear-gradient(
-      to bottom,
-      rgba(13, 32, 0, 1) 100%,
-      rgba(13, 32, 0, 0.7) 100%,
-      rgba(13, 32, 0, 0.5) 50%,
-      rgba(13, 32, 0, 0.3) 70%,
-      rgba(13, 32, 0, 0) 100%
-    );
-    height: 90%;
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 0;
-  }
+
 
   .landing-header::after {
     content: "";
-    background: linear-gradient(
-        to bottom,
+    background: linear-gradient(to bottom,
         rgba(13, 32, 0, 1) 0%,
-        rgba(13, 32, 0, 0) 20%
-      ),
-      url("../Assets/BB-HEADER-GFX-Mobile 1.png") no-repeat center/cover;
-    height: 50vh; /* Ajusta el tamaño de la imagen */
+        rgba(13, 32, 0, 0) 20%),
+      url("../Assets/BB-HEADER-GFX-Mobile.jpg") no-repeat center/cover;
+    min-height: 300px;
+    height: -webkit-fill-available;
+
     width: 100%;
-    position: absolute;
-    bottom: 10%; /* Sube la imagen un poco */
+    position: relative;
+    bottom: 0;
+    right: 0;
     left: 0;
-    z-index: 1;
+    top: 95px;
+
   }
 
   .header-content {
-    background: none; /* Quitar cualquier imagen de fondo */
-    color: white; /* Color del texto */
-    padding: 20% 5% 0 5%; /* Padding para centrar el contenido */
-    text-align: center; /* Alinear el texto al centro */
+    background: rgb(13, 32, 0);
+    color: white;
+    padding: 0;
+    text-align: center;
     position: relative;
+
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    height: calc(50dvh + 2px);
+    padding: 0 25px;
     z-index: 2;
-    flex: 1;
-  }
-
-  .header-content h1 {
-    font-size: 4vw;
-    line-height: 28px;
-    width: 100%;
-    position: relative;
-    font-size: 48px;
-    letter-spacing: -0.01em;
-    line-height: 56px;
-    font-weight: 500;
-    font-family: Geologica;
-    color: #fff;
-    text-align: center;
-    display: inline-block;
-  }
-
-  .header-content p {
-    font-size: 16px;
-    width: 100%;
-  }
-
-  .header-content .btn {
-    font-size: 14px;
-    padding: 10px 20px;
-  }
-
-  /* Ocultar el botón "Download PDF Proposal" en versión móvil */
-  .header-content .download-btn {
+    top: 96px;
+    &::after {
     display: none;
+    }
+    .signup-container {
+      margin: 30px 0;
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      grid-template-rows: auto auto auto;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      padding-left: 0px;
+      h1 {
+        /* font-size: 4vw; */
+        line-height: 1.1;
+        width: 100%;
+        position: relative;
+        font-size: clamp(30px, 4vw, 48px);
+        letter-spacing: -0.01em;
+        font-weight: 500;
+        font-family: Geologica;
+        color: #fff;
+        text-align: center;
+        display: inline-block;
+        padding: 0;
+        margin: 0;
+      }
+
+      p {
+        font-size: 16px;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+      }
+
+      .btn {
+        font-size: 14px;
+        padding: 10px 20px;
+        &:hover{
+          text-decoration: none;
+          filter: contrast(1.2);
+        }
+      }
+
+      .download-btn {
+        display: none;
+      }
+
+      .mobile-buttons {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        /* Añadir espacio entre los botones */
+
+        width: 100%;
+
+        .btn {
+          width: 100%;
+          position: relative;
+          border-radius: 0.375rem;
+          /* 6px */
+          /* border: 0.125rem solid #fff; */
+          box-sizing: border-box;
+          height: 2.5rem;
+          /* 40px */
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          padding: 0.5rem 1rem;
+          /* 8px 16px */
+          text-align: center;
+          font-size: 1rem;
+          /* 16px */
+          /* color: #fff; */
+          font-family: "DM Sans";
+          position: relative;
+          letter-spacing: 0.04em;
+          line-height: 1.5rem;
+          /* 24px */
+          font-weight: 500;
+        }
+
+        .btn-primary {
+          background-color: transparent !important;
+          border: 1px solid #fff;
+          color: #fff;
+        }
+
+        .btn-signup {
+          background-color: #aed18d;
+          border: 1px solid #aed18d;
+          color: #0d2000;
+        }
+      }
+
+    }
   }
 
-  /* Mostrar los botones "Login" y "Sign Up" en versión móvil */
-  .mobile-buttons {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px; /* Añadir espacio entre los botones */
-    margin-top: 20px;
+
+
+  .mobile-menu {
+    max-width: 300px !important;
   }
 
-  .mobile-buttons .btn {
-    width: 100%;
-    position: relative;
-    border-radius: 0.375rem; /* 6px */
-    /* border: 0.125rem solid #fff; */
-    box-sizing: border-box;
-    height: 2.5rem; /* 40px */
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem 1rem; /* 8px 16px */
-    text-align: center;
-    font-size: 1rem; /* 16px */
-    /* color: #fff; */
-    font-family: "DM Sans";
-    position: relative;
-    letter-spacing: 0.04em;
-    line-height: 1.5rem; /* 24px */
-    font-weight: 500;
+  .mobile-nav {
+    .nav-link {
+      padding: .5rem !important;
+    }
   }
 
-  .mobile-buttons .btn-primary {
-    background-color: transparent !important;
-    border: 1px solid #fff;
-    color: #fff;
-  }
 
-  .mobile-buttons .btn-signup {
-    background-color: #aed18d;
-    border: 1px solid #aed18d;
-    color: #0d2000;
-  }
 }

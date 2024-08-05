@@ -6,12 +6,13 @@ import { Box } from '@mui/system';
 import { Field } from '../DashboardParts/Field';
 import { Input } from '../DashboardParts/Input';
 import { useNavigate } from 'react-router-dom';
+import "../../css/DatePickers.css";
 
 // Fetch expenditures from the backend
 const fetchExpenditures = async (user_id, token, start_date, end_date) => {
   try {
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/dashboard/expendituresbycategory/`,
+      process.env.REACT_APP_API_HOST+`/api/dashboard/expendituresbycategory/`,
       {
         method: "GET",
         headers: {
@@ -135,7 +136,7 @@ export const ExpendituresByCategory = () => {
         </StyledNoDataWrapper>
       ) : (
         <>
-          <StyledBox sx={{ width: '100%' }} display="flex" alignItems="stretch" gap={1}>
+          <StyledBox className="date-pickers">
             <Field label="Start date">
               <StyledInput type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
             </Field>

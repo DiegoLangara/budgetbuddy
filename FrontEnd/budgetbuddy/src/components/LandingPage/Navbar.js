@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../css/Navbar.css';
 import logo from '../../Assets/Logonn.png';
-import { FaFolder, FaUser, FaShoppingBag, FaHome } from 'react-icons/fa';
+import { FaFolder, FaUser, FaShoppingBag, FaHome  } from 'react-icons/fa';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileArrowDown } from '@fortawesome/free-solid-svg-icons';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,6 +46,7 @@ const Navbar = () => {
             <li className="nav-item">
               <a className="nav-link" href="#team" onClick={() => scrollToSection('team')}>Team</a>
             </li>
+
             <li className="nav-item">
               <a className="nav-link" href="#contact" onClick={() => scrollToSection('contact')}>Contact Us</a>
             </li>
@@ -74,6 +77,12 @@ const Navbar = () => {
               <FaUser className="nav-icon" /> Team
             </a>
           </li>
+          <li className="nav-item">
+              <a className="nav-link" href="https://drive.google.com/file/d/1MH77n_kgjjLJ5X5eJzlX0ua73PCHTzto/view?usp=sharing" target="_blank">
+             
+              <FontAwesomeIcon icon={faFileArrowDown} className="nav-icon" />  Download Proposal</a>
+              
+            </li>
           <li className="nav-item">
             <a className="nav-link" href="#contact" onClick={() => scrollToSection('contact')}>
               <FaShoppingBag className="nav-icon" /> Contact Us

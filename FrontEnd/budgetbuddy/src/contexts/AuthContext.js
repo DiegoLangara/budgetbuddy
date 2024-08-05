@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
 
   async function signup(email, password) {
     const response = await fetch(
-      "https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/register",
+      process.env.REACT_APP_API_HOST+"/api/register",
       {
         method: "POST",
         headers: {
@@ -34,7 +34,7 @@ export function AuthProvider({ children }) {
   async function login(email, password) {
     try {
       const response = await fetch(
-        "https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/auth",
+        process.env.REACT_APP_API_HOST+"/api/auth",
         {
           method: "POST",
           headers: {

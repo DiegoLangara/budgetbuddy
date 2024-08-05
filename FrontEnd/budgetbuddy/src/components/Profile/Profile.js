@@ -17,11 +17,12 @@ import { Button } from "../ProfileParts/Button";
 import { FieldForTextBox } from "../ProfileParts/FieldForTextbox";
 import { Textarea } from "../ProfileParts/Textarea";
 import Swal from "sweetalert2";
+import "../../css/Profile.css";
 
 async function fetchPersonalDetails(user_id, token) {
   try {
     const response = await fetch(
-      `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/user/profile`,
+      process.env.REACT_APP_API_HOST+`/api/user/profile`,
       {
         method: "GET",
         headers: {
@@ -106,7 +107,7 @@ export const Profile = ({ open, onClose }) => {
   const saveToDatabase = async (data) => {
     try {
       const response = await fetch(
-        `https://budget-buddy-ca-9ea877b346e7.herokuapp.com/api/user/`,
+        process.env.REACT_APP_API_HOST+`/api/user/`,
         {
           method: "PUT",
           headers: {
@@ -164,9 +165,9 @@ export const Profile = ({ open, onClose }) => {
   };
 
   return (
-    <Drawer anchor="right" open={open} onClose={onClose}>
+    <Drawer anchor="right" open={open} onClose={onClose} className="profile-expanded">
       <ProfileContainer>
-        <ProfileHeader>
+        <ProfileHeader className="profile-header">
           <Typography variant="h6">Profile</Typography>
           <IconButton onClick={onClose}>
             <CloseIcon />
@@ -230,19 +231,19 @@ export const Profile = ({ open, onClose }) => {
                 </Field>
               </Grid>
             </Grid>
-            <Box display="flex" justifyContent="flex-end" gap={2} mt={2}>
+            <Box className="profile-buttons">
               {editName ? (
                 <>
                   <Button variant="contained" onClick={(e) => saveData(["firstname", "lastname"], e)}>
-                    save
+                    Save
                   </Button>
                   <Button variant="outlined" onClick={handleEditToggle("name")}>
-                    cancel
+                    Cancel
                   </Button>
                 </>
               ) : (
                 <Button variant="outlined" onClick={handleEditToggle("name")}>
-                  edit
+                  Edit
                 </Button>
               )}
             </Box>
@@ -262,19 +263,19 @@ export const Profile = ({ open, onClose }) => {
                 </Field>
               </Grid>
             </Grid>
-            <Box display="flex" justifyContent="flex-end" gap={2} mt={2}>
+            <Box className="profile-buttons">
               {editPassword ? (
                 <>
                   <Button variant="contained" onClick={(e) => saveData(["password"], e)}>
-                    save
+                    Save
                   </Button>
                   <Button variant="outlined" onClick={handleEditToggle("password")}>
-                    cancel
+                    Cancel
                   </Button>
                 </>
               ) : (
                 <Button variant="outlined" onClick={handleEditToggle("password")}>
-                  edit
+                  Edit
                 </Button>
               )}
             </Box>
@@ -292,19 +293,19 @@ export const Profile = ({ open, onClose }) => {
                 </FieldForTextBox>
               </Grid>
             </Grid>
-            <Box display="flex" justifyContent="flex-end" gap={2} mt={2}>
+            <Box className="profile-buttons">
               {editAboutMe ? (
                 <>
                   <Button variant="contained" onClick={(e) => saveData(["aboutme"], e)}>
-                    save
+                    Save
                   </Button>
                   <Button variant="outlined" onClick={handleEditToggle("aboutMe")}>
-                    cancel
+                    Cancel
                   </Button>
                 </>
               ) : (
                 <Button variant="outlined" onClick={handleEditToggle("aboutMe")}>
-                  edit
+                  Edit
                 </Button>
               )}
             </Box>

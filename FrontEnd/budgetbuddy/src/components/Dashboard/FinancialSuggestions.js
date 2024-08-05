@@ -83,5 +83,5 @@ const StyledTitle = styled.h4`
 
 const StyledContentWrapper = styled.div`
   position: sticky;
-  top: 0;
+  top: 10px;
 `;
